@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"><meta name="color-scheme" content="only light"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dreams & Goals — LifeTracker</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/reset.css">
+<link rel="stylesheet" href="css/variables.css?v=2">
+<link rel="stylesheet" href="css/layout.css?v=2">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/charts.css">
+<link rel="stylesheet" href="css/mobile.css">
+<link rel="stylesheet" href="css/cdp-style.css">
+<link rel="stylesheet" href="css/dropdown-style.css">
+<link rel="stylesheet" href="css/checkbox-style.css">
+<link rel="stylesheet" href="css/tooltip-style.css">
+<link rel="stylesheet" href="css/modal-style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+.goal-card-drag-enabled { cursor: grab; user-select: none; }
+.goal-card-drag-enabled:active { cursor: grabbing; }
+.goal-card-dragging { opacity: 0.3; transform: scale(0.98); }
+.goal-card-drag-over { outline: 2px solid var(--accent); outline-offset: 3px; }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon"><svg data-lucide="activity"></svg></div>
+      <span class="sidebar-logo-text">LifeTracker</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html"       class="nav-link" data-tooltip="nav_dashboard" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="layout-dashboard"></svg><span class="nav-label" data-i18n="nav_dashboard">Dashboard</span></a>
+      <a href="pomodoro.html"    class="nav-link" data-tooltip="nav_pomodoro" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="timer"></svg><span class="nav-label" data-i18n="nav_pomodoro">Focus Mode</span></a>
+      <a href="time.html"        class="nav-link" data-tooltip="nav_time" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="clock"></svg><span class="nav-label" data-i18n="nav_time">Zaman Takibi</span></a>
+      <a href="habits.html"      class="nav-link" data-tooltip="nav_habits" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="check-square"></svg><span class="nav-label" data-i18n="nav_habits">Alışkanlıklar</span></a>
+      <a href="gym.html"         class="nav-link" data-tooltip="nav_gym" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="dumbbell"></svg><span class="nav-label" data-i18n="nav_gym">Spor</span></a>
+      <a href="plans.html"       class="nav-link" data-tooltip="nav_plans" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="kanban"></svg><span class="nav-label" data-i18n="nav_plans">Planlar</span></a>
+      <a href="goals.html"       class="nav-link active" data-tooltip="nav_goals" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="star"></svg><span class="nav-label" data-i18n="nav_goals">Hayaller & Hedefler</span></a>
+      <a href="budget.html"      class="nav-link" data-tooltip="nav_budget" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="wallet"></svg><span class="nav-label" data-i18n="nav_budget">Bütçe</span></a>
+      <a href="investments.html" class="nav-link" data-tooltip="nav_investments" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="trending-up"></svg><span class="nav-label" data-i18n="nav_investments">Yatırım</span></a>
+    </nav>
+    <!-- FOCUS WIDGET -->
+    <div id="focus-sidebar-widget" class="focus-sidebar-widget">
+      <a href="pomodoro.html" class="fw-link">
+        <div class="fw-dot-wrap"><span class="fw-dot"></span></div>
+        <div class="fw-body">
+          <span class="fw-label">POMODORO</span>
+          <span class="fw-time">00:00</span>
+          <span class="fw-task"></span>
+        </div>
+        <span class="fw-icon"><svg data-lucide="chevron-right"></svg></span>
+      </a>
+    </div>
+    <div class="sidebar-footer"><button class="btn btn-icon btn-secondary privacy-toggle-btn" onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n style="width:34px;height:34px;min-width:34px;padding:0;flex-shrink:0"><svg data-lucide="eye"></svg></button><a href="#" class="nav-link" onclick="UI._openHelp();return false;" data-tooltip="sidebar_help" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="help-circle"></svg><span class="nav-label" data-i18n="sidebar_help">Yardım</span></a><a href="#" class="nav-link" onclick="UI.openSettings();return false;" data-tooltip="sidebar_settings" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="settings"></svg><span class="nav-label" data-i18n="sidebar_settings">Ayarlar</span></a></div>
+  </aside>
+
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="topbar-title" data-i18n="nav_goals">Hayaller & Hedefler</h1>
+        <span class="topbar-subtitle" id="topbar-date"></span>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-icon btn-secondary" id="goalLockBtn" onclick="Goals.toggleEditMode()" data-tooltip="goals_reorder" data-tooltip-i18n style="width:34px;height:34px;min-width:34px;padding:0"><svg data-lucide="lock"></svg></button>
+        <button class="btn btn-secondary" onclick="Goals.triggerImport()" style="display:flex;align-items:center;gap:6px"><svg data-lucide="upload"></svg><span data-i18n="import_data_btn">Veri Aktar</span></button>
+        <button class="btn btn-primary" id="addGoalBtn"><svg data-lucide="plus"></svg><span data-i18n="goals_add_btn">Hayal Ekle</span></button>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <div class="goals-grid" id="goals-grid"></div>
+    </main>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+<input type="file" id="lt-goals-import-file" accept=".json" style="display:none" onchange="Goals.importData(this)">
+<script src="js/store.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/modal-core.js"></script>
+<script src="js/delete-manager.js"></script>
+<script src="js/cdp-core.js"></script>
+<script src="js/dropdown-core.js"></script>
+<script src="js/checkbox-core.js"></script>
+<script src="js/tooltip-core.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/goals.js"></script>
+<script src="js/focus-widget.js"></script>
+<script>lucide.createIcons(); Goals.init();</script>
+</body>
+</html>

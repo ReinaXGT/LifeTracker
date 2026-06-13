@@ -1,0 +1,289 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"><meta name="color-scheme" content="only light"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Investments — LifeTracker</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/reset.css">
+<link rel="stylesheet" href="css/variables.css?v=2">
+<link rel="stylesheet" href="css/layout.css?v=2">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/charts.css">
+<link rel="stylesheet" href="css/mobile.css">
+<link rel="stylesheet" href="css/cdp-style.css">
+<link rel="stylesheet" href="css/dropdown-style.css">
+<link rel="stylesheet" href="css/checkbox-style.css">
+<link rel="stylesheet" href="css/tooltip-style.css">
+<link rel="stylesheet" href="css/modal-style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+/* ── Investments page-specific ─────────────────────────── */
+.state-screen {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  min-height: calc(100vh - var(--topbar-height));
+}
+.inv-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 26.25rem;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+/* Auth tabs */
+.auth-tabs {
+  display: flex;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: 0.25rem;
+  margin-bottom: 1.75rem;
+  border: 1px solid var(--border);
+}
+.auth-tab {
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-body);
+}
+.auth-tab.active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+/* Paywall features */
+.paywall-feats {
+  text-align: left;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+.paywall-feat {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+.paywall-feat::before {
+  content: '✓';
+  color: var(--green);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  width: 1.125rem;
+  flex-shrink: 0;
+}
+/* Loading spinner */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinning { animation: spin 0.9s linear infinite; }
+.load-ring {
+  width: 3rem; height: 3rem;
+  border-radius: 50%;
+  border: 3px solid var(--bg-elevated);
+  border-top-color: var(--accent);
+  animation: spin 0.9s linear infinite;
+  margin-bottom: 1rem;
+}
+/* Exchange selector custom style */
+.exchange-opt-flag { margin-right: 0.375rem; }
+/* Form row utility */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+/* PnL period dropdown — semi-transparent */
+.dd-pnl-menu {
+  background: rgba(14, 14, 22, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-color: rgba(255,255,255,.09);
+  min-width: 10.625rem;
+}
+.dd-pnl-menu .dd-item { justify-content: flex-start; }
+.dd-pnl-menu .dd-item-label { text-align: left; font-size: 0.8125rem; }
+.dd-pnl-menu .dd-item-check { margin-left: auto; }
+/* ── Asset row drag & drop ───────────────────────────────── */
+.inv-asset-row { cursor: grab; }
+.inv-asset-row button { cursor: pointer; }
+.inv-asset-row.inv-dragging { opacity: 0.35; cursor: grabbing; }
+.inv-asset-row.inv-drag-over-top { box-shadow: inset 0 2px 0 var(--accent); }
+.inv-asset-row.inv-drag-over-bot { box-shadow: inset 0 -2px 0 var(--accent); }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon"><svg data-lucide="activity"></svg></div>
+      <span class="sidebar-logo-text">LifeTracker</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html"       class="nav-link" data-tooltip="nav_dashboard" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="layout-dashboard"></svg><span class="nav-label" data-i18n="nav_dashboard">Dashboard</span></a>
+      <a href="pomodoro.html"    class="nav-link" data-tooltip="nav_pomodoro" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="timer"></svg><span class="nav-label" data-i18n="nav_pomodoro">Focus Mode</span></a>
+      <a href="time.html"        class="nav-link" data-tooltip="nav_time" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="clock"></svg><span class="nav-label" data-i18n="nav_time">Zaman Takibi</span></a>
+      <a href="habits.html"      class="nav-link" data-tooltip="nav_habits" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="check-square"></svg><span class="nav-label" data-i18n="nav_habits">Alışkanlıklar</span></a>
+      <a href="gym.html"         class="nav-link" data-tooltip="nav_gym" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="dumbbell"></svg><span class="nav-label" data-i18n="nav_gym">Spor</span></a>
+      <a href="plans.html"       class="nav-link" data-tooltip="nav_plans" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="kanban"></svg><span class="nav-label" data-i18n="nav_plans">Planlar</span></a>
+      <a href="goals.html"       class="nav-link" data-tooltip="nav_goals" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="star"></svg><span class="nav-label" data-i18n="nav_goals">Hayaller & Hedefler</span></a>
+      <a href="budget.html"      class="nav-link" data-tooltip="nav_budget" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="wallet"></svg><span class="nav-label" data-i18n="nav_budget">Bütçe</span></a>
+      <a href="investments.html" class="nav-link active" data-tooltip="nav_investments" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="trending-up"></svg><span class="nav-label" data-i18n="nav_investments">Yatırım</span></a>
+    </nav>
+    <!-- FOCUS WIDGET -->
+    <div id="focus-sidebar-widget" class="focus-sidebar-widget">
+      <a href="pomodoro.html" class="fw-link">
+        <div class="fw-dot-wrap"><span class="fw-dot"></span></div>
+        <div class="fw-body">
+          <span class="fw-label">POMODORO</span>
+          <span class="fw-time">00:00</span>
+          <span class="fw-task"></span>
+        </div>
+        <span class="fw-icon"><svg data-lucide="chevron-right"></svg></span>
+      </a>
+    </div>
+    <div class="sidebar-footer"><button class="btn btn-icon btn-secondary privacy-toggle-btn" onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n style="width:34px;height:34px;min-width:34px;padding:0;flex-shrink:0"><svg data-lucide="eye"></svg></button><a href="#" class="nav-link" onclick="UI._openHelp();return false;" data-tooltip="sidebar_help" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="help-circle"></svg><span class="nav-label" data-i18n="sidebar_help">Yardım</span></a><a href="#" class="nav-link" onclick="UI.openSettings();return false;" data-tooltip="sidebar_settings" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="settings"></svg><span class="nav-label" data-i18n="sidebar_settings">Ayarlar</span></a></div>
+  </aside>
+
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="topbar-title" data-i18n="nav_investments">Yatırım</h1>
+        <span class="topbar-subtitle" id="topbar-date"></span>
+      </div>
+      <div class="topbar-right" style="display:flex;gap:8px;align-items:center">
+        <!-- Exchange rate display + manual override -->
+        <div id="exchangeRateSection" style="display:flex;align-items:center;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px 10px 0;height:34px;box-sizing:border-box;white-space:nowrap;gap:0">
+          <span style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);font-weight:500;margin-right:3px;line-height:1;align-self:center">1$=</span>
+          <input id="exchangeRateInput" type="number" min="0.01" step="0.1"
+                 style="width:4.5ch;background:transparent;border:none;outline:none;font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--text-primary);padding:0;margin:0;text-align:left;flex-shrink:0;box-sizing:border-box;line-height:1;align-self:center;height:22px"
+                 placeholder="45.9" data-tooltip="inv_rate_input_title" data-tooltip-i18n
+                 oninput="this.style.width=(this.value.length||4)+0.3+'ch'">
+          <span id="rateCurrencySymbol" style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--accent);margin-left:2px;line-height:1;align-self:center">₺</span>
+          <span id="rateUpdateInfo" style="font-size:11px;color:var(--text-muted);white-space:nowrap;margin-left:7px;padding-left:7px;border-left:1px solid var(--border);line-height:1;align-self:center"></span>
+        </div>
+        <!-- Currency toggle -->
+        <div id="currencyToggleSection" style="display:flex;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);padding:2px;gap:2px;height:34px;box-sizing:border-box">
+          <button id="toggleUSER" class="btn btn-primary"
+                  onclick="Investments.setDisplayCurrency(Investments.getUserCurrencyCode())"
+                  style="border-radius:5px;border:none;min-width:58px;padding:0 10px;font-size:12px;font-weight:600;height:100%">₺ TRY</button>
+          <button id="toggleUSD" class="btn btn-secondary"
+                  onclick="Investments.setDisplayCurrency('USD')"
+                  style="border-radius:5px;border:none;min-width:58px;padding:0 10px;font-size:12px;font-weight:600;height:100%">$ USD</button>
+        </div>
+        <button class="btn btn-icon btn-secondary privacy-toggle-btn" id="privacy-toggle-btn"
+                onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n
+                style="color:var(--text-secondary);width:34px;height:34px">
+          <svg data-lucide="eye"></svg>
+        </button>
+        <button class="btn btn-icon btn-secondary" onclick="UI.openSettings()"
+                data-tooltip="inv_api_keys_title" data-tooltip-i18n
+                style="color:var(--text-secondary);width:34px;height:34px">
+          <svg data-lucide="key-round"></svg>
+        </button>
+        <button class="btn btn-secondary" onclick="Investments.triggerImport()" style="display:flex;align-items:center;gap:6px;height:34px"><svg data-lucide="upload"></svg><span data-i18n="import_data_btn">Veri Aktar</span></button>
+        <button class="btn btn-primary" id="addAssetBtn" style="height:34px;padding:0 14px">
+          <svg data-lucide="plus"></svg><span data-i18n="inv_add_btn">Varlık Ekle</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ── PORTFOLIO CONTENT ──────────────────────────────── -->
+    <main class="page-content" id="portfolioContent" style="transition:opacity 150ms ease-out">
+
+      <!-- KPI cards -->
+      <div class="kpi-grid" id="kpi-grid"></div>
+
+      <!-- Allocation chart + type summary -->
+      <div class="content-grid grid-2" style="margin-bottom:1.25rem">
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title" data-i18n="inv_dist_panel">Varlık Dağılımı</span></div>
+          <div class="panel-body">
+            <div style="display:flex;gap:1.75rem;align-items:center">
+              <div class="chart-doughnut">
+                <canvas id="allocChart"></canvas>
+                <div id="alloc-center" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;gap:0.125rem"></div>
+              </div>
+              <div id="alloc-legend" class="chart-legend" style="flex-direction:column;gap:0.625rem;flex:1"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title" data-i18n="inv_perf_panel">Getiri Analizi</span></div>
+          <div class="panel-body" id="perf-panel" style="padding:0"></div>
+        </div>
+      </div>
+
+      <!-- Portfolio detail table -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title" data-i18n="inv_portfolio_panel">Portföy Detayı</span>
+          <div style="display:flex;align-items:center;gap:0.625rem">
+            <div id="priceStatusBadge" style="display:none;align-items:center;gap:0.3125rem;font-size:0.75rem;color:var(--text-muted)"></div>
+            <button class="btn btn-icon btn-secondary" id="refreshPricesBtn"
+                    onclick="Investments.refreshPrices()" data-tooltip="inv_refresh_title" data-tooltip-i18n
+                    style="color:var(--text-secondary)">
+              <svg data-lucide="refresh-cw"></svg>
+            </button>
+          </div>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead><tr>
+              <th data-i18n="inv_col_asset">Varlık / Sembol</th>
+              <th data-i18n="inv_col_type">Tür</th>
+              <th style="text-align:right" data-i18n="inv_col_qty">Adet</th>
+              <th style="text-align:right" data-i18n="inv_col_cost">Ort. Maliyet</th>
+              <th style="text-align:right" data-i18n="inv_col_price">Güncel Fiyat</th>
+              <th style="text-align:right" data-i18n="inv_col_value">Toplam Değer</th>
+              <th style="text-align:right;cursor:pointer;user-select:none;white-space:nowrap" id="pnl-col-th" data-i18n="inv_col_pnl" data-tooltip="inv_pnl_toggle_title" data-tooltip-i18n>Toplam K/Z</th>
+              <th style="text-align:right" data-i18n="inv_col_pct">Dağılım %</th>
+              <th></th>
+            </tr></thead>
+            <tbody id="assetBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </main><!-- /#portfolioContent -->
+  </div><!-- /.main-content -->
+</div><!-- /.app-layout -->
+
+
+<div class="toast-container" id="toast-container"></div>
+<input type="file" id="lt-inv-import-file" accept=".json" style="display:none" onchange="Investments.importData(this)">
+<script src="js/store.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/modal-core.js"></script>
+<script src="js/delete-manager.js"></script>
+<script src="js/cdp-core.js"></script>
+<script src="js/dropdown-core.js"></script>
+<script src="js/checkbox-core.js"></script>
+<script src="js/tooltip-core.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/investments.js"></script>
+<script src="js/focus-widget.js"></script>
+<script>
+  lucide.createIcons();
+  Investments.init();
+</script>
+</body>
+</html>

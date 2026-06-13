@@ -1,0 +1,242 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"><meta name="color-scheme" content="only light"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Budget — LifeTracker</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/reset.css">
+<link rel="stylesheet" href="css/variables.css?v=2">
+<link rel="stylesheet" href="css/layout.css?v=2">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/charts.css">
+<link rel="stylesheet" href="css/mobile.css">
+<link rel="stylesheet" href="css/cdp-style.css">
+<link rel="stylesheet" href="css/dropdown-style.css">
+<link rel="stylesheet" href="css/checkbox-style.css">
+<link rel="stylesheet" href="css/tooltip-style.css">
+<link rel="stylesheet" href="css/color-picker-style.css">
+<link rel="stylesheet" href="css/modal-style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+.bview-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+.bvtab {
+  padding: 0.625rem 1.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-body);
+  display: flex;
+  align-items: center;
+  gap: 0.4375rem;
+  margin-bottom: -1px;
+  white-space: nowrap;
+}
+.bvtab:hover { color: var(--text-primary); }
+.bvtab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+.bvtab svg { width: 0.9375rem; height: 0.9375rem; }
+
+/* Drag & drop + resize panel styles */
+.budget-draggable-panel { transition: outline 150ms ease-out, opacity 150ms ease-out; }
+.budget-panel-drag-enabled { outline: 1.5px dashed var(--accent); outline-offset: 3px; }
+.budget-panel-drag-enabled .panel-header { cursor: grab; user-select: none; }
+.budget-panel-drag-enabled .panel-header:active { cursor: grabbing; }
+.budget-panel-drag-enabled .panel-header button { cursor: pointer; }
+.budget-panel-drag-enabled .panel-header button:active { cursor: pointer; }
+.budget-panel-dragging { opacity: 0.35; }
+.budget-draggable-panel.budget-panel-drag-over { outline: 2px solid var(--accent); background: rgba(124,108,252,0.09); }
+.drag-handle-icon {
+  width: 0.9375rem; height: 0.9375rem;
+  color: var(--text-muted);
+  margin-right: 0.125rem;
+  flex-shrink: 0;
+  cursor: grab;
+}
+.budget-details-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5625rem 1rem;
+  cursor: pointer;
+  border-top: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  user-select: none;
+  transition: background var(--transition-fast);
+}
+.budget-details-toggle:hover { background: var(--bg-elevated); }
+.page-content { position: relative; }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon"><svg data-lucide="activity"></svg></div>
+      <span class="sidebar-logo-text">LifeTracker</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html"       class="nav-link" data-tooltip="nav_dashboard" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="layout-dashboard"></svg><span class="nav-label" data-i18n="nav_dashboard">Dashboard</span></a>
+      <a href="pomodoro.html"    class="nav-link" data-tooltip="nav_pomodoro" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="timer"></svg><span class="nav-label" data-i18n="nav_pomodoro">Focus Mode</span></a>
+      <a href="time.html"        class="nav-link" data-tooltip="nav_time" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="clock"></svg><span class="nav-label" data-i18n="nav_time">Zaman Takibi</span></a>
+      <a href="habits.html"      class="nav-link" data-tooltip="nav_habits" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="check-square"></svg><span class="nav-label" data-i18n="nav_habits">Alışkanlıklar</span></a>
+      <a href="gym.html"         class="nav-link" data-tooltip="nav_gym" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="dumbbell"></svg><span class="nav-label" data-i18n="nav_gym">Spor</span></a>
+      <a href="plans.html"       class="nav-link" data-tooltip="nav_plans" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="kanban"></svg><span class="nav-label" data-i18n="nav_plans">Planlar</span></a>
+      <a href="goals.html"       class="nav-link" data-tooltip="nav_goals" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="star"></svg><span class="nav-label" data-i18n="nav_goals">Hayaller & Hedefler</span></a>
+      <a href="budget.html"      class="nav-link active" data-tooltip="nav_budget" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="wallet"></svg><span class="nav-label" data-i18n="nav_budget">Bütçe</span></a>
+      <a href="investments.html" class="nav-link" data-tooltip="nav_investments" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="trending-up"></svg><span class="nav-label" data-i18n="nav_investments">Yatırım</span></a>
+    </nav>
+    <!-- FOCUS WIDGET -->
+    <div id="focus-sidebar-widget" class="focus-sidebar-widget">
+      <a href="pomodoro.html" class="fw-link">
+        <div class="fw-dot-wrap"><span class="fw-dot"></span></div>
+        <div class="fw-body">
+          <span class="fw-label">POMODORO</span>
+          <span class="fw-time">00:00</span>
+          <span class="fw-task"></span>
+        </div>
+        <span class="fw-icon"><svg data-lucide="chevron-right"></svg></span>
+      </a>
+    </div>
+    <div class="sidebar-footer"><button class="btn btn-icon btn-secondary privacy-toggle-btn" onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n style="width:34px;height:34px;min-width:34px;padding:0;flex-shrink:0"><svg data-lucide="eye"></svg></button><a href="#" class="nav-link" onclick="UI._openHelp();return false;" data-tooltip="sidebar_help" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="help-circle"></svg><span class="nav-label" data-i18n="sidebar_help">Yardım</span></a><a href="#" class="nav-link" onclick="UI.openSettings();return false;" data-tooltip="sidebar_settings" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="settings"></svg><span class="nav-label" data-i18n="sidebar_settings">Ayarlar</span></a></div>
+  </aside>
+
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="topbar-title" data-i18n="nav_budget">Bütçe</h1>
+        <span class="topbar-subtitle" id="topbar-date"></span>
+      </div>
+      <div class="topbar-right">
+        <div id="topbar-actions" style="display:flex;align-items:center;gap:12px"></div>
+      </div>
+    </header>
+
+    <main class="page-content">
+
+      <!-- View Tab Navigation -->
+      <div class="bview-bar">
+        <button class="bvtab active" id="tab-overview" onclick="Budget.setView('overview')">
+          <svg data-lucide="layout-dashboard"></svg> <span data-i18n="bud_summary_tab">Özet</span>
+        </button>
+        <button class="bvtab" id="tab-categories" onclick="Budget.setView('categories')">
+          <svg data-lucide="layers"></svg> <span data-i18n="bud_groups_tab">Ana Kategoriler</span>
+        </button>
+        <button class="bvtab" id="tab-transactions" onclick="Budget.setView('transactions')">
+          <svg data-lucide="list"></svg> <span data-i18n="bud_trans_tab">İşlem Takibi</span>
+        </button>
+      </div>
+
+      <!-- VIEW: Özet -->
+      <div id="view-overview">
+        <div class="kpi-grid" id="kpi-grid"></div>
+
+        <!-- Dynamic panel grid — rendered by Budget.renderOverview() -->
+        <div id="overview-panels-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:1.25rem 0;align-items:stretch"></div>
+      </div>
+
+      <!-- VIEW: Ana Kategoriler -->
+      <div id="view-categories" style="display:none">
+        <div id="categories-content"></div>
+      </div>
+
+      <!-- VIEW: İşlem Takibi -->
+      <div id="view-transactions" style="display:none">
+        <div class="panel" style="overflow:visible">
+          <div class="panel-header" style="position:relative;z-index:2">
+            <span class="panel-title" data-i18n="bud_trans_panel">İşlem Takibi</span>
+            <div style="display:flex;gap:0.5rem;align-items:center">
+              <div class="search-wrap" style="min-width:12.5rem">
+                <svg data-lucide="search"></svg>
+                <input class="form-control" id="searchTx"
+                  style="height:2.125rem;padding-top:0;padding-bottom:0;box-sizing:border-box"
+                  placeholder="Ara..." data-i18n-placeholder="bud_search">
+              </div>
+              <div style="position:relative;display:inline-flex;height:2.125rem;flex-shrink:0">
+                <button type="button" id="filterDateBtn" onclick="Budget.toggleDateFilter()"
+                  style="display:flex;align-items:center;gap:0.375rem;padding:0 0.625rem;height:2.125rem;
+                         box-sizing:border-box;background:var(--bg-elevated);border:1px solid var(--border);
+                         border-radius:var(--radius-sm);cursor:pointer;white-space:nowrap">
+                  <svg data-lucide="calendar" style="width:0.9375rem;height:0.9375rem;color:var(--text-muted);flex-shrink:0"></svg>
+                  <span id="filterDateLabel" style="font-size:0.8125rem;color:var(--text-secondary)">Tarih</span>
+                </button>
+                <input type="hidden" id="filterDateFrom" value="">
+                <input type="hidden" id="filterDateTo" value="">
+              </div>
+              <button type="button" id="filterGroupBtn" onclick="Budget.openFilterGroupDropdown(this)"
+                style="display:flex;align-items:center;gap:0.5rem;padding:0 0.625rem;height:2.125rem;min-width:10rem;
+                       box-sizing:border-box;background:var(--bg-elevated);border:1px solid var(--border);
+                       border-radius:var(--radius-sm);cursor:pointer;white-space:nowrap;flex-shrink:0">
+                <span id="filterGroupLabel" style="flex:1;font-size:0.8125rem;color:var(--text-secondary);text-align:left" data-i18n="bud_all_cats">Tüm Kategoriler</span>
+                <svg data-lucide="chevron-down" style="width:0.875rem;height:0.875rem;color:var(--text-muted);flex-shrink:0"></svg>
+              </button>
+              <input type="hidden" id="filterGroupVal" value="">
+            </div>
+          </div>
+          <div id="txTable" class="table-container">
+            <table class="data-table">
+              <thead><tr>
+                <th data-i18n="bud_col_date">TARİH</th><th data-i18n="bud_col_amount">TUTAR</th><th data-i18n="bud_col_subcat">ALT KATEGORİ</th><th data-i18n="bud_col_maincat">ANA KATEGORİ</th><th data-i18n="bud_col_desc">AÇIKLAMA</th><th></th>
+              </tr></thead>
+              <tbody id="txBody"></tbody>
+            </table>
+          </div>
+          <div id="txEmpty" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- Details floating overlay — fixed so it stays on screen while scrolling -->
+      <div id="budget-details-overlay"
+        style="display:none;position:fixed;z-index:600;flex-direction:column;
+               background:var(--bg-surface);border:1px solid var(--border);
+               border-radius:var(--radius);box-shadow:0 8px 32px rgba(0,0,0,.55);
+               overflow:hidden;max-height:60vh">
+        <div id="budget-details-drag-handle"
+          style="display:flex;align-items:center;justify-content:space-between;
+                 padding:0.625rem 1rem;border-bottom:1px solid var(--border);flex-shrink:0;
+                 background:var(--bg-elevated);cursor:grab">
+          <span class="bdo-title" style="font-size:0.6875rem;font-weight:700;letter-spacing:.1em;color:var(--text-secondary)"></span>
+          <button onclick="Budget.closeDetailsOverlay()" class="btn btn-icon btn-secondary"
+            style="width:1.625rem;height:1.625rem;min-width:1.625rem;padding:0" data-tooltip="pomo_settings_close" data-tooltip-i18n>
+            <svg data-lucide="x" style="width:0.8125rem;height:0.8125rem"></svg>
+          </button>
+        </div>
+        <div class="bdo-body" style="overflow-y:auto;overflow-x:auto;flex:1"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+<input type="file" id="lt-budget-import-file" accept=".json" style="display:none" onchange="Budget._importBudgetData(this)">
+<script src="js/store.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/modal-core.js"></script>
+<script src="js/delete-manager.js"></script>
+<script src="js/cdp-core.js"></script>
+<script src="js/dropdown-core.js"></script>
+<script src="js/checkbox-core.js"></script>
+<script src="js/tooltip-core.js"></script>
+<script src="js/color-picker-core.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/budget.js"></script>
+<script src="js/focus-widget.js"></script>
+<script>lucide.createIcons(); Budget.init();</script>
+</body>
+</html>

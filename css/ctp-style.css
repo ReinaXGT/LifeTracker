@@ -1,0 +1,163 @@
+/* ── Custom Time Picker (CTP) ──────────────────────────────────────────────
+   Portal mimarisi: document.body'e append edilir, position:fixed + z-index:1500
+   ile JS tarafından konumlandırılır — modal overflow kırpması olmaz.
+   ──────────────────────────────────────────────────────────────────────── */
+
+@keyframes ctp-slide-up {
+  from { opacity: 0; transform: translateY(8px) scale(.97) }
+  to   { opacity: 1; transform: none }
+}
+@keyframes ctp-slide-down {
+  from { opacity: 0; transform: translateY(-8px) scale(.97) }
+  to   { opacity: 1; transform: none }
+}
+
+/* ── Picker konteyner ─────────────────────────────────────────────────── */
+.ctp-pick {
+  font-family: var(--font-body);
+  position: fixed;
+  z-index: 1500;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 24px 64px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.05);
+  padding: 0.75rem;
+  width: 12rem;
+  animation: ctp-slide-up 160ms cubic-bezier(.22,1,.36,1);
+  user-select: none;
+}
+
+.ctp-pick.ctp-open-up {
+  animation: ctp-slide-down 160ms cubic-bezier(.22,1,.36,1);
+}
+
+/* ── AM / PM toggle ───────────────────────────────────────────────────── */
+.ctp-ampm-row {
+  display: flex;
+  gap: 0.375rem;
+  margin-bottom: 0.625rem;
+}
+
+.ctp-ampm-btn {
+  flex: 1;
+  padding: 0.3125rem 0;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: color 120ms, background 120ms, border-color 120ms;
+}
+
+.ctp-ampm-btn:hover {
+  color: var(--text-primary);
+  border-color: rgba(255,255,255,.15);
+}
+
+.ctp-ampm-btn.ctp-ampm-active {
+  background: rgba(124,108,252,.18);
+  border-color: rgba(124,108,252,.5);
+  color: var(--accent);
+}
+
+/* ── Başlık etiketleri ────────────────────────────────────────────────── */
+.ctp-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.375rem;
+  padding: 0 0.125rem;
+}
+
+.ctp-col-lbl {
+  flex: 1;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ── Sütunlar ─────────────────────────────────────────────────────────── */
+.ctp-cols {
+  display: flex;
+  align-items: stretch;
+}
+
+.ctp-col-list {
+  flex: 1;
+  max-height: 11.5rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+  padding: 0.125rem 0.1875rem;
+}
+
+.ctp-col-list::-webkit-scrollbar       { width: 3px; }
+.ctp-col-list::-webkit-scrollbar-track { background: transparent; }
+.ctp-col-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 0.125rem; }
+
+.ctp-sep {
+  width: 1px;
+  background: var(--border);
+  margin: 0 0.3125rem;
+  flex-shrink: 0;
+  align-self: stretch;
+}
+
+/* ── Öğeler ───────────────────────────────────────────────────────────── */
+.ctp-item {
+  display: block;
+  padding: 0.375rem 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 0.375rem;
+  transition: background 100ms ease, color 100ms ease;
+  line-height: 1;
+}
+
+.ctp-item:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.ctp-item.ctp-active {
+  background: rgba(124,108,252,.18);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ── Footer (temizle) ─────────────────────────────────────────────────── */
+.ctp-footer {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: center;
+}
+
+.ctp-clear-btn {
+  font-size: 0.6875rem;
+  font-family: var(--font-body);
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 0.25rem;
+  transition: color 100ms, background 100ms;
+}
+
+.ctp-clear-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+}

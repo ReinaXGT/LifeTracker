@@ -1,0 +1,26 @@
+# ── Secrets & Local Config ────────────────────────────────────────────────────
+.env
+.env.local
+secrets.json
+
+# ── Claude & AI Memory ────────────────────────────────────────────────────────
+.claude/
+CLAUDE.md
+
+# ── OS & Editor ───────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+.idea/
+.vscode/settings.json
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+
+# ── Node (if tooling added later) ─────────────────────────────────────────────
+node_modules/

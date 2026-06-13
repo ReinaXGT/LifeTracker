@@ -1,0 +1,254 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"><meta name="color-scheme" content="only light"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Habits — LifeTracker</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/reset.css">
+<link rel="stylesheet" href="css/variables.css?v=2">
+<link rel="stylesheet" href="css/layout.css?v=2">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/charts.css">
+<link rel="stylesheet" href="css/mobile.css">
+<link rel="stylesheet" href="css/dropdown-style.css">
+<link rel="stylesheet" href="css/checkbox-style.css">
+<link rel="stylesheet" href="css/tooltip-style.css">
+<link rel="stylesheet" href="css/modal-style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+/* ── Habit rows ─────────────────────────────────── */
+.hc-row { display:flex; align-items:center; gap:0.75rem; padding:0.8125rem 1.25rem; border-bottom:1px solid var(--border); transition:background var(--transition-fast); }
+.hc-row:last-child { border-bottom:none; }
+.hc-row:hover { background:var(--bg-elevated); }
+.hc-row.hc-done { opacity:.65; }
+.hc-icon { font-size:1.125rem; flex-shrink:0; user-select:none; }
+.hc-name { font-size:0.9375rem; font-weight:500; color:var(--text-primary); flex:1; user-select:none; cursor:pointer; }
+.hc-strike { text-decoration:line-through; color:var(--text-muted); }
+.hc-streak { font-size:0.75rem; font-weight:600; white-space:nowrap; flex-shrink:0; }
+.hc-del { width:1.625rem; height:1.625rem; border-radius:0.375rem; display:flex; align-items:center; justify-content:center; color:var(--text-muted); background:transparent; cursor:pointer; border:none; transition:all var(--transition-fast); flex-shrink:0; opacity:0; }
+.hc-row:hover .hc-del { opacity:1; border:1px solid rgba(255,160,30,.7); color:#FFAA1E; background:rgba(255,160,30,.10); }
+.hc-del:hover { background:rgba(255,160,30,.22); border-color:#FFCC55; color:#FFCC55; }
+.hc-undo { width:1.625rem; height:1.625rem; border-radius:0.375rem; display:flex; align-items:center; justify-content:center; color:var(--text-muted); background:transparent; cursor:pointer; border:none; transition:all var(--transition-fast); flex-shrink:0; opacity:0; }
+.hc-row:hover .hc-undo { opacity:1; }
+.hc-undo:hover { background:rgba(96,165,250,.15); color:var(--blue); }
+.hc-skipped { opacity:.5; }
+.hc-skipped .hc-name { text-decoration:line-through; color:var(--text-muted); }
+.completed-divider { padding:0.4375rem 1.25rem; font-size:0.6875rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); background:var(--bg-elevated); border-top:1px solid var(--border); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:0.375rem; }
+
+/* ── Drag & Drop ─────────────────────────────────── */
+.hc-row { cursor: grab; }
+.hc-row button, .hc-row .cbx { cursor: pointer; }
+.hc-row.hc-dragging { opacity:.35; cursor:grabbing; }
+.hc-row.hc-drag-over-top { box-shadow:inset 0 2px 0 0 var(--accent); }
+.hc-row.hc-drag-over-bot { box-shadow:inset 0 -2px 0 0 var(--accent); }
+
+/* ── Habit type selector ────────────────────────── */
+.hm-type-row { display:flex; gap:0; border:1px solid var(--border); border-radius:var(--radius-sm); overflow:hidden; }
+.hm-type-opt { flex:1; padding:0.75rem 1rem; display:flex; align-items:center; gap:0.625rem; cursor:pointer; transition:background var(--transition-fast); position:relative; }
+.hm-type-opt + .hm-type-opt { border-left:1px solid var(--border); }
+.hm-type-opt input[type=radio] { display:none; }
+.hm-type-opt-icon { width:2rem; height:2rem; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--bg-elevated); transition:background var(--transition-fast); }
+.hm-type-opt-icon svg { width:0.9375rem; height:0.9375rem; color:var(--text-muted); transition:color var(--transition-fast); }
+.hm-type-opt-text { display:flex; flex-direction:column; gap:0.125rem; }
+.hm-type-name { font-size:0.8125rem; font-weight:600; color:var(--text-secondary); transition:color var(--transition-fast); }
+.hm-type-desc { font-size:0.6875rem; color:var(--text-muted); }
+.hm-type-opt.selected { background:var(--accent-glow); }
+.hm-type-opt.selected .hm-type-opt-icon { background:rgba(124,108,252,.25); }
+.hm-type-opt.selected .hm-type-opt-icon svg { color:var(--accent); }
+.hm-type-opt.selected .hm-type-name { color:var(--accent); }
+
+/* ── Day picker ─────────────────────────────────── */
+.hm-day-picker { display:flex; gap:0.5rem; }
+.hm-day-btn { width:2.625rem; height:2.625rem; border-radius:50%; border:2px solid var(--border); background:transparent; color:var(--text-muted); font-size:0.625rem; font-weight:700; cursor:pointer; transition:all var(--transition-fast); font-family:var(--font-mono); letter-spacing:0; }
+.hm-day-btn:hover { border-color:var(--accent); color:var(--text-primary); }
+.hm-day-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+
+/* ── Habit management list ──────────────────────── */
+.hm-mgr-row { display:flex; align-items:center; gap:0.75rem; padding:0.6875rem 1.25rem; border-bottom:1px solid var(--border); transition:background var(--transition-fast); }
+.hm-mgr-row:last-child { border-bottom:none; }
+.hm-mgr-row:hover { background:var(--bg-elevated); }
+.hm-mgr-dot { width:0.5625rem; height:0.5625rem; border-radius:50%; flex-shrink:0; }
+.hm-mgr-emoji { font-size:1.0625rem; flex-shrink:0; line-height:1; }
+.hm-mgr-info { flex:1; min-width:0; display:flex; flex-direction:column; gap:0.125rem; }
+.hm-mgr-name { font-size:0.875rem; font-weight:500; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.hm-mgr-meta { font-size:0.6875rem; font-weight:600; font-family:var(--font-mono); color:var(--blue); }
+.hm-mgr-actions { display:flex; gap:0.375rem; flex-shrink:0; }
+
+/* ── Two-column daily layout ────────────────────── */
+.hb-daily-grid { display:flex; gap:1.25rem; margin-bottom:1.25rem; align-items:flex-start; }
+.hb-daily-grid > .panel { flex:1; min-width:0; overflow:hidden; }
+.hb-todo-input-row { padding:0.625rem 1rem; border-top:1px solid var(--border); display:flex; gap:0.5rem; }
+.hb-todo-input-row .form-control { font-size:0.8125rem; }
+
+/* ── Donut row ──────────────────────────────────── */
+.hb-donut-row { display:flex; align-items:flex-end; gap:0.25rem; padding:1rem 0.75rem 0.75rem; }
+.hb-donut-item { display:flex; flex-direction:column; align-items:center; gap:0.375rem; flex:1; min-width:0; }
+.hb-donut-wrap { width:4.5rem; height:4.5rem; position:relative; flex-shrink:0; }
+.hb-donut-label { font-size:0.6875rem; color:var(--text-muted); font-family:var(--font-mono); font-weight:500; }
+.hb-donut-today-label { color:var(--accent); }
+.hb-donut-pct { font-size:0.75rem; font-weight:700; color:var(--text-primary); font-family:var(--font-mono); }
+.hb-donut-today-dot { position:absolute; bottom:-0.375rem; left:50%; transform:translateX(-50%); width:0.3125rem; height:0.3125rem; border-radius:50%; background:var(--accent); }
+.hb-donut-week { border-left:1px solid var(--border); padding-left:1rem; flex:0 0 auto; }
+.hb-donut-week .hb-donut-wrap { width:5.25rem; height:5.25rem; }
+
+/* ── Compact KPI stats row ──────────────────────────────── */
+.hb-stats-row { display:flex; align-items:center; gap:0; border-top:1px solid var(--border); }
+.hb-stat-item { display:flex; align-items:center; gap:0.625rem; padding:0.625rem 1.25rem; flex:1; }
+.hb-stat-item + .hb-stat-item { border-left:1px solid var(--border); }
+.hb-stat-icon { width:1.75rem; height:1.75rem; border-radius:0.5rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.hb-stat-icon svg { width:0.8125rem; height:0.8125rem; }
+.hb-stat-body { display:flex; flex-direction:column; gap:1px; }
+.hb-stat-label { font-size:0.625rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); }
+.hb-stat-value { font-size:0.9375rem; font-weight:700; font-family:var(--font-mono); color:var(--text-primary); line-height:1.2; }
+.hb-stat-sub { font-size:0.625rem; color:var(--text-muted); font-family:var(--font-mono); }
+
+/* ── 30-Day Grid Table ──────────────────────────────────── */
+.hg-table { border-collapse:collapse; width:100%; min-width:max-content; }
+.hg-week-row { }
+.hg-name-th { min-width:11.875rem; text-align:left; padding:0.75rem 0.75rem 0.5rem 1.25rem; font-size:0.625rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--text-muted); white-space:nowrap; }
+.hg-pct-th { min-width:3.25rem; text-align:center; padding:0.75rem 0.5rem 0.5rem; font-size:0.625rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--text-muted); }
+.hg-week-th { font-size:0.625rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; text-align:center; padding:0.75rem 0.375rem 0.5rem; border-bottom:2px solid var(--border); }
+.hg-day-th { text-align:center; font-family:var(--font-mono); font-size:0.625rem; font-weight:600; color:var(--text-muted); padding:0.375rem 0 0.125rem; min-width:1.75rem; }
+.hg-num-th { text-align:center; font-family:var(--font-mono); font-size:0.6875rem; font-weight:700; color:var(--text-secondary); padding:0.125rem 0 0.5rem; border-bottom:1px solid var(--border); }
+.hg-week-sep { border-right:1px solid var(--border); }
+.hg-today-col { color:var(--accent) !important; }
+
+.hg-row { border-bottom:1px solid var(--border); transition:background var(--transition-fast); }
+.hg-row:last-child { border-bottom:none; }
+.hg-row:hover { background:var(--bg-elevated); }
+.hg-name-td { padding:0.4375rem 0.75rem 0.4375rem 1.25rem; white-space:nowrap; position:sticky; left:0; background:var(--bg-surface); z-index:1; }
+.hg-row:hover .hg-name-td { background:var(--bg-elevated); }
+.hg-icon { font-size:0.875rem; margin-right:0.5rem; }
+.hg-habit-name { font-size:0.8125rem; font-weight:500; color:var(--text-primary); }
+.hg-sched-badge { font-size:0.5625rem; font-weight:700; padding:1px 0.3125rem; border-radius:3px; background:rgba(96,165,250,.15); color:var(--blue); margin-left:0.3125rem; vertical-align:middle; }
+.hg-pct-td { text-align:center; padding:0 0.625rem; position:sticky; left:13.375rem; background:var(--bg-surface); z-index:1; border-right:1px solid var(--border); }
+.hg-row:hover .hg-pct-td { background:var(--bg-elevated); }
+.hg-pct { font-family:var(--font-mono); font-size:0.75rem; font-weight:700; }
+
+.hg-cell { padding:0.25rem 0.1875rem; text-align:center; cursor:pointer; vertical-align:middle; }
+.hg-box { width:1.25rem; height:1.25rem; border-radius:4px; border:2px solid #3D3D5C; background:#1A1A2A; margin:0 auto; display:flex; align-items:center; justify-content:center; transition:border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast); }
+.hg-box svg { width:0.6875rem; height:0.6875rem; color:#fff; flex-shrink:0; }
+.hg-cell:not(.hg-cell-skip):not(.hg-cell-future):hover .hg-box { border-color:#6B6B9A; background:#252538; }
+.hg-cell-done .hg-box { background:var(--hc, var(--accent)); border-color:var(--hc, var(--accent)); box-shadow:0 0 8px color-mix(in srgb, var(--hc, var(--accent)) 50%, transparent); }
+.hg-cell-today .hg-box { border-color:var(--accent) !important; box-shadow:0 0 0 1.5px var(--accent) !important; }
+.hg-cell-skip { cursor:default; }
+.hg-cell-skip .hg-box { border-color:#252538; background:transparent; opacity:.5; cursor:default; }
+.hg-cell-future { cursor:default; }
+.hg-cell-future .hg-box { border-color:#252538; background:transparent; opacity:.3; }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon"><svg data-lucide="activity"></svg></div>
+      <span class="sidebar-logo-text">LifeTracker</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html"       class="nav-link" data-tooltip="nav_dashboard" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="layout-dashboard"></svg><span class="nav-label" data-i18n="nav_dashboard">Dashboard</span></a>
+      <a href="pomodoro.html"    class="nav-link" data-tooltip="nav_pomodoro" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="timer"></svg><span class="nav-label" data-i18n="nav_pomodoro">Focus Mode</span></a>
+      <a href="time.html"        class="nav-link" data-tooltip="nav_time" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="clock"></svg><span class="nav-label" data-i18n="nav_time">Zaman Takibi</span></a>
+      <a href="habits.html"      class="nav-link active" data-tooltip="nav_habits" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="check-square"></svg><span class="nav-label" data-i18n="nav_habits">Alışkanlıklar</span></a>
+      <a href="gym.html"         class="nav-link" data-tooltip="nav_gym" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="dumbbell"></svg><span class="nav-label" data-i18n="nav_gym">Spor</span></a>
+      <a href="plans.html"       class="nav-link" data-tooltip="nav_plans" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="kanban"></svg><span class="nav-label" data-i18n="nav_plans">Planlar</span></a>
+      <a href="goals.html"       class="nav-link" data-tooltip="nav_goals" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="star"></svg><span class="nav-label" data-i18n="nav_goals">Hayaller & Hedefler</span></a>
+      <a href="budget.html"      class="nav-link" data-tooltip="nav_budget" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="wallet"></svg><span class="nav-label" data-i18n="nav_budget">Bütçe</span></a>
+      <a href="investments.html" class="nav-link" data-tooltip="nav_investments" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="trending-up"></svg><span class="nav-label" data-i18n="nav_investments">Yatırım</span></a>
+    </nav>
+    <!-- FOCUS WIDGET -->
+    <div id="focus-sidebar-widget" class="focus-sidebar-widget">
+      <a href="pomodoro.html" class="fw-link">
+        <div class="fw-dot-wrap"><span class="fw-dot"></span></div>
+        <div class="fw-body">
+          <span class="fw-label">POMODORO</span>
+          <span class="fw-time">00:00</span>
+          <span class="fw-task"></span>
+        </div>
+        <span class="fw-icon"><svg data-lucide="chevron-right"></svg></span>
+      </a>
+    </div>
+    <div class="sidebar-footer"><button class="btn btn-icon btn-secondary privacy-toggle-btn" onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n style="width:34px;height:34px;min-width:34px;padding:0;flex-shrink:0"><svg data-lucide="eye"></svg></button><a href="#" class="nav-link" onclick="UI._openHelp();return false;" data-tooltip="sidebar_help" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="help-circle"></svg><span class="nav-label" data-i18n="sidebar_help">Yardım</span></a><a href="#" class="nav-link" onclick="UI.openSettings();return false;" data-tooltip="sidebar_settings" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="settings"></svg><span class="nav-label" data-i18n="sidebar_settings">Ayarlar</span></a></div>
+  </aside>
+
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="topbar-title" data-i18n="nav_habits">Alışkanlıklar</h1>
+        <span class="topbar-subtitle" id="topbar-date"></span>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-icon btn-secondary" id="manageHabitsBtn" data-tooltip="habits_manage_modal" data-tooltip-i18n style="color:var(--text-secondary)">
+          <svg data-lucide="settings-2"></svg>
+        </button>
+        <button class="btn btn-secondary" onclick="Habits.triggerImport()" style="display:flex;align-items:center;gap:6px"><svg data-lucide="upload"></svg><span data-i18n="import_data_btn">Veri Aktar</span></button>
+        <button class="btn btn-primary" id="addHabitBtn"><svg data-lucide="plus"></svg><span data-i18n="habits_add_btn">Alışkanlık Ekle</span></button>
+      </div>
+    </header>
+
+    <main class="page-content">
+
+      <!-- Habits Panel -->
+      <div class="panel" style="margin-bottom:1.25rem">
+        <div class="panel-header">
+          <div style="display:flex;flex-direction:column;gap:0.125rem">
+            <span class="panel-title" data-i18n="nav_habits">Alışkanlıklar</span>
+            <span style="font-family:var(--font-mono);font-size:0.6875rem;color:var(--text-muted)" id="today-date-label"></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.5rem">
+            <span style="font-family:var(--font-mono);font-size:0.9375rem;font-weight:700;color:var(--accent)" id="checklist-header">0 / 0</span>
+            <span style="font-size:0.75rem;color:var(--text-muted)" data-i18n="pomo_todo_done_count">tamamlandı</span>
+          </div>
+        </div>
+        <div id="daily-active"></div>
+        <div id="completed-section" style="display:none">
+          <div class="completed-divider">
+            <svg data-lucide="check-circle" style="width:0.8125rem;height:0.8125rem;color:var(--green)"></svg>
+            <span data-i18n="pomo_todo_completed_section">Tamamlananlar</span>
+          </div>
+          <div id="daily-completed"></div>
+        </div>
+        <div id="skipped-section" style="display:none">
+          <div class="completed-divider">
+            <svg data-lucide="minus-circle" style="width:0.8125rem;height:0.8125rem;color:#FB923C"></svg>
+            <span data-i18n="habits_skipped_section">Bugün Yapılmayacaklar</span>
+          </div>
+          <div id="daily-skipped"></div>
+        </div>
+      </div>
+
+      <!-- 30-Day Grid -->
+      <div id="habits-grid-container" style="margin-bottom:1.25rem"></div>
+
+      <!-- Donut Charts Row -->
+      <div class="panel" style="overflow:visible">
+        <div class="panel-header">
+          <span class="panel-title" data-i18n="habits_weekly_progress">Haftalık İlerleme</span>
+          <span style="font-size:0.75rem;color:var(--text-muted)" data-i18n="habits_weekly_sub">Günlük tamamlama oranları</span>
+        </div>
+        <div class="hb-donut-row" id="donut-row"></div>
+        <div class="hb-stats-row" id="kpi-stats-row"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+<input type="file" id="lt-habits-import-file" accept=".json" style="display:none" onchange="Habits.importData(this)">
+<script src="js/store.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/modal-core.js"></script>
+<script src="js/delete-manager.js"></script>
+<script src="js/dropdown-core.js"></script>
+<script src="js/checkbox-core.js"></script>
+<script src="js/tooltip-core.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/habits.js"></script>
+<script src="js/focus-widget.js"></script>
+<script>lucide.createIcons(); Habits.init();</script>
+</body>
+</html>

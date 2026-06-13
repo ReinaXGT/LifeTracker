@@ -1,0 +1,169 @@
+/* ─── Mobile Responsive — max-width: 768px ─────────────────────────── */
+
+/* Hamburger button — desktop'ta gizli */
+.mobile-menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  margin-right: 4px;
+  flex-shrink: 0;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.mobile-menu-btn:hover { background: var(--bg-elevated); color: var(--text-primary); }
+.mobile-menu-btn svg { width: 22px; height: 22px; }
+
+/* Sidebar backdrop — varsayılan gizli */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 150;
+  backdrop-filter: blur(2px);
+}
+.sidebar-backdrop.active { display: block; }
+
+/* ─── 768px ve altı ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  body { min-width: 0; }
+
+  /* Hamburger göster */
+  .mobile-menu-btn { display: flex; }
+
+  /* Sidebar: overlay drawer olarak gizle */
+  .sidebar {
+    transform: translateX(-100%);
+    z-index: 200;
+    width: 240px !important;
+    transition: transform 240ms ease-out;
+  }
+  .sidebar.collapsed {
+    width: 240px !important;
+    transform: translateX(-100%);
+  }
+  .sidebar.mobile-open {
+    transform: translateX(0) !important;
+    width: 240px !important;
+  }
+
+  /* collapsed class'ı olsa bile drawer tam görünüm gösterir */
+  .sidebar.mobile-open .nav-label {
+    opacity: 1 !important;
+    width: auto !important;
+    overflow: visible !important;
+    max-width: none !important;
+  }
+  .sidebar.mobile-open .sidebar-logo-text {
+    opacity: 1 !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .sidebar.mobile-open .sidebar-logo {
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+  .sidebar.mobile-open .nav-link {
+    justify-content: flex-start !important;
+    gap: 10px !important;
+  }
+  .sidebar.mobile-open .nav-link.active::before {
+    opacity: 1 !important;
+  }
+  .sidebar.mobile-open .sidebar-footer {
+    flex-direction: row !important;
+  }
+  .sidebar.mobile-open .sidebar-footer .nav-link {
+    justify-content: flex-start !important;
+    gap: 10px !important;
+  }
+  .sidebar.mobile-open .focus-sidebar-widget {
+    display: flex !important;
+  }
+
+  /* Daralt butonu mobilde gizle */
+  #sidebar-collapse-btn { display: none !important; }
+
+  /* Main content: tam genişlik */
+  .main-content { left: 0 !important; }
+
+  /* Topbar */
+  .topbar {
+    padding: 0 12px;
+    height: 60px;
+    z-index: 160; /* backdrop(150) üstünde, sidebar(200) altında — hamburger tıklanabilir kalır */
+  }
+  .topbar-left {
+    flex: 1;
+    min-width: 0;
+  }
+  .topbar-title {
+    font-size: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .topbar-subtitle { display: none; }
+  .topbar-right { gap: 6px; }
+
+  /* Sayfa içeriği padding */
+  .page-content { padding: 14px 12px; }
+
+  /* KPI grid: 2 sütun */
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .kpi-grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .kpi-grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .kpi-value { font-size: 20px; }
+  .kpi-value.mono { font-size: 18px; }
+
+  /* Tüm içerik gridleri → tek sütun */
+  .content-grid { gap: 12px; }
+  .content-grid.grid-2,
+  .content-grid.grid-3col,
+  .content-grid.grid-main-side,
+  .content-grid.grid-2-1 { grid-template-columns: 1fr; }
+
+  /* Goals grid: 2 sütun */
+  .goals-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  /* Panel padding */
+  .panel-header { padding: 12px 14px 10px; }
+  .panel-body { padding: 12px 14px; }
+
+  /* Toggle butonlar küçük */
+  .toggle-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  /* Modal → bottom sheet */
+  .modal-overlay { align-items: flex-end; }
+  .modal-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+    max-height: 92vh;
+    transform: translateY(24px) !important;
+  }
+  .modal-overlay.open .modal-panel { transform: translateY(0) !important; }
+}
+
+/* ─── 480px ve altı ─────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .goals-grid { grid-template-columns: 1fr; }
+  /* Topbar pomodoro widget'ı çok küçük ekranlarda gizle */
+  .ftw { display: none !important; }
+}

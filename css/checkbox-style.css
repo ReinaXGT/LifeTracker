@@ -1,0 +1,83 @@
+/* ── Checkbox Core ────────────────────────────────────────────────────── */
+/* checkbox-core.js ile birlikte kullanılır.                               */
+/* Tüm sayfalarda import edilir; native <input type="checkbox"> KULLANILMAZ */
+
+.cbx {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 2px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.cbx svg {
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+/* ── Şekil varyantları ── */
+
+/* Ana öğeler için (habits, pomodoro todo) */
+.cbx-circle {
+  width: 1.375rem;
+  height: 1.375rem;
+  border-radius: 50%;
+}
+
+/* Alt görevler, plan sub-task için */
+.cbx-square {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+}
+
+/* Modal inline checkbox için (küçük, yuvarlatılmış kare) */
+.cbx-sm {
+  width: 1.0625rem;
+  height: 1.0625rem;
+  border-radius: 0.3125rem;
+}
+
+/* ── Checked durumu ── */
+
+.cbx.cbx-checked {
+  background: var(--cbx-color, var(--accent));
+  border-color: var(--cbx-color, var(--accent));
+}
+
+.cbx.cbx-checked svg {
+  opacity: 1;
+}
+
+/* Daire checkbox: her zaman tema rengi kenarlık */
+.cbx-circle:not(.cbx-checked) {
+  border-color: var(--cbx-color, var(--accent));
+}
+
+/* Daire checkbox hover: içi silik tema rengiyle dolar */
+.cbx-circle:not(.cbx-checked):hover {
+  background: color-mix(in srgb, var(--cbx-color, var(--accent)) 32%, transparent);
+}
+
+/* Diğer tipler için hover'da renk ipucu */
+.cbx:not(.cbx-circle):not(.cbx-checked):hover {
+  border-color: var(--cbx-color, var(--accent));
+}
+
+/* ── Renk yardımcı sınıfları ── */
+
+.cbx-blue   { --cbx-color: var(--blue); }
+.cbx-green  { --cbx-color: var(--green); }
+.cbx-accent { --cbx-color: var(--accent); }
+.cbx-red    { --cbx-color: var(--red); }
+
+/* Her zaman renkli border — silme/uyarı bağlamları için (hover beklenmez) */
+.cbx-bordered {
+  border-color: var(--cbx-color, var(--accent));
+}

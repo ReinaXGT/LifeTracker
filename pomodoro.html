@@ -1,0 +1,608 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"><meta name="color-scheme" content="only light"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Pomodoro — LifeTracker</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/reset.css">
+<link rel="stylesheet" href="css/variables.css?v=2">
+<link rel="stylesheet" href="css/layout.css?v=2">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/charts.css">
+<link rel="stylesheet" href="css/mobile.css">
+<link rel="stylesheet" href="css/dropdown-style.css">
+<link rel="stylesheet" href="css/checkbox-style.css">
+<link rel="stylesheet" href="css/tooltip-style.css">
+<link rel="stylesheet" href="css/modal-style.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+/* ── Type selector ── */
+.pomo-type-btn {
+  display:flex; flex-direction:column; align-items:center; gap:0.5rem;
+  padding:0.875rem 0; min-width:10rem; border-radius:0.75rem;
+  border:1px solid var(--border); background:transparent;
+  color:var(--text-secondary); cursor:pointer; font-size:0.875rem;
+  font-weight:600; font-family:var(--font-body);
+  transition:all var(--transition-fast);
+}
+.pomo-type-btn svg { width:1.25rem; height:1.25rem; }
+.pomo-type-btn:hover { border-color:var(--text-secondary); color:var(--text-primary); }
+.pomo-type-btn.active {
+  border-color: var(--accent);
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  box-shadow: 0 0 14px var(--accent-glow), inset 0 0 20px var(--accent-glow);
+}
+.pomo-type-btn.active svg { color: var(--accent); }
+
+/* ── Pomodoro sub-tabs ── */
+.pomo-mode-btn {
+  padding:0.4375rem 1.125rem; border-radius:1.25rem; font-size:0.8125rem; font-weight:500;
+  color:var(--text-secondary); background:transparent; border:1px solid var(--border);
+  cursor:pointer; transition:all var(--transition-fast); font-family:var(--font-body);
+}
+.pomo-mode-btn:hover  { border-color:var(--accent); color:var(--text-primary); }
+.pomo-mode-btn.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+
+/* ── Ring ── */
+.pomo-ring-wrap { position:relative; width:18.75rem; height:18.75rem; flex-shrink:0; }
+.pomo-ring-svg  { width:18.75rem; height:18.75rem; transform:rotate(-90deg); display:block; }
+.pomo-ring-bg   { fill:none; stroke:var(--bg-elevated); stroke-width:7; }
+.pomo-ring-prog {
+  fill:none; stroke:var(--accent); stroke-width:7; stroke-linecap:round;
+  stroke-dasharray:816.81; stroke-dashoffset:0;
+  transition:stroke-dashoffset 1s linear, stroke .3s;
+}
+.pomo-overlay {
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:10px;
+  padding-top:10%;
+}
+.pomo-time {
+  font-family:'Space Grotesk', sans-serif; font-size:4.25rem; font-weight:700;
+  color:var(--text-primary); font-variant-numeric:tabular-nums;
+  letter-spacing:-1px; line-height:1;
+}
+.pomo-sublabel { font-size:10px; color:var(--text-muted); font-weight:600; letter-spacing:1.2px; text-transform:uppercase; }
+
+/* ── Action buttons (running state) ── */
+.pomo-ctrl-btn { min-width:6.875rem; justify-content:center; gap:0.4375rem; font-size:0.8125rem; padding:0.625rem 1.125rem; }
+.btn-flag   { background:#34D39918; color:#34D399; border:1px solid #34D39940; }
+.btn-flag:hover   { background:#34D39928; border-color:#34D399; }
+.btn-pause  { background:#60A5FA18; color:#60A5FA; border:1px solid #60A5FA40; }
+.btn-pause:hover  { background:#60A5FA28; border-color:#60A5FA; }
+.btn-stop   { background:#F8717118; color:#F87171; border:1px solid #F8717140; }
+.btn-stop:hover   { background:#F8717128; border-color:#F87171; }
+.btn-finish { background:#34D39918; color:#34D399; border:1px solid #34D39940; }
+.btn-finish:hover { background:#34D39928; border-color:#34D399; }
+
+/* ── Flow reset modal options ── */
+.flow-reset-option {
+  display:flex; flex-direction:column; gap:0.3125rem;
+  padding:0.875rem 1.125rem; border-radius:0.625rem;
+  border:1px solid var(--border); background:var(--bg-elevated);
+  cursor:pointer; text-align:left; width:100%;
+  transition:border-color .15s, background .15s;
+  font-family:var(--font-body);
+}
+.flow-reset-option .opt-title { font-size:0.875rem; font-weight:600; color:var(--text-primary); }
+.flow-reset-option .opt-desc  { font-size:0.75rem; color:var(--text-muted); }
+.flow-reset-option.opt-save   { border-color:#34D39950; background:#34D39908; }
+.flow-reset-option.opt-save .opt-title { color:#34D399; }
+.flow-reset-option.opt-save:hover   { border-color:#34D399; background:#34D39920; }
+.flow-reset-option.opt-rewind { border-color:#FB923C50; background:#FB923C08; }
+.flow-reset-option.opt-rewind .opt-title { color:#FB923C; }
+.flow-reset-option.opt-rewind:hover { border-color:#FB923C; background:#FB923C20; }
+.flow-reset-option.opt-hard   { border-color:#F8717150; background:#F8717108; }
+.flow-reset-option.opt-hard .opt-title { color:#F87171; }
+.flow-reset-option.opt-hard:hover   { border-color:#F87171; background:#F8717120; }
+
+/* ── Task select – animates away ── */
+#task-select-wrap {
+  width:100%; max-width:min(27.5rem, calc(100vw - 3rem));
+  transition: max-height .4s ease, opacity .35s ease, transform .35s ease, margin .35s ease;
+  overflow:hidden; max-height:7.5rem;
+}
+#task-select-wrap .dd-wrapper { width:100%; }
+#task-select-wrap.task-hidden {
+  max-height:0; opacity:0; transform:translateY(-0.625rem);
+  pointer-events:none; margin-top:-1rem;
+}
+
+/* ── Active task watermark (under ring) ── */
+#pomo-active-task {
+  font-size:0.8125rem; color:var(--text-muted); text-align:center;
+  opacity:0; transition:opacity .5s;
+  letter-spacing:.3px; font-style:italic; min-height:1.25rem;
+}
+#pomo-active-task.visible { opacity:.65; }
+
+/* ── Compact stats ── */
+.pomo-stat-strip {
+  display:flex; align-items:center;
+  background:var(--bg-surface); border:1px solid var(--border); border-radius:0.75rem; overflow:hidden;
+}
+.pomo-stat-item {
+  flex:1; padding:0.875rem 1.25rem; display:flex; flex-direction:column; gap:0.1875rem;
+  border-right:1px solid var(--border); align-items:center; text-align:center;
+}
+.pomo-stat-item:last-child { border-right:none; }
+.pomo-stat-label { font-size:0.625rem; color:var(--text-muted); font-weight:600; letter-spacing:.8px; text-transform:uppercase; }
+.pomo-stat-value { font-size:1.375rem; font-weight:700; color:var(--text-primary); line-height:1.1; }
+.pomo-stat-sub   { font-size:0.75rem; color:var(--text-muted); }
+
+/* ── Session dots ── */
+.pomo-dot      { width:0.5625rem; height:0.5625rem; border-radius:50%; background:var(--border); transition:background var(--transition); }
+.pomo-dot.done { background:var(--accent); }
+
+/* ── Settings input ── */
+.pomo-num {
+  width:4rem; background:var(--bg-base); border:1px solid var(--border); border-radius:0.375rem;
+  padding:0.3125rem 0.5rem; font-size:0.8125rem; font-family:var(--font-mono); color:var(--text-primary);
+  text-align:center; outline:none; transition:border-color var(--transition-fast);
+}
+.pomo-num:focus { border-color:var(--accent); }
+
+/* ── Todo list rows ── */
+.hc-row { display:flex; align-items:center; gap:0.75rem; padding:0.8125rem 1.25rem; border-bottom:1px solid var(--border); transition:background var(--transition-fast); background:rgba(255,255,255,.04); }
+.hc-row:last-child { border-bottom:none; }
+.hc-row:hover { background:rgba(255,255,255,.08); }
+.hc-row.hc-done { }
+.hc-name { font-size:0.9375rem; font-weight:500; color:var(--text-primary); flex:1; user-select:none; }
+.hc-strike { text-decoration:line-through; color:var(--text-muted); }
+.hc-del { width:1.625rem; height:1.625rem; border-radius:0.375rem; display:flex; align-items:center; justify-content:center; color:#F87171; background:rgba(248,113,113,.12); border:1px solid rgba(248,113,113,.35); cursor:pointer; transition:background .15s,border-color .15s; flex-shrink:0; }
+.hc-del:hover { background:rgba(248,113,113,.25); border-color:rgba(248,113,113,.6); }
+.completed-divider { padding:0.4375rem 1.25rem; font-size:0.6875rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); background:var(--bg-elevated); border-top:1px solid var(--border); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:0.375rem; }
+.hc-subtask { background:transparent !important; padding-top:0.4375rem !important; padding-bottom:0.4375rem !important; }
+.hc-edit-btn { color:rgba(96,165,250,.6); background:transparent; border:1px solid transparent; }
+/* ── Drag & Drop ── */
+.hc-row[draggable="true"] { cursor: grab; }
+.hc-row[draggable="true"] button, .hc-row[draggable="true"] .cbx { cursor: pointer; }
+.hc-row.hc-dragging { opacity:.35; cursor:grabbing; }
+.hc-row.hc-drag-over-top { box-shadow:inset 0 2px 0 0 var(--accent); }
+.hc-row.hc-drag-over-bot { box-shadow:inset 0 -2px 0 0 var(--accent); }
+.hc-edit-btn:hover { background:rgba(96,165,250,.12) !important; border-color:rgba(96,165,250,.4) !important; color:var(--blue) !important; }
+
+/* ── Focus subtask panel (sol köşe, mutlak konumlu) ── */
+#pomo-subtask-panel {
+  display:none; flex-direction:column; gap:0.25rem;
+  width:13.125rem;
+  position:absolute; left:1.5rem; top:0; bottom:0;
+  justify-content:center;
+}
+.pomo-fsub {
+  display:flex; align-items:flex-start; gap:0.625rem; cursor:pointer;
+  padding:0.375rem 0; user-select:none; border-radius:0.375rem;
+  transition:background .12s;
+}
+.pomo-fsub:hover { background:var(--bg-elevated); padding:0.375rem 0.5rem; margin:0 -0.5rem; }
+/* Focus panel subtask checkbox — cbx üzerine boyut + margin override */
+.pomo-fsub-cb { width:1.125rem; height:1.125rem; border-radius:0.3125rem; margin-top:1px; }
+.pomo-fsub:hover .pomo-fsub-cb:not(.cbx-checked) { border-color:var(--accent); }
+.pomo-fsub-text {
+  font-size:0.8125rem; color:var(--text-secondary); line-height:1.45;
+  transition:color .15s, text-decoration .15s; flex:1;
+}
+.pomo-fsub-text.done { text-decoration:line-through; color:var(--text-muted); }
+
+/* ── Fullscreen focus mode ── */
+#pomo-fs-controls {
+  position:fixed; top:1rem; right:1rem; z-index:200;
+  display:none; align-items:center; gap:0.375rem;
+}
+body.pomo-fullscreen #pomo-fs-controls { display:flex !important; }
+#pomo-fs-exit { gap:0.375rem; }
+
+body.pomo-fullscreen,
+body.pomo-fullscreen .app-layout,
+body.pomo-fullscreen .main-content,
+body.pomo-fullscreen .page-content,
+body.pomo-fullscreen #pomo-timer-panel { background:var(--bg-base) !important; }
+
+body.pomo-fullscreen .sidebar          { display:none !important; }
+body.pomo-fullscreen .topbar           { display:none !important; }
+body.pomo-fullscreen .app-layout::after { display:none !important; }
+
+body.pomo-fullscreen .main-content {
+  left:0 !important; right:0 !important; top:0 !important; bottom:0 !important;
+  display:flex !important; flex-direction:column !important;
+}
+body.pomo-fullscreen .page-content {
+  flex:1 !important; padding:0 !important;
+  display:flex !important; flex-direction:column !important;
+}
+
+body.pomo-fullscreen #pomo-timer-panel {
+  flex:1 !important; margin:0 !important; border:none !important; border-radius:0 !important;
+  display:flex !important; flex-direction:column !important;
+  align-items:center !important; justify-content:flex-start !important;
+  gap:0 !important; padding:0 !important;
+  overflow-y:auto !important; overflow-x:hidden !important;
+}
+
+body.pomo-fullscreen #pomo-timer-panel-header { display:none !important; }
+#pomo-ring-settings-btn {
+  width:28px;height:28px;
+  background:none;border:1px solid transparent;cursor:pointer;
+  color:var(--accent);opacity:0.45;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:6px;
+  transition:opacity 150ms,border-color 150ms;
+  flex-shrink:0;
+}
+#pomo-ring-settings-btn:hover {
+  opacity:1;
+  border-color:var(--accent);
+}
+body.pomo-fullscreen #pomo-todo-panel         { display:none !important; }
+body.pomo-fullscreen .pomo-stat-strip         { display:none !important; }
+body.pomo-fullscreen #pomo-laps               { max-width:27.5rem !important; width:100% !important; }
+
+body.pomo-fullscreen #pomo-body-row {
+  justify-content:center !important; width:100% !important; position:static !important;
+}
+
+body.pomo-fullscreen #pomo-subtask-panel {
+  position:fixed !important;
+  left:0 !important; top:50% !important; bottom:auto !important;
+  transform:translateY(-50%) !important;
+  width:14rem !important; min-width:0 !important;
+  padding:1.25rem 1.5rem !important;
+  flex-shrink:0 !important; max-height:70vh !important;
+  overflow-y:auto !important; scrollbar-width:none !important;
+}
+body.pomo-fullscreen #pomo-subtask-panel::-webkit-scrollbar { display:none; }
+body.pomo-fullscreen #pomo-subtask-spacer { display:none !important; }
+
+/* ── Fullscreen: flags right panel — hidden in fullscreen (laps shown inline) ── */
+#pomo-fs-flags { display:none; }
+body.pomo-fullscreen #pomo-fs-flags { display:none !important; }
+
+@keyframes pomo-fsflag-in {
+  from { opacity:0; transform:translateX(0.875rem); }
+  to   { opacity:1; transform:translateX(0); }
+}
+body.pomo-fullscreen #pomo-fs-flags .pomo-fsub {
+  animation:pomo-fsflag-in 300ms cubic-bezier(.22,1,.36,1) both;
+}
+
+@keyframes pomo-fsub-in {
+  from { opacity:0; transform:translateX(-0.875rem); }
+  to   { opacity:1; transform:translateX(0); }
+}
+body.pomo-fullscreen #pomo-subtask-panel .pomo-fsub {
+  animation:pomo-fsub-in 300ms cubic-bezier(.22,1,.36,1) both;
+}
+
+/* ── Fullscreen: type-row — normal card buttons, just centered with top padding ── */
+body.pomo-fullscreen #pomo-type-row {
+  justify-content:center !important;
+  padding:2rem 1.5rem 0 !important;
+}
+
+body.pomo-fullscreen #pomo-subtabs {
+  padding:0.75rem 0 0 !important; justify-content:center !important;
+}
+body.pomo-fullscreen #pomo-timer-body {
+  padding:1.25rem 0 2rem !important; gap:1.25rem !important;
+}
+
+body.pomo-fullscreen #task-select-wrap { max-width:28rem !important; }
+body.pomo-fullscreen .pomo-ring-wrap { width:min(28rem, 55vh) !important; height:min(28rem, 55vh) !important; }
+body.pomo-fullscreen .pomo-ring-svg  { width:min(28rem, 55vh) !important; height:min(28rem, 55vh) !important; }
+body.pomo-fullscreen .pomo-time      { font-size:6.25rem !important; }
+</style>
+</head>
+<body>
+<!-- Fullscreen controls (fixed, only visible in fullscreen mode) -->
+<div id="pomo-fs-controls">
+  <button class="btn btn-ghost btn-sm" style="gap:0.375rem" onclick="PomodoroPage.switchTask()">
+    <svg data-lucide="arrow-left-right" style="width:0.9375rem;height:0.9375rem"></svg><span data-i18n="pomo_task_switch"> Görev Değiştir</span>
+  </button>
+  <button id="pomo-fs-exit" class="btn btn-ghost btn-sm" data-tooltip="pomo_exit_fullscreen" data-tooltip-i18n onclick="PomodoroPage.toggleFullscreen()">
+    <svg data-lucide="minimize-2" style="width:0.9375rem;height:0.9375rem"></svg><span data-i18n="pomo_minimize"> Küçült</span>
+  </button>
+</div>
+
+<div class="app-layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon"><svg data-lucide="activity"></svg></div>
+      <span class="sidebar-logo-text">LifeTracker</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html"       class="nav-link" data-tooltip="nav_dashboard" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="layout-dashboard"></svg><span class="nav-label">Dashboard</span></a>
+      <a href="pomodoro.html"    class="nav-link active" data-tooltip="nav_pomodoro" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="timer"></svg><span class="nav-label">Focus Mode</span></a>
+      <a href="time.html"        class="nav-link" data-tooltip="nav_time" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="clock"></svg><span class="nav-label">Zaman Takibi</span></a>
+      <a href="habits.html"      class="nav-link" data-tooltip="nav_habits" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="check-square"></svg><span class="nav-label">Alışkanlıklar</span></a>
+      <a href="gym.html"         class="nav-link" data-tooltip="nav_gym" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="dumbbell"></svg><span class="nav-label" data-i18n="nav_gym">Spor</span></a>
+      <a href="plans.html"       class="nav-link" data-tooltip="nav_plans" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="kanban"></svg><span class="nav-label">Planlar</span></a>
+      <a href="goals.html"       class="nav-link" data-tooltip="nav_goals" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="star"></svg><span class="nav-label">Hayaller & Hedefler</span></a>
+      <a href="budget.html"      class="nav-link" data-tooltip="nav_budget" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="wallet"></svg><span class="nav-label">Bütçe</span></a>
+      <a href="investments.html" class="nav-link" data-tooltip="nav_investments" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="trending-up"></svg><span class="nav-label">Yatırım</span></a>
+    </nav>
+    <!-- FOCUS WIDGET -->
+    <div id="focus-sidebar-widget" class="focus-sidebar-widget">
+      <a href="pomodoro.html" class="fw-link">
+        <div class="fw-dot-wrap"><span class="fw-dot"></span></div>
+        <div class="fw-body">
+          <span class="fw-label">POMODORO</span>
+          <span class="fw-time">00:00</span>
+          <span class="fw-task"></span>
+        </div>
+        <span class="fw-icon"><svg data-lucide="chevron-right"></svg></span>
+      </a>
+    </div>
+    <div class="sidebar-footer">
+      <button class="btn btn-icon btn-secondary privacy-toggle-btn" onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n style="width:34px;height:34px;min-width:34px;padding:0;flex-shrink:0"><svg data-lucide="eye"></svg></button>
+      <a href="#" class="nav-link" onclick="UI._openHelp();return false;" data-tooltip="sidebar_help" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="help-circle"></svg><span class="nav-label" data-i18n="sidebar_help">Yardım</span></a>
+      <a href="#" class="nav-link" onclick="UI.openSettings();return false;" data-tooltip="sidebar_settings" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="settings"></svg><span class="nav-label" data-i18n="sidebar_settings">Ayarlar</span></a>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="topbar-title">Focus Mode</h1>
+        <span class="topbar-subtitle" id="topbar-date"></span>
+      </div>
+      <div class="topbar-right"></div>
+    </header>
+
+    <main class="page-content">
+
+      <!-- Timer panel -->
+      <div class="panel" id="pomo-timer-panel" style="margin-bottom:1.25rem">
+
+        <!-- Panel header: task switcher + settings top-right -->
+        <div class="panel-header" id="pomo-timer-panel-header" style="justify-content:flex-end;padding:0.875rem 1.25rem 0;gap:0.5rem">
+          <button class="btn btn-ghost btn-sm" id="pomoTaskSwitchBtn" style="gap:0.375rem;color:var(--text-muted)">
+            <svg data-lucide="arrow-left-right" style="width:0.875rem;height:0.875rem"></svg><span data-i18n="pomo_task_switch"> Görev Değiştir</span>
+          </button>
+          <button class="btn btn-ghost btn-sm" id="pomoSettingsToggle" style="gap:0.375rem;color:var(--text-muted)">
+            <svg data-lucide="settings" style="width:0.875rem;height:0.875rem"></svg><span data-i18n="settings_title"> Ayarlar</span>
+          </button>
+          <button class="btn btn-ghost btn-sm" id="pomoFullscreenToggle" style="gap:0.375rem;color:var(--text-muted)">
+            <svg data-lucide="maximize-2" style="width:0.875rem;height:0.875rem"></svg><span data-i18n="pomo_fullscreen"> Tam Ekran</span>
+          </button>
+        </div>
+
+        <!-- Settings content (hidden — opened as modal by _toggleSettings) -->
+        <div id="pomo-settings-panel" style="display:none">
+          <!-- Modal header -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+            <div style="display:flex;align-items:center;gap:0.5rem">
+              <svg data-lucide="settings" style="width:0.9375rem;height:0.9375rem;color:var(--accent)"></svg>
+              <span style="font-size:0.9375rem;font-weight:600;color:var(--text-primary)" data-i18n="settings_title">Ayarlar</span>
+            </div>
+            <button onclick="PomodoroPage._toggleSettings()" style="width:1.75rem;height:1.75rem;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;color:var(--text-muted);border-radius:var(--radius-sm)">
+              <svg data-lucide="x" style="width:0.9375rem;height:0.9375rem"></svg>
+            </button>
+          </div>
+          <!-- Settings grid -->
+          <div style="display:flex;flex-direction:column;gap:0.75rem">
+
+            <!-- Focus Mode card -->
+            <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:0.75rem;padding:1.125rem 1.25rem">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem">
+                <div style="width:1.75rem;height:1.75rem;border-radius:0.5rem;background:var(--accent-glow);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg data-lucide="timer" style="width:0.875rem;height:0.875rem;color:var(--accent)"></svg>
+                </div>
+                <span style="font-size:0.75rem;font-weight:700;color:var(--text-primary);letter-spacing:.3px">Focus Mode</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.625rem">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <div style="display:flex;align-items:center;gap:0.375rem">
+                    <span style="width:0.5rem;height:0.5rem;border-radius:50%;background:var(--accent);display:inline-block"></span>
+                    <span style="font-size:0.8125rem;color:var(--text-secondary)">Pomodoro</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:0.375rem">
+                    <input class="pomo-num" type="number" id="pomoWorkDur" value="25" min="1" max="90">
+                    <span style="font-size:0.6875rem;color:var(--text-muted)">dk</span>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <div style="display:flex;align-items:center;gap:0.375rem">
+                    <span style="width:0.5rem;height:0.5rem;border-radius:50%;background:#34D399;display:inline-block"></span>
+                    <span style="font-size:0.8125rem;color:var(--text-secondary)" data-i18n="pomo_btn_short">Kısa Mola</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:0.375rem">
+                    <input class="pomo-num" type="number" id="pomoShortDur" value="5" min="1" max="30">
+                    <span style="font-size:0.6875rem;color:var(--text-muted)">dk</span>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <div style="display:flex;align-items:center;gap:0.375rem">
+                    <span style="width:0.5rem;height:0.5rem;border-radius:50%;background:#60A5FA;display:inline-block"></span>
+                    <span style="font-size:0.8125rem;color:var(--text-secondary)" data-i18n="pomo_btn_long">Uzun Mola</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:0.375rem">
+                    <input class="pomo-num" type="number" id="pomoLongDur" value="15" min="1" max="60">
+                    <span style="font-size:0.6875rem;color:var(--text-muted)">dk</span>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-top:0.875rem;padding-top:0.75rem;border-top:1px solid var(--border);font-size:0.6875rem;color:var(--text-muted);line-height:1.5">
+                <span data-i18n="pomo_settings_pomo_tip">Her 4 pomodoro sonrası uzun mola başlar.</span>
+              </div>
+            </div>
+
+            <!-- Countdown card -->
+            <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:0.75rem;padding:1.125rem 1.25rem">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem">
+                <div style="width:1.75rem;height:1.75rem;border-radius:0.5rem;background:#60A5FA18;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg data-lucide="hourglass" style="width:0.875rem;height:0.875rem;color:#60A5FA"></svg>
+                </div>
+                <span style="font-size:0.75rem;font-weight:700;color:var(--text-primary);letter-spacing:.3px" data-i18n="pomo_btn_countdown">Geri Sayım</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div style="display:flex;align-items:center;gap:0.375rem">
+                  <span style="width:0.5rem;height:0.5rem;border-radius:50%;background:#60A5FA;display:inline-block"></span>
+                  <span style="font-size:0.8125rem;color:var(--text-secondary)" data-i18n="pomo_settings_duration">Süre</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:0.375rem">
+                  <input class="pomo-num" type="number" id="pomoCountdownDur" value="25" min="1" max="480">
+                  <span style="font-size:0.6875rem;color:var(--text-muted)">dk</span>
+                </div>
+              </div>
+              <div style="margin-top:0.875rem;padding-top:0.75rem;border-top:1px solid var(--border);font-size:0.6875rem;color:var(--text-muted);line-height:1.5">
+                <span data-i18n="pomo_settings_countdown_tip">Ayarlar timer durdurulduğunda geçerli olur.</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Timer type selector -->
+        <div id="pomo-type-row" style="display:flex;justify-content:center;gap:0.75rem;padding:0.5rem 1.5rem 0">
+          <button class="pomo-type-btn" data-type="flow">
+            <svg data-lucide="sparkles"></svg><span data-i18n="pomo_btn_flow">Akış Modu</span>
+          </button>
+          <button class="pomo-type-btn active" data-type="pomodoro">
+            <svg data-lucide="timer"></svg><span data-i18n="pomo_btn_pomodoro">Pomodoro</span>
+          </button>
+          <button class="pomo-type-btn" data-type="countdown">
+            <svg data-lucide="hourglass"></svg><span data-i18n="pomo_btn_countdown">Geri Sayım</span>
+          </button>
+        </div>
+
+        <!-- Pomodoro sub-tabs -->
+        <div id="pomo-subtabs" style="display:flex;justify-content:center;gap:0.5rem;padding:1rem 1.5rem 0">
+          <button class="pomo-mode-btn active" data-mode="work" data-i18n="pomo_btn_pomodoro">Pomodoro</button>
+          <button class="pomo-mode-btn" data-mode="short" data-i18n="pomo_btn_short">Kısa Mola</button>
+          <button class="pomo-mode-btn" data-mode="long" data-i18n="pomo_btn_long">Uzun Mola</button>
+        </div>
+
+        <!-- Main body: row wrapper — subtask panel (absolute left) + timer center -->
+        <div id="pomo-body-row" style="display:flex;align-items:flex-start;justify-content:center;position:relative">
+
+          <!-- Subtask panel — JS controlled, shown when selected task has subtasks -->
+          <div id="pomo-subtask-panel"></div>
+
+          <!-- Timer center -->
+          <div id="pomo-timer-body" style="display:flex;flex-direction:column;align-items:center;padding:1.75rem 1.5rem 2rem;gap:1.5rem;flex-shrink:0">
+
+          <!-- Ring -->
+          <div class="pomo-ring-wrap">
+            <svg class="pomo-ring-svg" viewBox="0 0 300 300">
+              <circle class="pomo-ring-bg"   cx="150" cy="150" r="130"/>
+              <circle class="pomo-ring-prog" cx="150" cy="150" r="130" id="pomoRing"/>
+            </svg>
+            <div class="pomo-overlay">
+              <div class="pomo-time" id="pomoTime">25:00</div>
+              <div class="pomo-sublabel" id="pomo-mode-label">Pomodoro</div>
+              <button id="pomo-ring-settings-btn" onclick="PomodoroPage._toggleSettings()" data-tooltip="Ayarlar">
+                <svg data-lucide="settings" style="width:15px;height:15px"></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Active task (appears below ring when task selected) -->
+          <div id="pomo-active-task"></div>
+          <!-- Pomodoro count progress (visible when task has pomodoro count set) -->
+          <div id="pomo-pomos-counter" style="display:none;font-size:0.75rem;font-weight:700;color:var(--accent);letter-spacing:.5px;text-align:center;margin-top:-0.5rem"></div>
+
+          <!-- Task select (animates away after selection) -->
+          <div id="task-select-wrap">
+            <div style="text-align:center;margin-bottom:8px">
+              <label class="form-label" style="display:inline-block" data-i18n="pomo_task_label">Çalışılacak Görev</label>
+            </div>
+            <select id="pomoTaskSelect" style="display:none"></select>
+            <button type="button" id="pomoTaskTrigger" onclick="PomodoroPage._openTaskDropdown(this)"
+              style="width:100%;max-width:27.5rem;display:flex;align-items:center;justify-content:space-between;gap:0.625rem;padding:0 0.875rem;height:2.75rem;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;text-align:left;font-family:var(--font-sans)">
+              <span id="pomoTaskLabel" style="font-size:0.875rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;color:var(--text-muted);font-style:italic;text-align:center"></span>
+              <svg data-lucide="chevron-down" style="width:0.9375rem;height:0.9375rem;flex-shrink:0;color:var(--text-muted)"></svg>
+            </button>
+          </div>
+
+          <!-- Buttons — JS controls visibility -->
+          <div id="pomo-btn-row" style="display:flex;gap:0.75rem;justify-content:center;align-items:center;flex-wrap:wrap">
+            <!-- paused only: finish -->
+            <button id="pomoFinish" class="btn pomo-ctrl-btn btn-finish" style="display:none">
+              <svg data-lucide="check" style="width:0.9375rem;height:0.9375rem"></svg><span data-i18n="pomo_btn_finish"> Bitir</span>
+            </button>
+            <!-- idle / paused -->
+            <button id="pomoStart" class="btn btn-primary pomo-ctrl-btn" style="min-width:11.25rem;font-size:0.9375rem;padding:0.75rem 2rem">
+              <svg data-lucide="play" style="width:1.0625rem;height:1.0625rem"></svg> Başlat
+            </button>
+            <!-- running: pause first, then flag (flow only), then reset -->
+            <button id="pomoPause" class="btn pomo-ctrl-btn btn-pause" style="display:none">
+              <svg data-lucide="pause"      style="width:0.9375rem;height:0.9375rem"></svg><span data-i18n="pomo_pause"> Duraklat</span>
+            </button>
+            <button id="pomoFlag"  class="btn pomo-ctrl-btn btn-flag"  style="display:none">
+              <svg data-lucide="flag"       style="width:0.9375rem;height:0.9375rem"></svg><span data-i18n="pomo_btn_flag"> Bayrak</span>
+            </button>
+            <button id="pomoReset" class="btn pomo-ctrl-btn btn-stop"  style="display:none">
+              <svg data-lucide="rotate-ccw" style="width:0.9375rem;height:0.9375rem"></svg><span data-i18n="pomo_reset"> Sıfırla</span>
+            </button>
+          </div>
+
+          <!-- Minute indicator (visible while running) -->
+          <div id="pomo-minute-label" style="display:none;font-size:0.75rem;color:var(--text-muted);font-weight:600;letter-spacing:.8px;text-transform:uppercase"></div>
+
+          <!-- Session dots (pomodoro only) -->
+          <div style="display:flex;align-items:center;gap:0.4375rem" id="pomoSessions"></div>
+
+          <!-- Flow laps -->
+          <div id="pomo-laps" style="display:none;width:100%;max-width:27.5rem;border:1px solid var(--border);border-radius:0.625rem;overflow:hidden"></div>
+
+          </div><!-- /pomo-timer-body -->
+
+          <!-- Right spacer — mirrors subtask panel width to keep timer centered -->
+          <div id="pomo-subtask-spacer" style="width:13.125rem;flex-shrink:0;display:none"></div>
+
+          <!-- Fullscreen flags panel — symmetric right side (JS populated) -->
+          <div id="pomo-fs-flags"></div>
+
+        </div><!-- /pomo-body-row -->
+      </div><!-- /pomo-timer-panel -->
+
+      <!-- Todo list -->
+      <div class="panel" id="pomo-todo-panel" style="margin-bottom:1.25rem">
+        <div class="panel-header">
+          <div style="display:flex;flex-direction:column;gap:0.125rem">
+            <span class="panel-title" data-i18n="pomo_todo_title">To-Do List</span>
+            <span style="font-size:0.6875rem;color:var(--text-muted)" data-i18n="pomo_todo_subtitle">Günlük görevler</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.625rem">
+            <span style="font-family:var(--font-mono);font-size:0.9375rem;font-weight:700;color:var(--blue)" id="todo-header">0 / 0</span>
+            <span style="font-size:0.75rem;color:var(--text-muted)" data-i18n="pomo_todo_done_count">tamamlandı</span>
+            <button class="btn btn-primary btn-sm" onclick="PomodoroPage.openTodoModal()">
+              <svg data-lucide="plus" style="width:0.875rem;height:0.875rem"></svg><span data-i18n="pomo_todo_add_btn">Görev Ekle</span>
+            </button>
+          </div>
+        </div>
+        <div id="todo-active"></div>
+        <div id="todo-completed-section" style="display:none">
+          <div class="completed-divider">
+            <svg data-lucide="check-circle" style="width:0.8125rem;height:0.8125rem;color:var(--blue)"></svg>
+            <span data-i18n="pomo_todo_completed_section">Tamamlananlar</span>
+          </div>
+          <div id="todo-completed"></div>
+        </div>
+      </div>
+
+      <!-- Compact stats -->
+      <div class="pomo-stat-strip" id="kpi-grid"></div>
+
+    </main>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+<script src="js/store.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/modal-core.js"></script>
+<script src="js/delete-manager.js"></script>
+<script src="js/dropdown-core.js"></script>
+<script src="js/checkbox-core.js"></script>
+<script src="js/tooltip-core.js"></script>
+<script src="js/pomodoro.js"></script>
+<script src="js/focus-widget.js"></script>
+<script>lucide.createIcons(); PomodoroPage.init();</script>
+</body>
+</html>

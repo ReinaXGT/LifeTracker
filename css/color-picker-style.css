@@ -1,0 +1,183 @@
+/* ── CustomColorPicker ───────────────────────────────────────────────── */
+
+.ccp-pick {
+  position: fixed;
+  z-index: 1500;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 56px rgba(0,0,0,.5), 0 4px 16px rgba(0,0,0,.3);
+  padding: 0.875rem;
+  width: 240px;
+  animation: lt-fade-in 140ms ease, lt-slide-up 180ms cubic-bezier(.22,1,.36,1);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ── Renk tuvali ─────────────────────────────────────────────────────── */
+
+.ccp-canvas-wrap {
+  position: relative;
+  width: 100%;
+  height: 148px;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: crosshair;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.ccp-canvas-sat {
+  position: absolute;
+  inset: 0;
+  /* background set via JS: linear-gradient(to right, #fff, <hueColor>) */
+}
+
+.ccp-canvas-val {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent, #000);
+}
+
+.ccp-thumb {
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.4), 0 2px 5px rgba(0,0,0,.45);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* ── Ton kaydırıcı ───────────────────────────────────────────────────── */
+
+.ccp-hue-track {
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(to right,
+    hsl(0,100%,50%)   0%,
+    hsl(30,100%,50%)  8.33%,
+    hsl(60,100%,50%)  16.67%,
+    hsl(90,100%,50%)  25%,
+    hsl(120,100%,50%) 33.33%,
+    hsl(150,100%,50%) 41.67%,
+    hsl(180,100%,50%) 50%,
+    hsl(210,100%,50%) 58.33%,
+    hsl(240,100%,50%) 66.67%,
+    hsl(270,100%,50%) 75%,
+    hsl(300,100%,50%) 83.33%,
+    hsl(330,100%,50%) 91.67%,
+    hsl(360,100%,50%) 100%);
+  position: relative;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.ccp-hue-thumb {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.4), 0 2px 5px rgba(0,0,0,.45);
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* ── Önizleme + Hex satırı ───────────────────────────────────────────── */
+
+.ccp-bottom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 9px;
+}
+
+.ccp-preview {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.ccp-hex-inp {
+  flex: 1;
+  height: 26px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0 7px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  text-transform: uppercase;
+  outline: none;
+  transition: border-color 120ms;
+}
+.ccp-hex-inp:focus { border-color: var(--accent); }
+
+/* ── RGB giriş alanları ──────────────────────────────────────────────── */
+
+.ccp-rgb-row {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.ccp-rgb-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.ccp-rgb-inp {
+  width: 100%;
+  height: 28px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 120ms;
+  -moz-appearance: textfield;
+}
+.ccp-rgb-inp::-webkit-inner-spin-button,
+.ccp-rgb-inp::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.ccp-rgb-inp:focus { border-color: var(--accent); }
+
+.ccp-rgb-lbl {
+  font-size: 0.625rem;
+  color: var(--text-muted);
+  font-weight: 700;
+  letter-spacing: .07em;
+}
+
+/* ── Preset renkler ──────────────────────────────────────────────────── */
+
+.ccp-presets {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.ccp-preset-btn {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 100ms ease, border-color 100ms ease;
+  flex-shrink: 0;
+  padding: 0;
+  outline: none;
+}
+.ccp-preset-btn:hover { transform: scale(1.22); }
+.ccp-preset-btn.ccp-active { border-color: var(--text-primary); }

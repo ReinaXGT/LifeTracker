@@ -1,0 +1,221 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="color-scheme" content="only light">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dashboard — LifeTracker</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/reset.css">
+<link rel="stylesheet" href="css/variables.css?v=2">
+<link rel="stylesheet" href="css/layout.css?v=2">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/charts.css">
+<link rel="stylesheet" href="css/mobile.css">
+<link rel="stylesheet" href="css/dropdown-style.css">
+<link rel="stylesheet" href="css/checkbox-style.css">
+<link rel="stylesheet" href="css/tooltip-style.css">
+<link rel="stylesheet" href="css/modal-style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+#dash-panels-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+.dash-panel-wrap { display: flex; flex-direction: column; }
+.dash-panel-wrap .panel { flex: 1; }
+.dash-panel-wrap.dash-panel-full { grid-column: span 2; }
+#dash-panels-grid.dash-edit-mode .panel-header {
+  cursor: grab;
+  user-select: none;
+}
+#dash-panels-grid.dash-edit-mode .panel-header:active { cursor: grabbing; }
+#dash-panels-grid.dash-edit-mode .dash-panel-wrap .panel {
+  border: 1.5px dashed var(--accent);
+  border-radius: var(--radius);
+}
+.dash-panel-dragging { opacity: 0.35; }
+.dash-panel-drag-over .panel { border-color: var(--accent) !important; box-shadow: 0 0 0 3px var(--accent-glow); }
+.dash-panel-wrap { transition: outline 80ms; }
+
+/* panel-time: chart, panel yüksekliğini tamamen doldurur */
+.dash-panel-wrap[data-panel-id="panel-time"] .panel         { display: flex; flex-direction: column; }
+.dash-panel-wrap[data-panel-id="panel-time"] .panel-body    { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.dash-panel-wrap[data-panel-id="panel-time"] .chart-container { flex: 1; height: auto; min-height: 10rem; }
+</style>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon"><svg data-lucide="activity"></svg></div>
+      <span class="sidebar-logo-text">LifeTracker</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html"       class="nav-link active" data-tooltip="nav_dashboard" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="layout-dashboard"></svg><span class="nav-label" data-i18n="nav_dashboard">Dashboard</span></a>
+      <a href="pomodoro.html"    class="nav-link" data-tooltip="nav_pomodoro" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="timer"></svg><span class="nav-label" data-i18n="nav_pomodoro">Focus Mode</span></a>
+      <a href="time.html"        class="nav-link" data-tooltip="nav_time" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="clock"></svg><span class="nav-label" data-i18n="nav_time">Zaman Takibi</span></a>
+      <a href="habits.html"      class="nav-link" data-tooltip="nav_habits" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="check-square"></svg><span class="nav-label" data-i18n="nav_habits">Alışkanlıklar</span></a>
+      <a href="gym.html"         class="nav-link" data-tooltip="nav_gym" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="dumbbell"></svg><span class="nav-label" data-i18n="nav_gym">Spor</span></a>
+      <a href="plans.html"       class="nav-link" data-tooltip="nav_plans" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="kanban"></svg><span class="nav-label" data-i18n="nav_plans">Planlar</span></a>
+      <a href="goals.html"       class="nav-link" data-tooltip="nav_goals" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="star"></svg><span class="nav-label" data-i18n="nav_goals">Hayaller & Hedefler</span></a>
+      <a href="budget.html"      class="nav-link" data-tooltip="nav_budget" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="wallet"></svg><span class="nav-label" data-i18n="nav_budget">Bütçe</span></a>
+      <a href="investments.html" class="nav-link" data-tooltip="nav_investments" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="trending-up"></svg><span class="nav-label" data-i18n="nav_investments">Yatırım</span></a>
+    </nav>
+    <!-- FOCUS WIDGET -->
+    <div id="focus-sidebar-widget" class="focus-sidebar-widget">
+      <a href="pomodoro.html" class="fw-link">
+        <div class="fw-dot-wrap"><span class="fw-dot"></span></div>
+        <div class="fw-body">
+          <span class="fw-label">POMODORO</span>
+          <span class="fw-time">00:00</span>
+          <span class="fw-task"></span>
+        </div>
+        <span class="fw-icon"><svg data-lucide="chevron-right"></svg></span>
+      </a>
+    </div>
+    <div class="sidebar-footer">
+      <button class="btn btn-icon btn-secondary privacy-toggle-btn" onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n style="width:34px;height:34px;min-width:34px;padding:0;flex-shrink:0"><svg data-lucide="eye"></svg></button>
+      <a href="#" class="nav-link" onclick="UI._openHelp();return false;" data-tooltip="sidebar_help" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="help-circle"></svg><span class="nav-label" data-i18n="sidebar_help">Yardım</span></a>
+      <a href="#" class="nav-link" onclick="UI.openSettings();return false;" data-tooltip="sidebar_settings" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="settings"></svg><span class="nav-label" data-i18n="sidebar_settings">Ayarlar</span></a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="topbar-title" data-i18n="nav_dashboard">Dashboard</h1>
+        <span class="topbar-subtitle" id="topbar-date"></span>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-icon btn-secondary" id="dashLayoutLockBtn" onclick="Dashboard.toggleLayoutEdit()" style="width:34px;height:34px;min-width:34px;padding:0" data-tooltip="goals_reorder" data-tooltip-i18n>
+          <svg data-lucide="lock"></svg>
+        </button>
+        <div style="position:relative;display:inline-flex;height:34px;flex-shrink:0">
+          <button type="button" id="periodDDBtn" onclick="Dashboard.openPeriodDropdown(this)"
+            style="display:flex;align-items:center;gap:6px;padding:0 10px;height:34px;box-sizing:border-box;
+                   background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);
+                   cursor:pointer;white-space:nowrap">
+            <svg data-lucide="calendar" style="width:14px;height:14px;color:var(--text-muted);flex-shrink:0"></svg>
+            <span id="periodDDLabel" style="font-size:13px;color:var(--text-primary)" data-i18n="dash_this_week">Bu Hafta</span>
+            <svg data-lucide="chevron-down" style="width:14px;height:14px;color:var(--text-muted);flex-shrink:0"></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-content">
+
+      <!-- KPI -->
+      <div class="kpi-grid" id="kpi-grid" style="margin-bottom:1.25rem"></div>
+
+      <div id="dash-panels-grid">
+
+        <div class="dash-panel-wrap" data-panel-id="panel-time">
+          <div class="panel">
+            <div class="panel-header">
+<span class="panel-title" data-i18n="dash_week_time">Bu Hafta Zaman Dağılımı</span>
+              <a href="time.html" class="btn btn-ghost btn-sm" data-i18n="btn_details">Detaylar →</a>
+            </div>
+            <div class="panel-body">
+              <div class="chart-container"><canvas id="weeklyTimeChart"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-panel-wrap" data-panel-id="panel-focus">
+          <div class="panel">
+            <div class="panel-header">
+<span class="panel-title" data-i18n="nav_pomodoro">Focus Mode</span>
+              <a href="pomodoro.html" class="btn btn-ghost btn-sm" data-i18n="btn_details">Detaylar →</a>
+            </div>
+            <div class="panel-body" id="focus-status"></div>
+          </div>
+        </div>
+
+        <div class="dash-panel-wrap dash-panel-full" data-panel-id="panel-gym">
+          <div class="panel">
+            <div class="panel-header">
+<span class="panel-title" data-i18n="nav_gym">Spor</span>
+              <a href="gym.html" class="btn btn-ghost btn-sm" data-i18n="btn_details">Detaylar →</a>
+            </div>
+            <div class="panel-body" id="gym-status"></div>
+          </div>
+        </div>
+
+        <div class="dash-panel-wrap" data-panel-id="panel-budget">
+          <div class="panel">
+            <div class="panel-header">
+<span class="panel-title" data-i18n="dash_budget_status">Bütçe Durumu</span>
+              <a href="budget.html" class="btn btn-ghost btn-sm" data-i18n="btn_details">Detaylar →</a>
+            </div>
+            <div class="panel-body" id="budget-status"></div>
+          </div>
+        </div>
+
+        <div class="dash-panel-wrap" data-panel-id="panel-invest">
+          <div class="panel">
+            <div class="panel-header">
+<span class="panel-title" data-i18n="dash_inv_dist">Yatırım Dağılımı</span>
+              <a href="investments.html" class="btn btn-ghost btn-sm" data-i18n="btn_details">Detaylar →</a>
+            </div>
+            <div class="panel-body">
+              <div style="display:flex;align-items:center;gap:1.75rem">
+                <div class="chart-doughnut"><canvas id="investmentPieChart"></canvas></div>
+                <div class="chart-legend" id="investment-legend" style="flex-direction:column;gap:0.625rem"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-panel-wrap" data-panel-id="panel-goals">
+          <div class="panel">
+            <div class="panel-header">
+<span class="panel-title" data-i18n="dash_dreams_panel">Hayaller</span>
+              <a href="goals.html" class="btn btn-ghost btn-sm" data-i18n="btn_all">Tümü →</a>
+            </div>
+            <div class="panel-body" id="goals-status"></div>
+          </div>
+        </div>
+
+        <div class="dash-panel-wrap" data-panel-id="panel-plans">
+          <div class="panel">
+            <div class="panel-header">
+<span class="panel-title" data-i18n="dash_upcoming">Yaklaşan Planlar</span>
+              <a href="plans.html" class="btn btn-ghost btn-sm" data-i18n="btn_all">Tümü →</a>
+            </div>
+            <div id="upcoming-plans" style="padding-bottom:0.25rem"></div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script src="js/store.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/modal-core.js"></script>
+<script src="js/dropdown-core.js"></script>
+<script src="js/checkbox-core.js"></script>
+<script src="js/tooltip-core.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/focus-widget.js"></script>
+<script>
+  lucide.createIcons();
+  Dashboard.init();
+</script>
+</body>
+</html>

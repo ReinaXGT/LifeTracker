@@ -1,0 +1,153 @@
+/* ── TooltipCore — Merkezi Tooltip Sistemi ─────────────────────────────── */
+
+.tlt {
+  position: fixed;
+  z-index: 1600;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 5px 9px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-primary);
+  pointer-events: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.32), 0 1px 4px rgba(0, 0, 0, 0.18);
+  white-space: pre-wrap;
+  max-width: 280px;
+  word-break: break-word;
+  opacity: 0;
+  transition: opacity 90ms ease;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 450;
+  letter-spacing: 0.01em;
+}
+
+.tlt.tlt-visible {
+  opacity: 1;
+  animation: tlt-in 110ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Ok (caret) — konuma göre otomatik */
+.tlt::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  pointer-events: none;
+}
+
+/* Ok: tooltip elementin ALTINDAyken → ok aşağıya bakar (↓) */
+.tlt[data-pos="top"]::after {
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  border-top-color: transparent;
+  border-left-color: transparent;
+}
+
+/* Ok: tooltip elementin ÜSTÜNDEyken → ok yukarıya bakar (↑) */
+.tlt[data-pos="bottom"]::after {
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  border-bottom-color: transparent;
+  border-right-color: transparent;
+}
+
+/* Ok: tooltip elementin SAĞINDAyken → ok sola bakar (←) */
+.tlt[data-pos="right"]::after {
+  left: -4px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  border-right-color: transparent;
+  border-top-color: transparent;
+}
+
+/* Ok: tooltip elementin SOLUNDAyken → ok sağa bakar (→) */
+.tlt[data-pos="left"]::after {
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+}
+
+@keyframes tlt-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── Chart External Tooltip ─────────────────────────────────────────────── */
+
+.tlt-chart {
+  position: fixed;
+  z-index: 1600;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  pointer-events: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.32), 0 1px 4px rgba(0, 0, 0, 0.18);
+  min-width: 110px;
+  max-width: 240px;
+  opacity: 0;
+  transition: opacity 80ms ease;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.tlt-chart.tlt-chart-visible {
+  opacity: 1;
+}
+
+.tlt-chart-title {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.tlt-chart-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.6;
+}
+
+.tlt-chart-row + .tlt-chart-row {
+  margin-top: 2px;
+}
+
+.tlt-chart-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tlt-chart-label {
+  color: var(--text-secondary);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tlt-chart-value {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}

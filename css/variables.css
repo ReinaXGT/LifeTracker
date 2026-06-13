@@ -1,0 +1,305 @@
+:root {
+  --bg-base:        #121217;
+  --bg-surface:     #1A1A22;
+  --bg-elevated:    #242430;
+  --border:         #2A2A3D;
+
+  --text-primary:   #F0F0FF;
+  --text-secondary: #ADADCC;
+  --text-muted:     #8888A4;
+
+  --accent:         #7C6CFC;
+  --accent-glow:    rgba(124, 108, 252, 0.20);
+
+  --green:  #34D399;
+  --red:    #F87171;
+  --yellow: #FBBF24;
+  --blue:   #60A5FA;
+
+  --sidebar-width:           204px;
+  --sidebar-collapsed-width: 54px;
+  --topbar-height:   70px;
+  --radius:          0.75rem;
+  --radius-sm:       0.5rem;
+  --radius-lg:       1rem;
+  --transition:      200ms ease-out;
+  --transition-fast: 150ms ease-out;
+
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  --shadow-sm:     0 1px 3px rgba(0,0,0,.3);
+  --shadow-md:     0 4px 16px rgba(0,0,0,.4);
+  --shadow-lg:     0 8px 32px rgba(0,0,0,.5);
+  --shadow-accent: 0 0 24px var(--accent-glow);
+
+  --chart-1: #7C6CFC;
+  --chart-2: #34D399;
+  --chart-3: #60A5FA;
+  --chart-4: #FBBF24;
+  --chart-5: #F87171;
+  --chart-6: #F472B6;
+}
+
+/* ── Gece Yarısı — derin lacivert ─────────────────────────── */
+[data-theme="midnight"] {
+  --bg-base:        #0F1122;
+  --bg-surface:     #15192E;
+  --bg-elevated:    #1C2540;
+  --border:         #1E2D50;
+  --text-primary:   #E8EEFF;
+  --text-secondary: #9AAAD8;
+  --text-muted:     #7288A8;
+  --accent:         #4D9EFF;
+  --accent-glow:    rgba(77, 158, 255, 0.20);
+  --shadow-sm:     0 1px 3px rgba(0,0,0,.4);
+  --shadow-md:     0 4px 16px rgba(0,0,0,.5);
+  --shadow-lg:     0 8px 32px rgba(0,0,0,.6);
+  --shadow-accent: 0 0 24px var(--accent-glow);
+  --chart-1: #4D9EFF;
+  --chart-2: #34D399;
+  --chart-3: #A78BFA;
+  --chart-4: #FBBF24;
+  --chart-5: #F87171;
+  --chart-6: #F472B6;
+}
+
+/* ── Okyanus — teal/cyan ───────────────────────────────────── */
+[data-theme="ocean"] {
+  --bg-base:        #0D1718;
+  --bg-surface:     #122224;
+  --bg-elevated:    #1A2E30;
+  --border:         #1A3538;
+  --text-primary:   #E0F8F8;
+  --text-secondary: #9CCECE;
+  --text-muted:     #609295;
+  --accent:         #00CBA9;
+  --accent-glow:    rgba(0, 203, 169, 0.20);
+  --shadow-sm:     0 1px 3px rgba(0,0,0,.4);
+  --shadow-md:     0 4px 16px rgba(0,0,0,.5);
+  --shadow-lg:     0 8px 32px rgba(0,0,0,.6);
+  --shadow-accent: 0 0 24px var(--accent-glow);
+  --chart-1: #00CBA9;
+  --chart-2: #60A5FA;
+  --chart-3: #34D399;
+  --chart-4: #FBBF24;
+  --chart-5: #F87171;
+  --chart-6: #F472B6;
+}
+
+/* ── Orman — koyu yeşil ────────────────────────────────────── */
+[data-theme="forest"] {
+  --bg-base:        #0E1610;
+  --bg-surface:     #142218;
+  --bg-elevated:    #1B2E20;
+  --border:         #1C3522;
+  --text-primary:   #E0F5E0;
+  --text-secondary: #9DCEA6;
+  --text-muted:     #618C68;
+  --accent:         #4ADE80;
+  --accent-glow:    rgba(74, 222, 128, 0.20);
+  --shadow-sm:     0 1px 3px rgba(0,0,0,.4);
+  --shadow-md:     0 4px 16px rgba(0,0,0,.5);
+  --shadow-lg:     0 8px 32px rgba(0,0,0,.6);
+  --shadow-accent: 0 0 24px var(--accent-glow);
+  --chart-1: #4ADE80;
+  --chart-2: #60A5FA;
+  --chart-3: #FBBF24;
+  --chart-4: #34D399;
+  --chart-5: #F87171;
+  --chart-6: #F472B6;
+}
+
+/* ── Gün Batımı — sıcak turuncu ───────────────────────────── */
+[data-theme="sunset"] {
+  --bg-base:        #18120D;
+  --bg-surface:     #241810;
+  --bg-elevated:    #302014;
+  --border:         #3A2215;
+  --text-primary:   #FFF0E0;
+  --text-secondary: #D8C096;
+  --text-muted:     #9A7858;
+  --accent:         #FB923C;
+  --accent-glow:    rgba(251, 146, 60, 0.20);
+  --shadow-sm:     0 1px 3px rgba(0,0,0,.4);
+  --shadow-md:     0 4px 16px rgba(0,0,0,.5);
+  --shadow-lg:     0 8px 32px rgba(0,0,0,.6);
+  --shadow-accent: 0 0 24px var(--accent-glow);
+  --chart-1: #FB923C;
+  --chart-2: #FBBF24;
+  --chart-3: #F87171;
+  --chart-4: #34D399;
+  --chart-5: #60A5FA;
+  --chart-6: #F472B6;
+}
+
+/* ── Gül — pembe/leylak ────────────────────────────────────── */
+[data-theme="rose"] {
+  --bg-base:        #181018;
+  --bg-surface:     #221724;
+  --bg-elevated:    #2E2030;
+  --border:         #3A1E40;
+  --text-primary:   #FFE8FF;
+  --text-secondary: #D8A4D8;
+  --text-muted:     #90769A;
+  --accent:         #F472B6;
+  --accent-glow:    rgba(244, 114, 182, 0.20);
+  --shadow-sm:     0 1px 3px rgba(0,0,0,.4);
+  --shadow-md:     0 4px 16px rgba(0,0,0,.5);
+  --shadow-lg:     0 8px 32px rgba(0,0,0,.6);
+  --shadow-accent: 0 0 24px var(--accent-glow);
+  --chart-1: #F472B6;
+  --chart-2: #A78BFA;
+  --chart-3: #60A5FA;
+  --chart-4: #FBBF24;
+  --chart-5: #F87171;
+  --chart-6: #34D399;
+}
+
+/* ── Kehribar — altın sarısı ───────────────────────────────── */
+[data-theme="amber"] {
+  --bg-base:        #141108;
+  --bg-surface:     #1E1608;
+  --bg-elevated:    #291E08;
+  --border:         #332200;
+  --text-primary:   #FFFDE0;
+  --text-secondary: #D8C28A;
+  --text-muted:     #907E58;
+  --accent:         #EAB308;
+  --accent-glow:    rgba(234, 179, 8, 0.20);
+  --shadow-sm:     0 1px 3px rgba(0,0,0,.4);
+  --shadow-md:     0 4px 16px rgba(0,0,0,.5);
+  --shadow-lg:     0 8px 32px rgba(0,0,0,.6);
+  --shadow-accent: 0 0 24px var(--accent-glow);
+  --chart-1: #EAB308;
+  --chart-2: #F97316;
+  --chart-3: #84CC16;
+  --chart-4: #34D399;
+  --chart-5: #60A5FA;
+  --chart-6: #F87171;
+}
+
+/* ── Kızıl — koyu kan kırmızısı ───────────────────────────── */
+[data-theme="crimson"] {
+  --bg-base:        #170B0B;
+  --bg-surface:     #240E0E;
+  --bg-elevated:    #301414;
+  --border:         #3D1212;
+  --text-primary:   #FFE8E8;
+  --text-secondary: #D89898;
+  --text-muted:     #9A6464;
+  --accent:         #DC2626;
+  --accent-glow:    rgba(220, 38, 38, 0.20);
+  --shadow-sm:     0 1px 3px rgba(0,0,0,.4);
+  --shadow-md:     0 4px 16px rgba(0,0,0,.5);
+  --shadow-lg:     0 8px 32px rgba(0,0,0,.6);
+  --shadow-accent: 0 0 24px var(--accent-glow);
+  --chart-1: #DC2626;
+  --chart-2: #F97316;
+  --chart-3: #FBBF24;
+  --chart-4: #34D399;
+  --chart-5: #60A5FA;
+  --chart-6: #F472B6;
+}
+
+/* ── Nebula — lavanta mor ──────────────────────────────────── */
+[data-theme="nebula"] {
+  --bg-base:        #100D18;
+  --bg-surface:     #181224;
+  --bg-elevated:    #221A30;
+  --border:         #281C40;
+  --text-primary:   #F0E8FF;
+  --text-secondary: #BC9EE6;
+  --text-muted:     #7C60A0;
+  --accent:         #A78BFA;
+  --accent-glow:    rgba(167, 139, 250, 0.20);
+  --shadow-sm:     0 1px 3px rgba(0,0,0,.4);
+  --shadow-md:     0 4px 16px rgba(0,0,0,.5);
+  --shadow-lg:     0 8px 32px rgba(0,0,0,.6);
+  --shadow-accent: 0 0 24px var(--accent-glow);
+  --chart-1: #A78BFA;
+  --chart-2: #F472B6;
+  --chart-3: #60A5FA;
+  --chart-4: #34D399;
+  --chart-5: #FBBF24;
+  --chart-6: #F87171;
+}
+
+/* ── Arktik — buz mavisi ───────────────────────────────────── */
+[data-theme="arctic"] {
+  --bg-base:        #0A1418;
+  --bg-surface:     #0D1C28;
+  --bg-elevated:    #122636;
+  --border:         #0F2E40;
+  --text-primary:   #E0F8FF;
+  --text-secondary: #96D6E8;
+  --text-muted:     #528CA8;
+  --accent:         #22D3EE;
+  --accent-glow:    rgba(34, 211, 238, 0.20);
+  --shadow-sm:     0 1px 3px rgba(0,0,0,.4);
+  --shadow-md:     0 4px 16px rgba(0,0,0,.5);
+  --shadow-lg:     0 8px 32px rgba(0,0,0,.6);
+  --shadow-accent: 0 0 24px var(--accent-glow);
+  --chart-1: #22D3EE;
+  --chart-2: #60A5FA;
+  --chart-3: #34D399;
+  --chart-4: #FBBF24;
+  --chart-5: #F87171;
+  --chart-6: #A78BFA;
+}
+
+/* ── Neon — elektrik lime ──────────────────────────────────── */
+[data-theme="neon"] {
+  --bg-base:        #0C120C;
+  --bg-surface:     #101A10;
+  --bg-elevated:    #142414;
+  --border:         #142814;
+  --text-primary:   #EEFFEE;
+  --text-secondary: #AADAA4;
+  --text-muted:     #5E8260;
+  --accent:         #84CC16;
+  --accent-glow:    rgba(132, 204, 22, 0.20);
+  --shadow-sm:     0 1px 3px rgba(0,0,0,.4);
+  --shadow-md:     0 4px 16px rgba(0,0,0,.5);
+  --shadow-lg:     0 8px 32px rgba(0,0,0,.6);
+  --shadow-accent: 0 0 24px var(--accent-glow);
+  --chart-1: #84CC16;
+  --chart-2: #22D3EE;
+  --chart-3: #FBBF24;
+  --chart-4: #F472B6;
+  --chart-5: #F87171;
+  --chart-6: #60A5FA;
+}
+
+/* ── Beyaz — tek açık tema ─────────────────────────────────── */
+[data-theme="white"] {
+  --bg-base:        #F1F5F9;
+  --bg-surface:     #FFFFFF;
+  --bg-elevated:    #E8EDF5;
+  --border:         #CBD5E1;
+
+  --text-primary:   #0F172A;
+  --text-secondary: #334155;
+  --text-muted:     #6B7A8F;
+
+  --accent:         #6366F1;
+  --accent-glow:    rgba(99, 102, 241, 0.18);
+
+  --green:  #16A34A;
+  --red:    #DC2626;
+  --yellow: #CA8A04;
+  --blue:   #2563EB;
+
+  --shadow-sm:     0 1px 3px rgba(0,0,0,.07);
+  --shadow-md:     0 4px 16px rgba(0,0,0,.09);
+  --shadow-lg:     0 8px 32px rgba(0,0,0,.13);
+  --shadow-accent: 0 0 24px var(--accent-glow);
+
+  --chart-1: #6366F1;
+  --chart-2: #16A34A;
+  --chart-3: #2563EB;
+  --chart-4: #CA8A04;
+  --chart-5: #DC2626;
+  --chart-6: #DB2777;
+}

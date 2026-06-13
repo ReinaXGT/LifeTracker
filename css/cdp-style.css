@@ -1,0 +1,184 @@
+/* ── Custom Date Picker (CDP) ─────────────────────────────────────────────
+   Merkezi takvim bileşeni stilleri.
+   Kullanım: cdp-core.js ile birlikte yüklenir.
+   Picker portal mimarisi: document.body'e append edilir, position:fixed + z-index:1500
+   ile JS tarafından konumlandırılır — herhangi bir overflow kırpması olmaz.
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Animasyonlar — ui.js lt-confirm-style inject etmemişse bu dosya fallback sağlar */
+@keyframes lt-fade-in    { from { opacity: 0 } to { opacity: 1 } }
+@keyframes lt-slide-up   { from { opacity: 0; transform: translateY(10px) scale(.97) } to { opacity: 1; transform: none } }
+@keyframes lt-slide-down { from { opacity: 0; transform: translateY(-10px) scale(.97) } to { opacity: 1; transform: none } }
+
+/* ── Wrapper ─────────────────────────────────────────────────────────────
+   .cdp-wrapper: position:relative ve overflow:visible zorunlu.
+   Toolbar kullanımı için inline-flex + height:34px verilmeli.
+   ───────────────────────────────────────────────────────────────────────── */
+.cdp-wrapper {
+  position: relative;
+  overflow: visible;
+}
+
+/* ── Picker konteyner ────────────────────────────────────────────────────── */
+.cdp-pick {
+  font-family: var(--font-body);
+  position: absolute;
+  top: calc(100% + 4px);
+  z-index: 40;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 16px 48px rgba(0,0,0,.6);
+  padding: 0.75rem;
+  width: 15.5rem;
+  animation: lt-slide-up 160ms cubic-bezier(.22,1,.36,1);
+  user-select: none;
+}
+
+/* Hizalama varyantları */
+.cdp-pick.cdp-align-right { right: 0; }
+.cdp-pick.cdp-align-left  { left: 0;  }
+
+/* Akıllı Konumlandırma — ekran altında yer yoksa yukarı açılır */
+.cdp-pick.cdp-open-up {
+  top: auto;
+  bottom: calc(100% + 4px);
+  animation: lt-slide-down 160ms cubic-bezier(.22,1,.36,1);
+}
+
+/* ── Başlık satırı (ay adı + nav okları) ──────────────────────────────────── */
+.cdp-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.625rem;
+}
+
+.cdp-nav {
+  background: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.3125rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 150ms;
+  flex-shrink: 0;
+}
+.cdp-nav:hover {
+  background: var(--bg-elevated);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+.cdp-lbl {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: capitalize;
+  letter-spacing: .01em;
+}
+
+/* ── Takvim ızgarası ─────────────────────────────────────────────────────── */
+.cdp-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.125rem;
+}
+
+.cdp-dh {
+  text-align: center;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  padding: 0.125rem 0 0.375rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.cdp-day {
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 0.3125rem;
+  width: 1.875rem;
+  height: 1.875rem;
+  font-size: 0.6875rem;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 120ms, color 120ms;
+  margin: 0.0625rem auto;
+}
+.cdp-day:hover    { background: var(--bg-elevated); outline: 1.5px solid var(--accent); outline-offset: -1.5px; }
+.cdp-sel:hover, .cdp-range-start:hover, .cdp-range-end:hover { outline: none; }
+.cdp-other        { color: var(--text-muted) !important; }
+.cdp-today {
+  color: var(--accent);
+  font-weight: 700;
+  outline: 1.5px solid var(--accent);
+  outline-offset: -1.5px;
+}
+.cdp-sel {
+  background: var(--accent) !important;
+  color: #fff !important;
+  font-weight: 600;
+}
+.cdp-sel:hover    { background: var(--accent) !important; }
+
+/* ── Aralık seçimi ────────────────────────────────────────────────────────── */
+.cdp-range-start, .cdp-range-end {
+  background: var(--accent) !important;
+  color: #fff !important;
+  font-weight: 600;
+}
+.cdp-range-start:hover, .cdp-range-end:hover { background: var(--accent) !important; }
+.cdp-in-range {
+  background: var(--accent-glow) !important;
+  color: var(--text-primary);
+  border-radius: 0;
+}
+.cdp-in-range:hover { background: rgba(124,108,252,.30) !important; }
+
+/* Aralık ipucu (ikinci tarihi seç) */
+.cdp-range-hint {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-align: center;
+  padding: 0.25rem 0 0.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.5rem;
+}
+
+/* ── Temizle butonu alanı ─────────────────────────────────────────────────── */
+.cdp-foot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.cdp-clear {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.6875rem;
+  color: var(--text-secondary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.3125rem;
+  transition: background 120ms, color 120ms;
+  font-family: var(--font-body);
+}
+.cdp-clear:hover {
+  background: rgba(248,113,113,.12);
+  color: var(--red);
+}
