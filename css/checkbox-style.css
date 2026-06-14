@@ -7,67 +7,69 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 2px solid var(--border);
+  border: 2px solid var(--cbx-color, var(--accent));
   background: transparent;
   cursor: pointer;
   user-select: none;
-  transition: background var(--transition-fast), border-color var(--transition-fast);
+  transition: background var(--transition-fast), border-color var(--transition-fast),
+              box-shadow var(--transition-fast);
 }
 
 .cbx svg {
   opacity: 0;
-  transition: opacity var(--transition-fast);
+  transition: opacity var(--transition-fast), filter var(--transition-fast);
   pointer-events: none;
   flex-shrink: 0;
 }
 
 /* ── Şekil varyantları ── */
 
-/* Ana öğeler için (habits, pomodoro todo) */
 .cbx-circle {
   width: 1.375rem;
   height: 1.375rem;
   border-radius: 50%;
 }
 
-/* Alt görevler, plan sub-task için */
 .cbx-square {
   width: 1rem;
   height: 1rem;
   border-radius: 0.25rem;
 }
 
-/* Modal inline checkbox için (küçük, yuvarlatılmış kare) */
 .cbx-sm {
   width: 1.0625rem;
   height: 1.0625rem;
   border-radius: 0.3125rem;
 }
 
-/* ── Checked durumu ── */
+/* ── Hover: hitbox üzerinde yarı-şeffaf tema rengi arka plan ── */
+
+.cbx:not(.cbx-checked):hover {
+  background: color-mix(in srgb, var(--cbx-color, var(--accent)) 28%, transparent);
+  box-shadow: 0 0 7px color-mix(in srgb, var(--cbx-color, var(--accent)) 55%, transparent);
+}
+
+/* Satır düzeyinde hover (tüm tıklanabilir alan) checkbox'ı tetikler */
+[onclick]:hover .cbx:not(.cbx-checked),
+label:hover .cbx:not(.cbx-checked) {
+  background: color-mix(in srgb, var(--cbx-color, var(--accent)) 28%, transparent);
+  box-shadow: 0 0 7px color-mix(in srgb, var(--cbx-color, var(--accent)) 55%, transparent);
+}
+
+/* ── Checked: şeffaf arka plan, neon tema rengi tik ── */
 
 .cbx.cbx-checked {
-  background: var(--cbx-color, var(--accent));
+  background: transparent;
   border-color: var(--cbx-color, var(--accent));
+  box-shadow: 0 0 8px color-mix(in srgb, var(--cbx-color, var(--accent)) 55%, transparent),
+              inset 0 0 6px color-mix(in srgb, var(--cbx-color, var(--accent)) 18%, transparent);
 }
 
 .cbx.cbx-checked svg {
   opacity: 1;
-}
-
-/* Daire checkbox: her zaman tema rengi kenarlık */
-.cbx-circle:not(.cbx-checked) {
-  border-color: var(--cbx-color, var(--accent));
-}
-
-/* Daire checkbox hover: içi silik tema rengiyle dolar */
-.cbx-circle:not(.cbx-checked):hover {
-  background: color-mix(in srgb, var(--cbx-color, var(--accent)) 32%, transparent);
-}
-
-/* Diğer tipler için hover'da renk ipucu */
-.cbx:not(.cbx-circle):not(.cbx-checked):hover {
-  border-color: var(--cbx-color, var(--accent));
+  color: var(--cbx-color, var(--accent));
+  filter: drop-shadow(0 0 4px var(--cbx-color, var(--accent)))
+          drop-shadow(0 0 2px var(--cbx-color, var(--accent)));
 }
 
 /* ── Renk yardımcı sınıfları ── */
@@ -77,7 +79,7 @@
 .cbx-accent { --cbx-color: var(--accent); }
 .cbx-red    { --cbx-color: var(--red); }
 
-/* Her zaman renkli border — silme/uyarı bağlamları için (hover beklenmez) */
+/* Her zaman renkli border — silme/uyarı bağlamları için */
 .cbx-bordered {
   border-color: var(--cbx-color, var(--accent));
 }

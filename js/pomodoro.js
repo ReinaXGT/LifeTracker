@@ -1232,8 +1232,10 @@
     const prev = this._laps.length ? this._laps[this._laps.length - 1].elapsed : 0;
     const now  = new Date();
     const localTime = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-    // flow: elapsed = artan sayaç (timeLeft büyür); diğerleri: tüketilen süre
-    const elapsed = this.timerType === 'flow' ? this.timeLeft : (this._sessionDur - this.timeLeft);
+    // flow: elapsed = artan sayaç (timeLeft büyür); diğerleri: tüketilen süre + overtime
+    const elapsed = this.timerType === 'flow'
+      ? this.timeLeft
+      : (this._sessionDur - this.timeLeft + (this._overtimeSecs || 0));
     const split   = elapsed - prev;
     this._laps.push({ elapsed, split, num: this._laps.length + 1, localTime });
     this._renderLaps();
@@ -1361,12 +1363,20 @@
     this.renderTodoList();
   },
 
+  // ── Split sürelerini elapsed'tan yeniden türet ───────────────
+  _recalcLapSplits() {
+    this._laps.forEach((l, i) => {
+      l.num   = i + 1;
+      l.split = l.elapsed - (i > 0 ? this._laps[i - 1].elapsed : 0);
+    });
+  },
+
   // ── Flag silme ────────────────────────────────────────────────
   deleteFlagConfirm(idx) {
     const skip = Store.get('pomo_flag_del_skip');
     if (skip === UI.today()) {
       this._laps.splice(idx, 1);
-      this._laps.forEach((l, i) => { l.num = i + 1; });
+      this._recalcLapSplits();
       this._recalcPomosAfterFlagDelete();
       this._renderLaps();
       this._saveState();
@@ -1405,7 +1415,7 @@
     this._pendingDeleteFlagIdx = null;
     if (idx === null || idx === undefined) return;
     this._laps.splice(idx, 1);
-    this._laps.forEach((l, i) => { l.num = i + 1; });
+    this._recalcLapSplits();
     this._recalcPomosAfterFlagDelete();
     this._renderLaps();
     this._saveState();
@@ -1576,7 +1586,7 @@
       </div>
       <input class="form-control" type="text" placeholder="${UI.t('pomo_subtask_placeholder')}" value="${(text||'').replace(/"/g,'&quot;')}"
         style="flex:1;font-size:0.8125rem;padding:0.3125rem 0.625rem"
-        onkeydown="if(event.key==='Enter'){event.preventDefault();event.stopPropagation();if(this.value.trim())PomodoroPage._addSubtaskField('${containerId}');}">
+        onkeydown="if(event.key==='Enter'){event.preventDefault();event.stopPropagation();if(this.value.trim()){const rows=[...document.querySelectorAll('#${containerId} .subtask-input-row')];const hasEmpty=rows.some(r=>!r.querySelector('input').value.trim());if(hasEmpty){rows.find(r=>!r.querySelector('input').value.trim()).querySelector('input').focus();}else{PomodoroPage._addSubtaskField('${containerId}');}}}">
       <button type="button" onclick="this.closest('.subtask-input-row').remove()" style="background:transparent;border:none;color:var(--text-muted);cursor:pointer;padding:0.25rem;display:flex;align-items:center">
         <svg data-lucide="x" style="width:0.8125rem;height:0.8125rem"></svg>
       </button>`;
@@ -2334,23 +2344,23 @@
     // Tüm modları say (work + flow + countdown)
     const todaySessions  = pomo.sessions.filter(s => s.date === td);
     const todayMins      = todaySessions.reduce((a, s) => a + (s.duration || (s.mode === 'work' ? 25 : 0)), 0);
-    const todayFlowMins  = pomo.sessions.filter(s => s.date === td && s.mode === 'flow')
+    // Mola dışı tüm oturumları say (work + flow + countdown)
+    const todayFlowMins  = pomo.sessions.filter(s => s.date === td && s.mode !== 'short' && s.mode !== 'long')
                                         .reduce((a, s) => a + (s.duration || 0), 0);
     // Dün tarihi (her iki karşılaştırma için)
     const ydDate = new Date(); ydDate.setDate(ydDate.getDate() - 1);
     const ydStr  = ydDate.toISOString().split('T')[0];
 
-    // Aktif oturumun henüz kaydedilmemiş süresini canlı ekle
-    // Flow: çalışıyor veya duraklatılmış (F5) fark etmez — lap splitleri her zaman sayılır
-    let liveSessionMins = 0;
-    let liveFlowSecs    = 0;
-    if (this.timerType === 'flow') {
-      liveFlowSecs    = this._laps.reduce((s, l) => s + l.split, 0);
-      liveSessionMins = Math.round(liveFlowSecs / 60);
-    } else if (this.running && this.timerType === 'pomodoro' && this.mode === 'work' && this._sessionDur > 0) {
-      liveSessionMins = Math.round((this._sessionDur - this.timeLeft) / 60);
-    }
-    const displayFlowMins = todayFlowMins + liveSessionMins;
+    // Akış süresi: kaydedilmiş session'lar + mevcut oturumdaki son flag'e kadar olan süre
+    // Canlı sayaç (flagsiz geçen süre) dahil edilmez — yalnızca flag ve zaman logları sayılır
+    const storedFlowSecs = Math.round(todayFlowMins * 60);
+    const lapSecs = (this.timerType === 'flow' && this._laps.length > 0)
+      ? this._laps[this._laps.length - 1].elapsed
+      : 0;
+    const displayFlowMins = Math.floor((storedFlowSecs + lapSecs) / 60);
+
+    // Seans sayısı KPI'ı: sadece kaydedilmiş session'lardan
+    const liveSessionMins = 0;
 
     // Aktif görev pomodoro takibi varsa canlı tamamlanan sayısını hesapla
     let livePomosDone = null;
@@ -2359,7 +2369,7 @@
     }
 
     // Dünkü akış ve odaklanma süresi karşılaştırması
-    const yesterdayFlowMins   = pomo.sessions.filter(s => s.date === ydStr && s.mode === 'flow')
+    const yesterdayFlowMins   = pomo.sessions.filter(s => s.date === ydStr && s.mode !== 'short' && s.mode !== 'long')
                                              .reduce((a, s) => a + (s.duration || 0), 0);
     const yesterdaySessions   = pomo.sessions.filter(s => s.date === ydStr);
     const yesterdaySessionCnt = yesterdaySessions.length;
