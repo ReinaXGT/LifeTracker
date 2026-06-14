@@ -4,6 +4,9 @@
 //  • Sidebar widget : Ayarlar'ın üstünde canlı süre + Focus Mode linki
 //  • Topbar widget  : Dashboard başlığının sağında mod + süre + kontrol butonları
 //                     (sadece pomodoro.html dışındaki sayfalarda gösterilir)
+//  • KPI motoru     : Akış Süresi / Bugün Tamamlanan / Günlük Seri hesaplaması
+//                     PomodoroPage ve diğer sayfalar için merkezi hesaplama kaynağı
+//                     [data-focus-kpi] elementlere otomatik render eder
 //
 // Strateji:
 //   pomodoro.html → PomodoroPage'den doğrudan okur / metotlarını çağırır (0 gecikme)
@@ -16,6 +19,7 @@ const FocusWidget = (() => {
   let _channel       = null;
   let _isPomoPage    = false;
   let _originalTitle = '';
+  let _kpiStreak     = null; // cache: { date: 'YYYY-MM-DD', value: N }
 
   // ── Yardımcılar ────────────────────────────────────────────────────────────
   const LABEL_KEYS = {
@@ -130,7 +134,6 @@ const FocusWidget = (() => {
 
   // ── Kontrol aksiyonları ─────────────────────────────────────────────────────
   function _calcCurrentState() {
-    // Diğer sayfalar için: anlık timeLeft/overtimeSecs'i hesapla, lt_pomo_state'e yaz
     const s = Store.get('pomo_state');
     if (!s) return null;
     const away = Math.floor((Date.now() - s.savedAt) / 1000);
@@ -144,7 +147,6 @@ const FocusWidget = (() => {
     return { ...s, timeLeft, overtimeSecs };
   }
 
-  // Duraklat / Devam Et
   function _togglePause() {
     if (_isPomoPage && PomodoroPage._initialized) {
       PomodoroPage.running ? PomodoroPage.pause() : PomodoroPage.start(true);
@@ -158,7 +160,6 @@ const FocusWidget = (() => {
     _update();
   }
 
-  // Bayrak (tüm modlar)
   function _addFlag() {
     if (_isPomoPage && PomodoroPage._initialized) {
       PomodoroPage.addFlag(); _update(); return;
@@ -176,7 +177,6 @@ const FocusWidget = (() => {
     _update();
   }
 
-  // Durdur
   function _stop() {
     if (_isPomoPage && PomodoroPage._initialized) {
       const P = PomodoroPage;
@@ -184,7 +184,6 @@ const FocusWidget = (() => {
       else             P.reset();
       _update(); return;
     }
-    // Diğer sayfalar → state'i temizle (sessiz durdur)
     Store.set('pomo_state', null);
     _update();
   }
@@ -210,7 +209,7 @@ const FocusWidget = (() => {
 
   // ── Topbar widget inject & güncelle ────────────────────────────────────────
   function _injectTopbar() {
-    if (_isPomoPage) return; // Pomodoro sayfasında topbar widget gösterme
+    if (_isPomoPage) return;
     const right = document.querySelector('header.topbar .topbar-right');
     if (!right || document.getElementById('focus-topbar-widget')) return;
 
@@ -243,7 +242,6 @@ const FocusWidget = (() => {
 
     lucide.createIcons({ nodes: [el] });
 
-    // Set translated titles after injection
     const pause = document.getElementById('ftw-pause');
     const flag  = document.getElementById('ftw-flag');
     const stop  = document.getElementById('ftw-stop');
@@ -263,7 +261,6 @@ const FocusWidget = (() => {
     w.style.display = 'flex';
 
     const col   = _color(state);
-    const lbl   = _label(state);
     const time  = _fmt(state);
     const min   = _elapsedMin(state);
 
@@ -275,7 +272,6 @@ const FocusWidget = (() => {
     w.querySelector('.ftw-time').style.color       = col;
     w.style.setProperty('--ftw-accent', col);
 
-    // Pause / Resume ikonu
     const pauseBtn = document.getElementById('ftw-pause');
     if (pauseBtn) {
       const icon = state.running ? 'pause' : 'play';
@@ -284,11 +280,9 @@ const FocusWidget = (() => {
       lucide.createIcons({ nodes: [pauseBtn] });
     }
 
-    // Bayrak: çalışırken tüm modlarda göster
     const flagBtn = document.getElementById('ftw-flag');
     if (flagBtn) flagBtn.style.display = state.running ? '' : 'none';
 
-    // Kaçıncı dakika tooltip
     const timeEl = w.querySelector('.ftw-time');
     if (timeEl) timeEl.dataset.tooltip = state.running ? UI.t('pomo_minute_n', min) : UI.t('fw_paused');
   }
@@ -310,6 +304,137 @@ const FocusWidget = (() => {
     _updateSidebar(state);
     _updateTopbar(state);
     _updateTitle(state);
+  }
+
+  // ── KPI Motor ──────────────────────────────────────────────────────────────
+  function _calcKPIData() {
+    const td       = UI.today();
+    const pomo     = Store.getPomo();
+    const timeLogs = Store.getTime().logs || [];
+
+    // Dün tarihi
+    const ydDate = new Date(); ydDate.setDate(ydDate.getDate() - 1);
+    const ydStr  = `${ydDate.getFullYear()}-${String(ydDate.getMonth()+1).padStart(2,'0')}-${String(ydDate.getDate()).padStart(2,'0')}`;
+
+    // Bugünkü mola-dışı pomodoro oturumları
+    const sessions = pomo.sessions.filter(s => s.date === td && s.mode !== 'short' && s.mode !== 'long');
+    const pomoTodaySecs = sessions.reduce((a, s) => a + (s.duration || 0), 0) * 60;
+
+    // Bugünkü manuel zaman logları (pomodoro çift-sayımını önlemek için source=pomodoro hariç)
+    const manualTodaySecs = timeLogs
+      .filter(l => l.date === td && l.source !== 'pomodoro')
+      .reduce((a, l) => a + (l.duration || 0), 0) * 60;
+
+    // Canlı laps: PomoPage açıksa doğrudan, değilse lt_pomo_state'ten
+    let laps = [];
+    if (_isPomoPage && typeof PomodoroPage !== 'undefined' && PomodoroPage._initialized) {
+      laps = PomodoroPage._laps || [];
+    } else {
+      const s = Store.get('pomo_state');
+      if (s && Date.now() - s.savedAt < 8 * 60 * 60 * 1000) laps = s.laps || [];
+    }
+    const lapSecs  = laps.length > 0 ? laps[laps.length - 1].elapsed : 0;
+    const flowMins = Math.floor((pomoTodaySecs + manualTodaySecs + lapSecs) / 60);
+
+    const workMins     = Store.get('pomo_cfg')?.work || 25;
+    const sessionCount = Math.round(flowMins / workMins * 10) / 10;
+
+    // Dün karşılaştırması — pomodoro oturumları + manuel zaman logları
+    const ydPomoMins = pomo.sessions
+      .filter(s => s.date === ydStr && s.mode !== 'short' && s.mode !== 'long')
+      .reduce((a, s) => a + (s.duration || 0), 0);
+    const ydManualMins = timeLogs
+      .filter(l => l.date === ydStr && l.source !== 'pomodoro')
+      .reduce((a, l) => a + (l.duration || 0), 0);
+    const ydFlowMins = Math.floor(ydPomoMins + ydManualMins);
+    const ydCount = Math.round(ydFlowMins / workMins * 10) / 10;
+
+    // Günlük seri — günde bir kez hesaplanır (cache)
+    if (!_kpiStreak || _kpiStreak.date !== td) {
+      let streak = 0;
+      for (let i = 0; i < 365; i++) {
+        const d  = new Date(); d.setDate(d.getDate() - i);
+        const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        if (timeLogs.some(l => l.date === ds)) streak++;
+        else break;
+      }
+      _kpiStreak = { date: td, value: streak };
+    }
+
+    // Aktif görev pomodoro takibi — bellek önce, fallback lt_pomo_state (F5 sonrası)
+    // NOT: _initialized kontrolü yok — renderKPIs(), _initialized=true'dan ÖNCE çağrılır
+    let livePomosDone = null;
+    if (_isPomoPage && typeof PomodoroPage !== 'undefined') {
+      if (PomodoroPage._taskPomosTotal !== null && PomodoroPage._taskPomosRemaining !== null) {
+        livePomosDone = Math.round((PomodoroPage._taskPomosTotal - PomodoroPage._taskPomosRemaining) * 10) / 10;
+      }
+      if (livePomosDone === null) {
+        const st = Store.get('pomo_state');
+        if (st && (st.taskPomosTotal ?? 0) > 0 && Date.now() - st.savedAt < 8 * 60 * 60 * 1000) {
+          livePomosDone = Math.round(Math.max(0, (st.taskPomosTotal ?? 0) - (st.taskPomosRemaining ?? 0)) * 10) / 10;
+        }
+      }
+    }
+
+    return { flowMins, sessionCount, ydFlowMins, ydCount, streak: _kpiStreak.value, workMins, livePomosDone };
+  }
+
+  function _kpiHTML(d) {
+    const { flowMins, sessionCount, ydFlowMins, ydCount, streak, livePomosDone } = d;
+    const todayValue = livePomosDone !== null
+      ? `${sessionCount} 🍅`
+      : UI.t('pomo_sessions_n', sessionCount);
+    const streakUp = streak > 0;
+    return `
+      <div class="pomo-stat-item">
+        <span class="pomo-stat-label">${UI.t('pomo_kpi_today')}</span>
+        <span class="pomo-stat-value">${todayValue}</span>
+        <span class="pomo-stat-sub" style="color:${
+          ydCount === 0
+            ? 'var(--text-muted)'
+            : sessionCount >= ydCount ? 'var(--green)' : 'var(--red)'
+        }">
+          ${ydCount === 0
+            ? `— ${UI.t('pomo_vs_yday_none')}`
+            : (() => {
+                const diff = Math.round(Math.abs(sessionCount - ydCount) * 10) / 10;
+                return sessionCount >= ydCount
+                  ? `▲ ${UI.t('pomo_sessions_n', diff)} ${UI.t('pomo_vs_yday_more')}`
+                  : `▼ ${UI.t('pomo_sessions_n', diff)} ${UI.t('pomo_vs_yday_less')}`;
+              })()
+          }
+        </span>
+      </div>
+      <div class="pomo-stat-item">
+        <span class="pomo-stat-label">${UI.t('pomo_kpi_flow')}</span>
+        <span class="pomo-stat-value">${flowMins} ${UI.t('mins_suffix')}</span>
+        <span class="pomo-stat-sub" style="color:${
+          ydFlowMins === 0
+            ? 'var(--text-muted)'
+            : flowMins >= ydFlowMins ? 'var(--green)' : 'var(--red)'
+        }">
+          ${ydFlowMins === 0
+            ? `— ${UI.t('pomo_vs_yday_none')}`
+            : flowMins >= ydFlowMins
+              ? `▲ ${UI.fmtMinutes(flowMins - ydFlowMins)} ${UI.t('pomo_vs_yday_more')}`
+              : `▼ ${UI.fmtMinutes(ydFlowMins - flowMins)} ${UI.t('pomo_vs_yday_less')}`
+          }
+        </span>
+      </div>
+      <div class="pomo-stat-item">
+        <span class="pomo-stat-label">${UI.t('pomo_kpi_streak')}</span>
+        <span class="pomo-stat-value">${UI.t('pomo_days_n', streak)}</span>
+        <span class="pomo-stat-sub" style="color:${streakUp ? 'var(--yellow)' : 'var(--text-muted)'}">
+          ${streakUp ? '▲' : '▼'} ${UI.t('pomo_streak_sub')}
+        </span>
+      </div>`;
+  }
+
+  function _renderKPIContainers() {
+    const els = document.querySelectorAll('[data-focus-kpi]');
+    if (!els.length) return;
+    const html = _kpiHTML(_calcKPIData());
+    els.forEach(el => { el.innerHTML = html; });
   }
 
   // ── Worker & Channel ───────────────────────────────────────────────────────
@@ -340,16 +465,24 @@ const FocusWidget = (() => {
       _originalTitle = document.title;
       _injectTopbar();
       _update();
+      _renderKPIContainers();
       _initWorker();
       _initChannel();
       document.addEventListener('visibilitychange', () => {
         if (!document.hidden) _update();
       });
       document.addEventListener('lt:pomo-state-change', () => _update());
+      document.addEventListener('lt:pomo-kpi-change',   () => { _kpiStreak = null; _renderKPIContainers(); });
+      document.addEventListener('lt:language-change',   () => _renderKPIContainers());
+      document.addEventListener('lt:theme-change',      () => _renderKPIContainers());
     },
     togglePause() { _togglePause(); },
     addFlag()     { _addFlag();     },
     stop()        { _stop();        },
+    getKPIData()  { return _calcKPIData(); },
+    renderKPIs(containerEl) {
+      if (containerEl) containerEl.innerHTML = _kpiHTML(_calcKPIData());
+    },
   };
 })();
 

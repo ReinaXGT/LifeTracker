@@ -1,4 +1,4 @@
-const Store = {
+﻿const Store = {
   _p: 'lt_',
 
   get(k)    { try { const r = localStorage.getItem(this._p+k); return r ? JSON.parse(r) : null; } catch { return null; } },
@@ -44,9 +44,9 @@ const Store = {
   // ── Time ────────────────────────────────────────────────
   getTime()        { return this.get('time') || { logs:[] }; },
   setTime(d)       { return this.set('time', d); },
-  addTimeLog(log)  { const t=this.getTime(); t.logs.unshift({...log,id:this._id()}); return this.setTime(t); },
+  addTimeLog(log)  { const t=this.getTime(); t.logs.unshift({...log,id:this._id()}); const _r=this.setTime(t); document.dispatchEvent(new CustomEvent('lt:pomo-kpi-change')); return _r; },
   updateTimeLog(id, updates){ const t=this.getTime(); t.logs=t.logs.map(l=>l.id===id?{...l,...updates}:l); return this.setTime(t); },
-  deleteTimeLog(id){ const t=this.getTime(); t.logs=t.logs.filter(l=>l.id!==id); return this.setTime(t); },
+  deleteTimeLog(id){ const t=this.getTime(); t.logs=t.logs.filter(l=>l.id!==id); const _r=this.setTime(t); document.dispatchEvent(new CustomEvent('lt:pomo-kpi-change')); return _r; },
 
   // ── Task Progress (Single Source of Truth) ──────────────
   // pomoDone'u her zaman zaman loglarından hesapla — depolanan değere güvenme

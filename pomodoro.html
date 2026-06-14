@@ -38,6 +38,21 @@
 }
 .pomo-type-btn.active svg { color: var(--accent); }
 
+/* ── Todo add button — type-btn tarzı ── */
+.pomo-todo-add-btn {
+  display:inline-flex; align-items:center; gap:0.375rem;
+  padding:0.3125rem 0.75rem; border-radius:0.5rem;
+  border:1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  background:transparent; color:var(--text-secondary);
+  cursor:pointer; font-size:0.8125rem; font-weight:600;
+  font-family:var(--font-body); transition:all var(--transition-fast);
+}
+.pomo-todo-add-btn:hover {
+  border-color:var(--accent); color:var(--text-primary);
+  background:color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.pomo-todo-add-btn svg { width:0.875rem; height:0.875rem; color:inherit; }
+
 /* ── Pomodoro sub-tabs ── */
 .pomo-mode-btn {
   padding:0.4375rem 1.125rem; border-radius:1.25rem; font-size:0.8125rem; font-weight:500;
@@ -72,8 +87,8 @@
 .pomo-ctrl-btn { min-width:6.875rem; justify-content:center; gap:0.4375rem; font-size:0.8125rem; padding:0.625rem 1.125rem; }
 .btn-flag   { background:#34D39918; color:#34D399; border:1px solid #34D39940; }
 .btn-flag:hover   { background:#34D39928; border-color:#34D399; }
-.btn-pause  { background:#60A5FA18; color:#60A5FA; border:1px solid #60A5FA40; }
-.btn-pause:hover  { background:#60A5FA28; border-color:#60A5FA; }
+.btn-pause  { background:var(--accent-glow); color:var(--accent); border:1px solid color-mix(in srgb,var(--accent) 40%,transparent); }
+.btn-pause:hover  { background:color-mix(in srgb,var(--accent) 20%,transparent); border-color:var(--accent); }
 .btn-stop   { background:#F8717118; color:#F87171; border:1px solid #F8717140; }
 .btn-stop:hover   { background:#F8717128; border-color:#F87171; }
 .btn-finish { background:#34D39918; color:#34D399; border:1px solid #34D39940; }
@@ -147,7 +162,7 @@
 .pomo-num:focus { border-color:var(--accent); }
 
 /* ── Todo list rows ── */
-.hc-row { display:flex; align-items:center; gap:0.75rem; padding:0.8125rem 1.25rem; border-bottom:1px solid var(--border); transition:background var(--transition-fast); background:rgba(255,255,255,.04); }
+.hc-row { display:flex; align-items:center; gap:0.75rem; padding:0.8125rem 1.25rem; border-bottom:1px solid rgba(255,255,255,.10); transition:background var(--transition-fast); background:rgba(255,255,255,.04); }
 .hc-row:last-child { border-bottom:none; }
 .hc-row:hover { background:rgba(255,255,255,.08); }
 .hc-row.hc-done { }
@@ -196,6 +211,18 @@
 body.pomo-fullscreen #pomo-fs-controls { display:flex !important; }
 #pomo-fs-exit { gap:0.375rem; }
 
+/* ── Panel header butonları: Görev Değiştir / Ayarlar / Tam Ekran ── */
+#pomo-timer-panel-header .btn {
+  color: color-mix(in srgb, var(--accent) 70%, var(--text-secondary)) !important;
+  border: 1px solid transparent !important;
+  transition: color var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+}
+#pomo-timer-panel-header .btn:hover {
+  color: var(--accent) !important;
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent) !important;
+  background: color-mix(in srgb, var(--accent) 10%, transparent) !important;
+}
+
 body.pomo-fullscreen,
 body.pomo-fullscreen .app-layout,
 body.pomo-fullscreen .main-content,
@@ -213,14 +240,15 @@ body.pomo-fullscreen .main-content {
 body.pomo-fullscreen .page-content {
   flex:1 !important; padding:0 !important;
   display:flex !important; flex-direction:column !important;
+  overflow:hidden !important;
 }
 
 body.pomo-fullscreen #pomo-timer-panel {
   flex:1 !important; margin:0 !important; border:none !important; border-radius:0 !important;
   display:flex !important; flex-direction:column !important;
   align-items:center !important; justify-content:flex-start !important;
-  gap:0 !important; padding:0 0 2rem !important;
-  overflow-y:auto !important; overflow-x:hidden !important;
+  gap:0 !important; padding:0 0 1.5rem !important;
+  overflow:hidden !important;
 }
 
 body.pomo-fullscreen #pomo-timer-panel-header { display:none !important; }
@@ -239,7 +267,8 @@ body.pomo-fullscreen #pomo-timer-panel-header { display:none !important; }
 }
 body.pomo-fullscreen #pomo-todo-panel         { display:none !important; }
 body.pomo-fullscreen .pomo-stat-strip         { display:none !important; }
-body.pomo-fullscreen #pomo-laps               { max-width:27.5rem !important; width:100% !important; margin-top:1.5rem !important; margin-left:auto !important; margin-right:auto !important; }
+body.pomo-fullscreen #pomo-laps               { max-width:27.5rem !important; width:100% !important; margin-top:0.25rem !important; margin-left:auto !important; margin-right:auto !important; }
+body.pomo-fullscreen #pomoSessions:empty      { display:none !important; }
 
 body.pomo-fullscreen #pomo-body-row {
   justify-content:center !important; width:100% !important; position:static !important;
@@ -280,14 +309,24 @@ body.pomo-fullscreen #pomo-subtask-panel .pomo-fsub {
 /* ── Fullscreen: type-row — normal card buttons, just centered with top padding ── */
 body.pomo-fullscreen #pomo-type-row {
   justify-content:center !important;
-  padding:2rem 1.5rem 0 !important;
+  padding:1rem 1.5rem 0 !important;
 }
+
+/* ── Fullscreen KPI bar ── */
+#pomo-fs-kpi { display:none; }
+body.pomo-fullscreen.pomo-fs-kpi-on #pomo-fs-kpi {
+  display:flex; max-width:27.5rem; width:100%; margin:auto auto 0;
+  background:var(--bg-base); border:1px solid var(--border); border-radius:0.75rem; overflow:hidden;
+}
+body.pomo-fullscreen #pomo-fs-kpi .pomo-stat-item  { padding:0.5rem 0.625rem !important; }
+body.pomo-fullscreen #pomo-fs-kpi .pomo-stat-value { font-size:1.0625rem !important; }
+body.pomo-fullscreen #pomo-fs-kpi .pomo-stat-sub   { font-size:0.625rem !important; white-space:nowrap; }
 
 body.pomo-fullscreen #pomo-subtabs {
   padding:0.75rem 0 0 !important; justify-content:center !important;
 }
 body.pomo-fullscreen #pomo-timer-body {
-  padding:1.25rem 0 0.5rem !important; gap:1.25rem !important;
+  padding:1.25rem 0 0 !important; gap:1.25rem !important;
 }
 
 body.pomo-fullscreen #task-select-wrap { max-width:28rem !important; }
@@ -360,13 +399,13 @@ body.pomo-fullscreen .pomo-time      { font-size:6.25rem !important; }
 
         <!-- Panel header: task switcher + settings top-right -->
         <div class="panel-header" id="pomo-timer-panel-header" style="justify-content:flex-end;padding:0.875rem 1.25rem 0;gap:0.5rem">
-          <button class="btn btn-ghost btn-sm" id="pomoTaskSwitchBtn" style="gap:0.375rem;color:var(--text-muted)">
+          <button class="btn btn-ghost btn-sm" id="pomoTaskSwitchBtn" style="gap:0.375rem">
             <svg data-lucide="arrow-left-right" style="width:0.875rem;height:0.875rem"></svg><span data-i18n="pomo_task_switch"> Görev Değiştir</span>
           </button>
-          <button class="btn btn-ghost btn-sm" id="pomoSettingsToggle" style="gap:0.375rem;color:var(--text-muted)">
+          <button class="btn btn-ghost btn-sm" id="pomoSettingsToggle" style="gap:0.375rem">
             <svg data-lucide="settings" style="width:0.875rem;height:0.875rem"></svg><span data-i18n="settings_title"> Ayarlar</span>
           </button>
-          <button class="btn btn-ghost btn-sm" id="pomoFullscreenToggle" style="gap:0.375rem;color:var(--text-muted)">
+          <button class="btn btn-ghost btn-sm" id="pomoFullscreenToggle" style="gap:0.375rem">
             <svg data-lucide="maximize-2" style="width:0.875rem;height:0.875rem"></svg><span data-i18n="pomo_fullscreen"> Tam Ekran</span>
           </button>
         </div>
@@ -451,6 +490,26 @@ body.pomo-fullscreen .pomo-time      { font-size:6.25rem !important; }
               </div>
               <div style="margin-top:0.875rem;padding-top:0.75rem;border-top:1px solid var(--border);font-size:0.6875rem;color:var(--text-muted);line-height:1.5">
                 <span data-i18n="pomo_settings_countdown_tip">Ayarlar timer durdurulduğunda geçerli olur.</span>
+              </div>
+            </div>
+
+            <!-- Fullscreen card -->
+            <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:0.75rem;padding:1.125rem 1.25rem">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem">
+                <div style="width:1.75rem;height:1.75rem;border-radius:0.5rem;background:var(--accent-glow);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg data-lucide="maximize-2" style="width:0.875rem;height:0.875rem;color:var(--accent)"></svg>
+                </div>
+                <span style="font-size:0.75rem;font-weight:700;color:var(--text-primary);letter-spacing:.3px" data-i18n="pomo_fullscreen">Tam Ekran</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div style="display:flex;align-items:center;gap:0.375rem">
+                  <span style="width:0.5rem;height:0.5rem;border-radius:50%;background:var(--accent);display:inline-block"></span>
+                  <span style="font-size:0.8125rem;color:var(--text-secondary)" data-i18n="pomo_settings_fs_kpi">Bilgi Paneli</span>
+                </div>
+                <button id="pomoFsKpiToggle" onclick="PomodoroPage._toggleFsKpi()"
+                  style="min-width:2.75rem;height:1.375rem;border-radius:0.6875rem;border:none;cursor:pointer;position:relative;transition:background 200ms;background:var(--bg-base);flex-shrink:0">
+                  <span id="pomoFsKpiThumb" style="position:absolute;top:0.1875rem;width:1rem;height:1rem;border-radius:50%;background:var(--text-muted);transition:left 200ms,background 200ms;left:0.1875rem"></span>
+                </button>
               </div>
             </div>
 
@@ -559,7 +618,10 @@ body.pomo-fullscreen .pomo-time      { font-size:6.25rem !important; }
 
         <!-- Flow laps — pomo-body-row dışında: flag eklendikçe row yüksekliği değişmez,
              subtask paneli sabit konumunu korur -->
-        <div id="pomo-laps" style="display:none;width:100%;max-width:27.5rem;margin:1.5rem auto 0;border:1px solid var(--border);border-radius:0.625rem;overflow:hidden"></div>
+        <div id="pomo-laps" style="display:none;width:100%;max-width:27.5rem;margin:0.5rem auto 0;border:1px solid var(--border);border-radius:0.625rem;overflow:hidden"></div>
+
+        <!-- Fullscreen KPI bar — normal akış, scrollbar oluşturmaz -->
+        <div id="pomo-fs-kpi"></div>
       </div><!-- /pomo-timer-panel -->
 
       <!-- Todo list -->
@@ -570,10 +632,10 @@ body.pomo-fullscreen .pomo-time      { font-size:6.25rem !important; }
             <span style="font-size:0.6875rem;color:var(--text-muted)" data-i18n="pomo_todo_subtitle">Günlük görevler</span>
           </div>
           <div style="display:flex;align-items:center;gap:0.625rem">
-            <span style="font-family:var(--font-mono);font-size:0.9375rem;font-weight:700;color:var(--blue)" id="todo-header">0 / 0</span>
+            <span style="font-family:var(--font-mono);font-size:0.9375rem;font-weight:700;color:var(--text-muted)" id="todo-header">0 / 0</span>
             <span style="font-size:0.75rem;color:var(--text-muted)" data-i18n="pomo_todo_done_count">tamamlandı</span>
-            <button class="btn btn-primary btn-sm" onclick="PomodoroPage.openTodoModal()">
-              <svg data-lucide="plus" style="width:0.875rem;height:0.875rem"></svg><span data-i18n="pomo_todo_add_btn">Görev Ekle</span>
+            <button class="pomo-todo-add-btn" onclick="PomodoroPage.openTodoModal()">
+              <svg data-lucide="plus"></svg><span data-i18n="pomo_todo_add_btn">Görev Ekle</span>
             </button>
           </div>
         </div>

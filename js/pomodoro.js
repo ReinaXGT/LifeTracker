@@ -70,6 +70,7 @@
     if (c.short)     set('pomoShortDur',     c.short);
     if (c.long)      set('pomoLongDur',      c.long);
     if (c.countdown) set('pomoCountdownDur', c.countdown);
+    this._syncFsKpiToggle();
   },
 
   _initialTime() {
@@ -439,13 +440,20 @@
       this._activeTaskText = taskText;
       const pomCount = parseFloat(opt?.dataset.pomodoros);
       const durMins  = parseInt(opt?.dataset.duration);
-      if (!isNaN(pomCount) && pomCount > 0 && !this.running && this.timerType === 'pomodoro' && this.mode === 'work') {
+      if (!isNaN(pomCount) && pomCount > 0 && this.timerType === 'pomodoro' && this.mode === 'work') {
         // Pomodoro tabanlı: timer'ı kesirli pomodoro sayısına göre ayarla
-        this._taskPomosTotal     = pomCount;
-        this._taskPomosRemaining = pomCount;
-        this._applyTaskPomoSession();
-      } else if (!isNaN(pomCount) && pomCount > 0 && this.timerType === 'flow') {
-        // Flow modu + pomodoro sayısı: zaman loglarından mevcut ilerlemeyi hesapla
+        this._taskPomosTotal = pomCount;
+        if (!this.running) {
+          this._taskPomosRemaining = pomCount;
+          this._applyTaskPomoSession();
+        } else {
+          const pomoDoneFromLogs = Store.calcTaskPomodoros(this._activeTaskId, taskText);
+          this._taskPomosRemaining = Math.max(0, Math.round((pomCount - pomoDoneFromLogs) * 1000) / 1000);
+          this._taskPomoCurrent = 0;
+        }
+        this._updatePomosCounter();
+      } else if (!isNaN(pomCount) && pomCount > 0 && (this.timerType === 'flow' || this.timerType === 'countdown')) {
+        // Flow / countdown modu + pomodoro sayısı: zaman loglarından mevcut ilerlemeyi hesapla
         this._taskPomosTotal  = pomCount;
         const pomoDoneFromLogs = Store.calcTaskPomodoros(this._activeTaskId, taskText);
         this._taskPomosRemaining = Math.max(0, Math.round((pomCount - pomoDoneFromLogs) * 1000) / 1000);
@@ -1191,12 +1199,32 @@
     if (this.timerType === 'countdown') {
       Store.addPomoSession({ date: UI.today(), mode: 'countdown', task: taskText, duration: durationMin, completedAt });
       this._autoLogTime(durationMin, completedAt, UI.today(), 'countdown');
-      if (taskId2) { this._checkAllFocusSubtasks(); this._markTaskDone(taskId2, durationMin); this._loadTasks(); this.renderTodoList(); }
+      let _cdPomosAllDone = false;
+      if (taskId2) {
+        if (this._taskPomosRemaining !== null) {
+          const _cdDoneFromLogs = Store.calcTaskPomodoros(taskId2, taskText);
+          this._taskPomosRemaining = Math.max(0, Math.round((this._taskPomosTotal - _cdDoneFromLogs) * 1000) / 1000);
+          this._taskPomoCurrent = 0;
+          if (this._taskPomosRemaining <= 0.001) {
+            this._taskPomosRemaining = null;
+            this._taskPomosTotal = null;
+            _cdPomosAllDone = true;
+          }
+          if (_cdPomosAllDone) { this._checkAllFocusSubtasks(); this._markTaskDone(taskId2, 0); }
+        } else {
+          this._checkAllFocusSubtasks(); this._markTaskDone(taskId2, durationMin);
+        }
+        this._loadTasks(); this.renderTodoList();
+      }
       UI.toast(UI.t('pomo_toast_countdown_done'), 'success');
       this._showButtons('idle');
       this.timeLeft = this._initialTime();
       this._updateDisplay(true);
-      this._resetTaskUI();
+      if (_cdPomosAllDone || this._taskPomosRemaining === null) {
+        this._resetTaskUI();
+      } else {
+        this._updatePomosCounter();
+      }
       Store.set('pomo_state', null);
       this.renderKPIs();
       this._renderDots();
@@ -1240,8 +1268,8 @@
     this._laps.push({ elapsed, split, num: this._laps.length + 1, localTime });
     this._renderLaps();
 
-    // Flow modu + pomodoro takibi: flag split süresi üzerinden sayacı ilerlet
-    if (this.timerType === 'flow' && this._taskPomosRemaining !== null && split > 0) {
+    // Flow / countdown modu + pomodoro takibi: flag split süresi üzerinden sayacı ilerlet
+    if ((this.timerType === 'flow' || this.timerType === 'countdown') && this._taskPomosRemaining !== null && split > 0) {
       const pomoFraction = Math.round((split / this.cfg.work) * 1000) / 1000;
       this._taskPomoCurrent    = Math.round((this._taskPomoCurrent + pomoFraction) * 1000) / 1000;
       this._taskPomosRemaining = Math.max(0, Math.round((this._taskPomosRemaining - pomoFraction) * 1000) / 1000);
@@ -1256,6 +1284,7 @@
     }
     // Her flag'de KPI'ı güncelle (akış süresi dahil)
     this.renderKPIs();
+    document.dispatchEvent(new CustomEvent('lt:pomo-kpi-change'));
   },
 
   _renderLaps() {
@@ -1300,7 +1329,7 @@
           <span style="width:3.25rem;height:1.625rem;display:flex;align-items:center;justify-content:flex-end;${SG}font-size:0.75rem;color:var(--text-muted)">${l.localTime || '—'}</span>
           <div style="${DEL_COL}">
             <button onclick="PomodoroPage.deleteFlagConfirm(${origIdx})"
-              data-tooltip="${UI.t('btn_delete')}"
+              data-tooltip="${UI.t('btn_delete')}" data-tooltip-pos="right"
               style="width:1.625rem;height:1.625rem;display:flex;align-items:center;justify-content:center;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.35);border-radius:0.5rem;cursor:pointer;color:#F87171;transition:background .15s,border-color .15s;flex-shrink:0;padding:0"
               onmouseenter="this.style.background='rgba(248,113,113,.25)';this.style.borderColor='rgba(248,113,113,.6)'"
               onmouseleave="this.style.background='rgba(248,113,113,.12)';this.style.borderColor='rgba(248,113,113,.35)'">
@@ -1381,6 +1410,7 @@
       this._renderLaps();
       this._saveState();
       this.renderKPIs();
+      document.dispatchEvent(new CustomEvent('lt:pomo-kpi-change'));
       UI.toast(UI.t('pomo_flag_deleted'), 'info');
       return;
     }
@@ -1420,6 +1450,7 @@
     this._renderLaps();
     this._saveState();
     this.renderKPIs();
+    document.dispatchEvent(new CustomEvent('lt:pomo-kpi-change'));
     UI.toast(UI.t('pomo_flag_deleted'), 'info');
   },
 
@@ -1581,8 +1612,8 @@
     div.dataset.done = done ? 'true' : 'false';
     div.style.cssText = 'display:flex;align-items:center;gap:0.5rem;margin-top:0.375rem';
     div.innerHTML = `
-      <div style="width:1rem;height:1rem;border-radius:0.25rem;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;background:${done ? 'var(--blue)' : 'transparent'};border-color:${done ? 'var(--blue)' : 'var(--border)'}"
-        onclick="this.dataset.done=this.dataset.done==='true'?'false':'true';this.closest('.subtask-input-row').dataset.done=this.dataset.done;this.style.background=this.dataset.done==='true'?'var(--blue)':'transparent';this.style.borderColor=this.dataset.done==='true'?'var(--blue)':'var(--border)'">
+      <div style="width:1rem;height:1rem;border-radius:0.25rem;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;background:${done ? 'var(--accent)' : 'transparent'};border-color:${done ? 'var(--accent)' : 'var(--border)'}"
+        onclick="this.dataset.done=this.dataset.done==='true'?'false':'true';this.closest('.subtask-input-row').dataset.done=this.dataset.done;this.style.background=this.dataset.done==='true'?'var(--accent)':'transparent';this.style.borderColor=this.dataset.done==='true'?'var(--accent)':'var(--border)'">
       </div>
       <input class="form-control" type="text" placeholder="${UI.t('pomo_subtask_placeholder')}" value="${(text||'').replace(/"/g,'&quot;')}"
         style="flex:1;font-size:0.8125rem;padding:0.3125rem 0.625rem"
@@ -1843,10 +1874,11 @@
     const completed = todos.filter(t =>  t.done);
 
     const hdr = document.getElementById('todo-header');
-    if (hdr) hdr.textContent = `${completed.length} / ${todos.length}`;
+    if (hdr) hdr.innerHTML = `<span style="color:var(--accent)">${completed.length}</span><span style="color:var(--text-muted)"> / </span><span style="color:var(--accent)">${todos.length}</span>`;
 
     const CAT_COLORS = { Çalışma:'#7C6CFC', Öğrenme:'#60A5FA', Egzersiz:'#34D399', Sosyal:'#F472B6', Uyku:'#FBBF24', Diğer:'#8888AA' };
     const _catLabel = k => ({ Çalışma: UI.t('pomo_cat_work'), Öğrenme: UI.t('pomo_cat_learn'), Egzersiz: UI.t('pomo_cat_exercise'), Sosyal: UI.t('pomo_cat_social'), Uyku: UI.t('pomo_cat_sleep'), Diğer: UI.t('pomo_cat_other') }[k] || k);
+    const _accent = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#7C6CFC';
 
     const subtaskPanel = (t) => {
       const subs = t.subtasks || [];
@@ -1855,7 +1887,7 @@
       const rows = subs.map(s =>
         `<div class="hc-row hc-subtask${s.done ? ' hc-done' : ''}">
           <div style="width:2rem;flex-shrink:0"></div>
-          ${CheckboxCore.html({ done: s.done, type: 'square', color: 'var(--blue)', onclick: `event.stopPropagation();PomodoroPage.toggleSubtask('${t.id}','${s.id}')` })}
+          ${CheckboxCore.html({ done: s.done, type: 'square', color: 'var(--accent)', onclick: `event.stopPropagation();PomodoroPage.toggleSubtask('${t.id}','${s.id}')` })}
           <span style="font-size:0.8125rem;color:var(--text-secondary);flex:1;${s.done ? 'text-decoration:line-through;color:var(--text-muted)' : ''}">${s.text}</span>
         </div>`
       ).join('');
@@ -1900,7 +1932,7 @@
         : '';
 
       const subBadge = hasSubtasks
-        ? `<span onclick="event.stopPropagation();PomodoroPage.toggleSubtaskPanel('${t.id}')" style="display:inline-flex;align-items:center;justify-content:center;width:1.25rem;height:1.25rem;border-radius:50%;background:rgba(96,165,250,0.15);border:1.5px solid rgba(96,165,250,0.45);color:var(--blue);font-size:0.625rem;font-weight:700;flex-shrink:0;font-family:var(--font-mono);cursor:pointer;line-height:1;padding:0" data-tooltip="${subs.filter(s=>s.done).length}/${subs.length} tamamlandı">${subs.length}</span>`
+        ? `<span onclick="event.stopPropagation();PomodoroPage.toggleSubtaskPanel('${t.id}')" style="display:inline-flex;align-items:center;justify-content:center;width:1.25rem;height:1.25rem;border-radius:50%;background:${_accent}26;border:1.5px solid ${_accent}70;color:var(--accent);font-size:0.625rem;font-weight:700;flex-shrink:0;font-family:var(--font-mono);cursor:pointer;line-height:1;padding:0" data-tooltip="${subs.filter(s=>s.done).length}/${subs.length} tamamlandı">${subs.length}</span>`
         : '';
 
       const clickArea = hasSubtasks
@@ -1930,7 +1962,7 @@
         ? ` draggable="true" ondragstart="PomodoroPage._todoDragStart('${t.id}',event)" ondragover="PomodoroPage._todoDragOver('${t.id}',event)" ondragend="PomodoroPage._todoDragEnd()" ondrop="PomodoroPage._todoDrop('${t.id}',event)"`
         : '';
       return `<div class="hc-row${t.done ? ' hc-done' : ''}" data-id="${t.id}"${dragAttrs}>
-        ${CheckboxCore.html({ done: t.done, type: 'circle', color: 'var(--blue)', onclick: `event.stopPropagation();PomodoroPage.toggleTodo('${t.id}')` })}
+        ${CheckboxCore.html({ done: t.done, type: 'circle', color: 'var(--accent)', onclick: `event.stopPropagation();PomodoroPage.toggleTodo('${t.id}')` })}
         ${textBlock}
         ${catBadge}
         ${timeBadge}
@@ -2084,6 +2116,7 @@
     Store.addTimeLog({ date, category, project, start, end: completedAt, duration: durationMin, source: 'pomodoro', taskId });
     // Log yazıldıktan sonra görevin pomoDone'unu loglardan yeniden hesapla
     if (taskId) Store.syncTaskProgress(taskId);
+    document.dispatchEvent(new CustomEvent('lt:pomo-kpi-change'));
   },
 
   // ── Flow: save session ────────────────────────────────────────
@@ -2339,113 +2372,66 @@
 
   // ── KPIs ─────────────────────────────────────────────────────
   renderKPIs() {
-    const pomo = Store.getPomo();
-    const td   = UI.today();
-    // Tüm modları say (work + flow + countdown)
-    const todaySessions  = pomo.sessions.filter(s => s.date === td);
-    const todayMins      = todaySessions.reduce((a, s) => a + (s.duration || (s.mode === 'work' ? 25 : 0)), 0);
-    // Mola dışı tüm oturumları say (work + flow + countdown)
-    const todayFlowMins  = pomo.sessions.filter(s => s.date === td && s.mode !== 'short' && s.mode !== 'long')
-                                        .reduce((a, s) => a + (s.duration || 0), 0);
-    // Dün tarihi (her iki karşılaştırma için)
-    const ydDate = new Date(); ydDate.setDate(ydDate.getDate() - 1);
-    const ydStr  = ydDate.toISOString().split('T')[0];
+    FocusWidget.renderKPIs(document.getElementById('kpi-grid'));
+    this._renderFsKpi();
+  },
 
-    // Akış süresi: kaydedilmiş session'lar + mevcut oturumdaki son flag'e kadar olan süre
-    // Canlı sayaç (flagsiz geçen süre) dahil edilmez — yalnızca flag ve zaman logları sayılır
-    const storedFlowSecs = Math.round(todayFlowMins * 60);
-    const lapSecs = (this.timerType === 'flow' && this._laps.length > 0)
-      ? this._laps[this._laps.length - 1].elapsed
-      : 0;
-    const displayFlowMins = Math.floor((storedFlowSecs + lapSecs) / 60);
+  // ── Fullscreen KPI bar ────────────────────────────────────────
+  _renderFsKpi() {
+    const el = document.getElementById('pomo-fs-kpi');
+    if (!el) return;
+    const cfg = Store.get('pomo_cfg') || {};
+    const fsKpiOn = cfg.fsKpi !== false;
+    if (!fsKpiOn || !document.body.classList.contains('pomo-fullscreen')) return;
+    const d = FocusWidget.getKPIData();
 
-    // Seans sayısı KPI'ı: sadece kaydedilmiş session'lardan
-    const liveSessionMins = 0;
+    // Seans karşılaştırma sub-text
+    const seansSubColor = d.ydCount === 0 ? 'var(--text-muted)' : d.sessionCount >= d.ydCount ? 'var(--green)' : 'var(--red)';
+    const seansSub = d.ydCount === 0
+      ? `— ${UI.t('pomo_vs_yday_none')}`
+      : (() => { const diff = Math.round(Math.abs(d.sessionCount - d.ydCount) * 10) / 10; return d.sessionCount >= d.ydCount ? `▲ ${UI.t('pomo_sessions_n', diff)} ${UI.t('pomo_vs_yday_more')}` : `▼ ${UI.t('pomo_sessions_n', diff)} ${UI.t('pomo_vs_yday_less')}`; })();
 
-    // Aktif görev pomodoro takibi varsa canlı tamamlanan sayısını hesapla
-    let livePomosDone = null;
-    if (this._taskPomosTotal !== null && this._taskPomosRemaining !== null) {
-      livePomosDone = Math.round((this._taskPomosTotal - this._taskPomosRemaining) * 10) / 10;
-    }
+    // Akış süresi karşılaştırma sub-text
+    const flowSubColor = d.ydFlowMins === 0 ? 'var(--text-muted)' : d.flowMins >= d.ydFlowMins ? 'var(--green)' : 'var(--red)';
+    const flowSub = d.ydFlowMins === 0
+      ? `— ${UI.t('pomo_vs_yday_none')}`
+      : d.flowMins >= d.ydFlowMins ? `▲ ${d.flowMins - d.ydFlowMins} ${UI.t('mins_suffix')} ${UI.t('pomo_vs_yday_more')}` : `▼ ${d.ydFlowMins - d.flowMins} ${UI.t('mins_suffix')} ${UI.t('pomo_vs_yday_less')}`;
 
-    // Dünkü akış ve odaklanma süresi karşılaştırması
-    const yesterdayFlowMins   = pomo.sessions.filter(s => s.date === ydStr && s.mode !== 'short' && s.mode !== 'long')
-                                             .reduce((a, s) => a + (s.duration || 0), 0);
-    const yesterdaySessions   = pomo.sessions.filter(s => s.date === ydStr);
-    const yesterdaySessionCnt = yesterdaySessions.length;
-    // livePomosDone aktifken dünü de pomodoro birimine çevir (cfg.work dakika cinsinden)
-    const workMins = Store.get('pomo_cfg')?.work || 25;
-    const yesterdayPomoEquiv  = Math.round(
-      yesterdaySessions.reduce((a, s) => a + (s.duration || workMins) / workMins, 0) * 10
-    ) / 10;
-    // Seans sayısı = toplam süre / oturum süresi (oransal, ondalıklı)
-    const yesterdayMins    = yesterdaySessions.reduce((a, s) => a + (s.duration || (s.mode === 'work' ? workMins : 0)), 0);
-    const yesterdayCompare = livePomosDone !== null
-      ? yesterdayPomoEquiv
-      : Math.round(yesterdayMins / workMins * 10) / 10;
-
-    // Günlük seri: zaman takibi loglarından ardışık gün sayısı
-    const timeLogs = (Store.getTime().logs || []);
-    let streak = 0;
-    for (let i = 0; i < 365; i++) {
-      const d = new Date(); d.setDate(d.getDate() - i);
-      const ds = d.toISOString().split('T')[0];
-      if (timeLogs.some(l => l.date === ds)) streak++;
-      else break;
-    }
-
-    // Toplam süre (kaydedilmiş + canlı) / oturum süresi → oransal seans sayısı
-    // livePomosDone sadece mevcut görevin done sayısını verir; diğer günün oturumlarını atlar.
-    // Her zaman todayMins + canlı ilerleme formülünü kullan; 🍅 formatı için livePomosDone ayrı tutulur.
-    const todayCount = Math.round((todayMins + liveSessionMins) / workMins * 10) / 10;
-    const todayValue = livePomosDone !== null
-      ? `${todayCount} 🍅`
-      : UI.t('pomo_sessions_n', todayCount);
-    const todayUp  = todayCount > 0;
-    const streakUp = streak > 0;
-    document.getElementById('kpi-grid').innerHTML = `
+    el.innerHTML = `
       <div class="pomo-stat-item">
         <span class="pomo-stat-label">${UI.t('pomo_kpi_today')}</span>
-        <span class="pomo-stat-value">${todayValue}</span>
-        <span class="pomo-stat-sub" style="color:${
-          yesterdaySessionCnt === 0
-            ? 'var(--text-muted)'
-            : todayCount >= yesterdayCompare ? 'var(--green)' : 'var(--red)'
-        }">
-          ${yesterdaySessionCnt === 0
-            ? UI.t('pomo_sessions_n', todayCount)
-            : (() => {
-                const diff = Math.round(Math.abs(todayCount - yesterdayCompare) * 10) / 10;
-                return todayCount >= yesterdayCompare
-                  ? `▲ ${UI.t('pomo_sessions_n', diff)} ${UI.t('pomo_vs_yday_more')}`
-                  : `▼ ${UI.t('pomo_sessions_n', diff)} ${UI.t('pomo_vs_yday_less')}`;
-              })()
-          }
-        </span>
+        <span class="pomo-stat-value" style="color:${d.sessionCount > 0 ? 'var(--accent)' : 'var(--text-muted)'}">${d.sessionCount > 0 ? UI.t('pomo_sessions_n', d.sessionCount) : '—'}</span>
+        <span class="pomo-stat-sub" style="color:${seansSubColor}">${seansSub}</span>
       </div>
       <div class="pomo-stat-item">
         <span class="pomo-stat-label">${UI.t('pomo_kpi_flow')}</span>
-        <span class="pomo-stat-value">${displayFlowMins} ${UI.t('mins_suffix')}</span>
-        <span class="pomo-stat-sub" style="color:${
-          yesterdayFlowMins === 0
-            ? 'var(--text-muted)'
-            : displayFlowMins >= yesterdayFlowMins ? 'var(--green)' : 'var(--red)'
-        }">
-          ${yesterdayFlowMins === 0
-            ? `— ${UI.t('pomo_vs_yday_none')}`
-            : displayFlowMins >= yesterdayFlowMins
-              ? `▲ ${UI.fmtMinutes(displayFlowMins - yesterdayFlowMins)} ${UI.t('pomo_vs_yday_more')}`
-              : `▼ ${UI.fmtMinutes(yesterdayFlowMins - displayFlowMins)} ${UI.t('pomo_vs_yday_less')}`
-          }
-        </span>
+        <span class="pomo-stat-value" style="color:${d.flowMins > 0 ? 'var(--green)' : 'var(--text-muted)'}">${d.flowMins > 0 ? `${d.flowMins} ${UI.t('mins_suffix')}` : '—'}</span>
+        <span class="pomo-stat-sub" style="color:${flowSubColor}">${flowSub}</span>
       </div>
       <div class="pomo-stat-item">
         <span class="pomo-stat-label">${UI.t('pomo_kpi_streak')}</span>
-        <span class="pomo-stat-value">${UI.t('pomo_days_n', streak)}</span>
-        <span class="pomo-stat-sub" style="color:${streakUp ? 'var(--yellow)' : 'var(--text-muted)'}">
-          ${streakUp ? '▲' : '▼'} ${UI.t('pomo_streak_sub')}
-        </span>
+        <span class="pomo-stat-value" style="color:${d.streak > 0 ? 'var(--yellow)' : 'var(--text-muted)'}">${d.streak > 0 ? UI.t('pomo_days_n', d.streak) : '—'}</span>
+        <span class="pomo-stat-sub" style="color:${d.streak > 0 ? 'var(--yellow)' : 'var(--text-muted)'}">${d.streak > 0 ? '▲' : '▼'} ${UI.t('pomo_streak_sub')}</span>
       </div>`;
+  },
+
+  _syncFsKpiToggle() {
+    const cfg = Store.get('pomo_cfg') || {};
+    const on = cfg.fsKpi !== false;
+    const btn   = document.getElementById('pomoFsKpiToggle');
+    const thumb = document.getElementById('pomoFsKpiThumb');
+    if (btn)   btn.style.background   = on ? 'var(--accent)' : 'var(--bg-base)';
+    if (thumb) { thumb.style.left = on ? '1.375rem' : '0.1875rem'; thumb.style.background = on ? '#fff' : 'var(--text-muted)'; }
+    document.body.classList.toggle('pomo-fs-kpi-on', on);
+  },
+
+  _toggleFsKpi() {
+    const cfg = Store.get('pomo_cfg') || {};
+    const next = cfg.fsKpi === false ? true : false;
+    Store.set('pomo_cfg', { ...cfg, fsKpi: next });
+    this._syncFsKpiToggle();
+    if (next) this._renderFsKpi();
+    else { const el = document.getElementById('pomo-fs-kpi'); if (el) el.innerHTML = ''; }
   },
 
   // ── Fullscreen ────────────────────────────────────────────────
@@ -2472,6 +2458,7 @@
     // Subtask ve flags panellerini tam ekran moduna göre yeniden konumlandır
     this._renderSubtaskPanel();
     this._renderFsFlags(document.getElementById('pomo-fs-flags'));
+    this._renderFsKpi();
     this._updateDisplay(true);
   },
 

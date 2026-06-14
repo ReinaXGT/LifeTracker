@@ -415,15 +415,6 @@ const Dashboard = {
     const weekMins  = logs.filter(l => l.date >= weekAgo).reduce((a, l) => a + l.duration, 0);
     const monthMins = logs.filter(l => l.date >= monthAgo).reduce((a, l) => a + l.duration, 0);
 
-    // Günlük seri (art arda kayıtlı gün sayısı)
-    let streak = 0;
-    for (let i = 0; i <= 365; i++) {
-      const d = new Date(today); d.setDate(today.getDate() - i);
-      const ds = d.toISOString().split('T')[0];
-      if (logs.filter(l => l.date === ds).reduce((a, l) => a + l.duration, 0) > 0) streak++;
-      else break;
-    }
-
     // Bu hafta kategori dağılımı (top 4)
     const catTotals = {};
     logs.filter(l => l.date >= weekAgo).forEach(l => {
@@ -432,9 +423,7 @@ const Dashboard = {
     const topCats = Object.entries(catTotals).sort(([, a], [, b]) => b - a).slice(0, 4);
     const maxCat  = topCats[0]?.[1] || 1;
 
-    // Bugün pomodoro seansı sayısı
-    const pomoToday = sessions.filter(s => s.date === td && s.mode === 'work').length;
-
+    const kpi = FocusWidget.getKPIData();
     const catColors = ['var(--accent)', 'var(--green)', 'var(--blue)', 'var(--yellow)'];
 
     const statBlock = (label, mins) => `
@@ -463,19 +452,26 @@ const Dashboard = {
           </div>`).join('')}
       </div>` : ''}
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-radius:var(--radius-sm);overflow:hidden">
-        <div style="background:var(--bg-elevated);display:flex;align-items:center;gap:0.625rem;padding:0.6875rem 0.875rem">
-          <svg data-lucide="flame" style="width:0.9375rem;height:0.9375rem;color:var(--yellow);flex-shrink:0"></svg>
-          <div>
-            <div style="font-family:var(--font-mono);font-size:0.9375rem;font-weight:700;color:${streak > 0 ? 'var(--yellow)' : 'var(--text-muted)'};line-height:1">${streak > 0 ? UI.t('dash_focus_streak_days', streak) : '—'}</div>
-            <div style="font-size:0.625rem;color:var(--text-muted);margin-top:0.1875rem;text-transform:uppercase;letter-spacing:0.05em">${UI.t('dash_focus_streak')}</div>
-          </div>
-        </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);border-radius:var(--radius-sm);overflow:hidden">
         <div style="background:var(--bg-elevated);display:flex;align-items:center;gap:0.625rem;padding:0.6875rem 0.875rem">
           <svg data-lucide="timer" style="width:0.9375rem;height:0.9375rem;color:var(--accent);flex-shrink:0"></svg>
           <div>
-            <div style="font-family:var(--font-mono);font-size:0.9375rem;font-weight:700;color:${pomoToday > 0 ? 'var(--accent)' : 'var(--text-muted)'};line-height:1">${pomoToday > 0 ? pomoToday : '—'}</div>
-            <div style="font-size:0.625rem;color:var(--text-muted);margin-top:0.1875rem;text-transform:uppercase;letter-spacing:0.05em">${UI.t('dash_today_sessions')}</div>
+            <div style="font-family:var(--font-mono);font-size:0.9375rem;font-weight:700;color:${kpi.sessionCount > 0 ? 'var(--accent)' : 'var(--text-muted)'};line-height:1">${kpi.sessionCount > 0 ? UI.t('pomo_sessions_n', kpi.sessionCount) : '—'}</div>
+            <div style="font-size:0.625rem;color:var(--text-muted);margin-top:0.1875rem;text-transform:uppercase;letter-spacing:0.05em">${UI.t('pomo_kpi_today')}</div>
+          </div>
+        </div>
+        <div style="background:var(--bg-elevated);display:flex;align-items:center;gap:0.625rem;padding:0.6875rem 0.875rem">
+          <svg data-lucide="clock" style="width:0.9375rem;height:0.9375rem;color:var(--green);flex-shrink:0"></svg>
+          <div>
+            <div style="font-family:var(--font-mono);font-size:0.9375rem;font-weight:700;color:${kpi.flowMins > 0 ? 'var(--green)' : 'var(--text-muted)'};line-height:1">${kpi.flowMins > 0 ? UI.fmtMinutes(kpi.flowMins) : '—'}</div>
+            <div style="font-size:0.625rem;color:var(--text-muted);margin-top:0.1875rem;text-transform:uppercase;letter-spacing:0.05em">${UI.t('pomo_kpi_flow')}</div>
+          </div>
+        </div>
+        <div style="background:var(--bg-elevated);display:flex;align-items:center;gap:0.625rem;padding:0.6875rem 0.875rem">
+          <svg data-lucide="flame" style="width:0.9375rem;height:0.9375rem;color:var(--yellow);flex-shrink:0"></svg>
+          <div>
+            <div style="font-family:var(--font-mono);font-size:0.9375rem;font-weight:700;color:${kpi.streak > 0 ? 'var(--yellow)' : 'var(--text-muted)'};line-height:1">${kpi.streak > 0 ? UI.t('dash_focus_streak_days', kpi.streak) : '—'}</div>
+            <div style="font-size:0.625rem;color:var(--text-muted);margin-top:0.1875rem;text-transform:uppercase;letter-spacing:0.05em">${UI.t('dash_focus_streak')}</div>
           </div>
         </div>
       </div>
