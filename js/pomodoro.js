@@ -273,6 +273,7 @@
       this.timeLeft = this._initialTime();
     }
 
+    this._carryOverTodos();
     this._loadTasks();
     this._applyRestoredTask();
     this._updateDisplay(true);
@@ -416,8 +417,8 @@
   _updatePomosCounter() {
     const el = document.getElementById('pomo-pomos-counter');
     if (!el) return;
-    if (this._taskPomosRemaining !== null && this._taskPomosTotal !== null && this._taskPomosRemaining > 0.001) {
-      const done  = Math.round((this._taskPomosTotal - this._taskPomosRemaining) * 10) / 10;
+    if (this._taskPomosTotal !== null) {
+      const done  = Math.round((this._taskPomosTotal - (this._taskPomosRemaining || 0)) * 10) / 10;
       const total = this._taskPomosTotal;
       el.textContent = `🍅 ${done} / ${total}`;
       el.style.display = '';
@@ -448,7 +449,7 @@
           this._applyTaskPomoSession();
         } else {
           const pomoDoneFromLogs = Store.calcTaskPomodoros(this._activeTaskId, taskText);
-          this._taskPomosRemaining = Math.max(0, Math.round((pomCount - pomoDoneFromLogs) * 1000) / 1000);
+          this._taskPomosRemaining = Math.round((pomCount - pomoDoneFromLogs) * 1000) / 1000;
           this._taskPomoCurrent = 0;
         }
         this._updatePomosCounter();
@@ -456,7 +457,7 @@
         // Flow / countdown modu + pomodoro sayısı: zaman loglarından mevcut ilerlemeyi hesapla
         this._taskPomosTotal  = pomCount;
         const pomoDoneFromLogs = Store.calcTaskPomodoros(this._activeTaskId, taskText);
-        this._taskPomosRemaining = Math.max(0, Math.round((pomCount - pomoDoneFromLogs) * 1000) / 1000);
+        this._taskPomosRemaining = Math.round((pomCount - pomoDoneFromLogs) * 1000) / 1000;
         this._taskPomoCurrent    = 0;
         this._updatePomosCounter();
       } else if (!isNaN(durMins) && durMins > 0 && !this.running && this.timerType === 'pomodoro' && this.mode === 'work') {
@@ -903,23 +904,12 @@
     // Pomodoro takibi varsa zaman loglarından senkronize et, görevi seçili tut
     if (taskId && this._taskPomosTotal !== null) {
       const pomoDoneFromLogs = Store.calcTaskPomodoros(taskId, taskText);
-      this._taskPomosRemaining = Math.max(0, Math.round((this._taskPomosTotal - pomoDoneFromLogs) * 1000) / 1000);
+      this._taskPomosRemaining = Math.round((this._taskPomosTotal - pomoDoneFromLogs) * 1000) / 1000;
       this._taskPomoCurrent    = 0;
-
-      if (this._taskPomosRemaining <= 0.001) {
-        // Tüm pomodorolar tamamlandı
-        this._taskPomosRemaining = null;
-        this._taskPomosTotal     = null;
-        this.timeLeft = this._initialTime();
-        this._updateDisplay(true);
-        this._resetTaskUI();
-      } else {
-        // Kalan pomodoro var — görevi seçili tut, sayacı güncelle
-        this.timeLeft = this._initialTime();
-        this._updateDisplay(true);
-        this._updatePomosCounter();
-        this.renderTodoList();
-      }
+      this.timeLeft = this._initialTime();
+      this._updateDisplay(true);
+      this._updatePomosCounter();
+      this.renderTodoList();
     } else {
       this.timeLeft = this._initialTime();
       this._updateDisplay(true);
@@ -1050,28 +1040,17 @@
     }
 
     // Pomodoro sayacını güncelle — bu oturumda kaç pomodoro tamamlandı?
-    let pomosAllDone = false;
-    const sessionPomos = this._taskPomoCurrent; // kaç pomodoro tamamlandı bu oturumda
+    const sessionPomos = this._taskPomoCurrent;
     if (this._taskPomosRemaining !== null && sessionPomos > 0) {
-      this._taskPomosRemaining = Math.max(0, this._taskPomosRemaining - sessionPomos);
+      this._taskPomosRemaining = this._taskPomosRemaining - sessionPomos;
       this._taskPomoCurrent    = 0;
-      if (this._taskPomosRemaining <= 0.001) {
-        this._taskPomosRemaining = null;
-        this._taskPomosTotal     = null;
-        pomosAllDone             = true;
-      }
     }
 
     if (taskId) {
       if (sessionPomos > 0) {
-        // Pomodoro ilerlemesini kaydet (tamamlansın ya da tamamlanmasın)
         this._incrementTaskPomoDone(taskId, durationMin, sessionPomos);
       }
-      if (pomosAllDone) {
-        // Tüm pomodorolar bitti — görevi tamamla
-        this._checkAllFocusSubtasks();
-        this._markTaskDone(taskId, 0); // spentMin zaten _incrementTaskPomoDone'da eklendi
-      } else if (this._taskPomosRemaining === null && sessionPomos === 0) {
+      if (this._taskPomosRemaining === null && sessionPomos === 0) {
         // Pomodoro takibi yok (dakika tabanlı veya takipsiz) — finish her zaman tamamlar
         this._checkAllFocusSubtasks();
         this._markTaskDone(taskId, durationMin);
@@ -1082,8 +1061,7 @@
 
     // Overtime bitişinde otomatik molaya geç
     if (wasOvertime) {
-      // Görev pomolardan kaldıysa task seçimini koru, bitmişse sıfırla
-      if (pomosAllDone || this._taskPomosRemaining === null) {
+      if (this._taskPomosRemaining === null) {
         this._resetTaskUI();
       } else {
         this._updatePomosCounter();
@@ -1098,13 +1076,13 @@
     this._laps      = [];
     this._renderLaps();
     this._showButtons('idle');
-    if (pomosAllDone || this._taskPomosRemaining === null) {
-      // Tüm pomolar tamamlandı ya da pomodoro takibi yok — UI sıfırla
+    if (this._taskPomosRemaining === null) {
+      // Pomodoro takibi yok — UI sıfırla
       this.timeLeft = this._initialTime();
       this._updateDisplay(true);
       this._resetTaskUI();
     } else {
-      // Kalan pomodoro var — task seçimini koru, sonraki oturum süresini ayarla
+      // Pomodoro takibi var (hedef aşılmış olsa bile) — task seçimini koru
       this._updatePomosCounter();
       this._applyTaskPomoSession();
     }
@@ -1199,18 +1177,11 @@
     if (this.timerType === 'countdown') {
       Store.addPomoSession({ date: UI.today(), mode: 'countdown', task: taskText, duration: durationMin, completedAt });
       this._autoLogTime(durationMin, completedAt, UI.today(), 'countdown');
-      let _cdPomosAllDone = false;
       if (taskId2) {
         if (this._taskPomosRemaining !== null) {
           const _cdDoneFromLogs = Store.calcTaskPomodoros(taskId2, taskText);
-          this._taskPomosRemaining = Math.max(0, Math.round((this._taskPomosTotal - _cdDoneFromLogs) * 1000) / 1000);
+          this._taskPomosRemaining = Math.round((this._taskPomosTotal - _cdDoneFromLogs) * 1000) / 1000;
           this._taskPomoCurrent = 0;
-          if (this._taskPomosRemaining <= 0.001) {
-            this._taskPomosRemaining = null;
-            this._taskPomosTotal = null;
-            _cdPomosAllDone = true;
-          }
-          if (_cdPomosAllDone) { this._checkAllFocusSubtasks(); this._markTaskDone(taskId2, 0); }
         } else {
           this._checkAllFocusSubtasks(); this._markTaskDone(taskId2, durationMin);
         }
@@ -1220,7 +1191,7 @@
       this._showButtons('idle');
       this.timeLeft = this._initialTime();
       this._updateDisplay(true);
-      if (_cdPomosAllDone || this._taskPomosRemaining === null) {
+      if (this._taskPomosRemaining === null) {
         this._resetTaskUI();
       } else {
         this._updatePomosCounter();
@@ -1272,7 +1243,7 @@
     if ((this.timerType === 'flow' || this.timerType === 'countdown') && this._taskPomosRemaining !== null && split > 0) {
       const pomoFraction = Math.round((split / this.cfg.work) * 1000) / 1000;
       this._taskPomoCurrent    = Math.round((this._taskPomoCurrent + pomoFraction) * 1000) / 1000;
-      this._taskPomosRemaining = Math.max(0, Math.round((this._taskPomosRemaining - pomoFraction) * 1000) / 1000);
+      this._taskPomosRemaining = Math.round((this._taskPomosRemaining - pomoFraction) * 1000) / 1000;
       this._updatePomosCounter();
       // pomoDone'u habits_todos'a yaz ki todo listesi de güncellensin
       const flagTaskId = this._activeTaskId;
@@ -1377,10 +1348,7 @@
       this._laps.reduce((s, l) => s + l.split / this.cfg.work, 0) * 1000
     ) / 1000;
     this._taskPomoCurrent    = fromLaps;
-    this._taskPomosRemaining = Math.max(
-      0,
-      Math.round((this._taskPomosTotal - fromLogs - fromLaps) * 1000) / 1000
-    );
+    this._taskPomosRemaining = Math.round((this._taskPomosTotal - fromLogs - fromLaps) * 1000) / 1000;
     // Storage'ı da güncelle (ghost progress önleme)
     const data = Store.get('habits_todos') || { items: [] };
     const item = data.items.find(t => t.id === this._activeTaskId);
@@ -1466,6 +1434,20 @@
 
   _saveTodos(items) {
     Store.set('habits_todos', { items });
+  },
+
+  // Tamamlanmamış eski tarihli todoları bugüne taşı
+  _carryOverTodos() {
+    const td    = UI.today();
+    const items = this._getTodos();
+    let changed = false;
+    items.forEach(t => {
+      if (!t.done && t.date && t.date < td) {
+        t.date  = td;
+        changed = true;
+      }
+    });
+    if (changed) this._saveTodos(items);
   },
 
   _todoFormHTML(mode) {
@@ -1795,7 +1777,9 @@
     this._renderSubtaskPanel();
   },
 
-  _todoDragId: null,
+  _todoDragId:    null,
+  _subDragTodoId: null,
+  _subDragSubId:  null,
 
   _todoDragStart(id, e) {
     if (e.target.closest('button') || e.target.closest('.cbx')) { e.preventDefault(); return; }
@@ -1850,6 +1834,68 @@
     this.renderTodoList();
   },
 
+  // ── Subtask drag & drop ───────────────────────────────────────
+  _subDragStart(todoId, subId, e) {
+    if (e.target.closest('button') || e.target.closest('.cbx')) { e.preventDefault(); return; }
+    this._subDragTodoId = todoId;
+    this._subDragSubId  = subId;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', subId);
+    setTimeout(() => {
+      const el = document.querySelector(`#subtasks-${todoId} .hc-row[data-sub-id="${subId}"]`);
+      if (el) el.classList.add('hc-dragging');
+    }, 0);
+  },
+
+  _subDragOver(todoId, subId, e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (subId === this._subDragSubId) return;
+    document.querySelectorAll(`#subtasks-${todoId} .hc-row`).forEach(r =>
+      r.classList.remove('hc-drag-over-top', 'hc-drag-over-bot')
+    );
+    const el = document.querySelector(`#subtasks-${todoId} .hc-row[data-sub-id="${subId}"]`);
+    if (!el) return;
+    const mid = el.getBoundingClientRect().top + el.offsetHeight / 2;
+    el.classList.add(e.clientY < mid ? 'hc-drag-over-top' : 'hc-drag-over-bot');
+  },
+
+  _subDragEnd(todoId) {
+    document.querySelectorAll(`#subtasks-${todoId} .hc-row`).forEach(r =>
+      r.classList.remove('hc-dragging', 'hc-drag-over-top', 'hc-drag-over-bot')
+    );
+    this._subDragTodoId = null;
+    this._subDragSubId  = null;
+  },
+
+  _subDrop(todoId, targetSubId, e) {
+    e.preventDefault();
+    document.querySelectorAll(`#subtasks-${todoId} .hc-row`).forEach(r =>
+      r.classList.remove('hc-dragging', 'hc-drag-over-top', 'hc-drag-over-bot')
+    );
+    if (!this._subDragSubId || this._subDragSubId === targetSubId) {
+      this._subDragSubId = null; this._subDragTodoId = null; return;
+    }
+    const items = this._getTodos();
+    const todo  = items.find(t => t.id === todoId);
+    if (!todo?.subtasks) { this._subDragSubId = null; this._subDragTodoId = null; return; }
+    const subs = todo.subtasks;
+    const from = subs.findIndex(s => s.id === this._subDragSubId);
+    const to   = subs.findIndex(s => s.id === targetSubId);
+    if (from === -1 || to === -1) { this._subDragSubId = null; this._subDragTodoId = null; return; }
+    const el = document.querySelector(`#subtasks-${todoId} .hc-row[data-sub-id="${targetSubId}"]`);
+    const mid = el ? el.getBoundingClientRect().top + el.offsetHeight / 2 : 0;
+    const insertAfter = el ? e.clientY >= mid : false;
+    const [sub] = subs.splice(from, 1);
+    const newTo = subs.findIndex(s => s.id === targetSubId);
+    subs.splice(insertAfter ? newTo + 1 : newTo, 0, sub);
+    this._saveTodos(items);
+    this._subDragSubId  = null;
+    this._subDragTodoId = null;
+    this.renderTodoList();
+    this._renderSubtaskPanel();
+  },
+
   toggleSubtask(todoId, subId) {
     const items = this._getTodos();
     const todo  = items.find(t => t.id === todoId);
@@ -1885,13 +1931,36 @@
       if (!subs.length) return '';
       const isOpen = !!this._openTodos[t.id];
       const rows = subs.map(s =>
-        `<div class="hc-row hc-subtask${s.done ? ' hc-done' : ''}">
-          <div style="width:2rem;flex-shrink:0"></div>
+        `<div class="hc-row hc-subtask${s.done ? ' hc-done' : ''}" data-sub-id="${s.id}"
+             draggable="true"
+             ondragstart="PomodoroPage._subDragStart('${t.id}','${s.id}',event)"
+             ondragover="PomodoroPage._subDragOver('${t.id}','${s.id}',event)"
+             ondragend="PomodoroPage._subDragEnd('${t.id}')"
+             ondrop="PomodoroPage._subDrop('${t.id}','${s.id}',event)">
+          <div style="width:2rem;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text-muted);cursor:grab;font-size:0.9375rem;opacity:0.5">⠿</div>
           ${CheckboxCore.html({ done: s.done, type: 'square', color: 'var(--accent)', onclick: `event.stopPropagation();PomodoroPage.toggleSubtask('${t.id}','${s.id}')` })}
           <span style="font-size:0.8125rem;color:var(--text-secondary);flex:1;${s.done ? 'text-decoration:line-through;color:var(--text-muted)' : ''}">${s.text}</span>
+          <button class="hc-del hc-edit-btn" data-tooltip="${UI.t('btn_edit')}"
+            onclick="event.stopPropagation();PomodoroPage._todoSubEdit('${t.id}','${s.id}')">
+            <svg data-lucide="pencil" style="width:0.75rem;height:0.75rem"></svg>
+          </button>
+          <button class="hc-del" data-tooltip="${UI.t('btn_delete')}"
+            onclick="event.stopPropagation();PomodoroPage._focusSubDelete('${s.id}','${t.id}')">
+            <svg data-lucide="trash-2" style="width:0.75rem;height:0.75rem"></svg>
+          </button>
         </div>`
       ).join('');
-      return `<div id="subtasks-${t.id}" style="display:${isOpen ? '' : 'none'}">${rows}</div>`;
+      const addRow = `
+        <div class="hc-row hc-subtask hc-sub-add-row" onclick="event.stopPropagation()">
+          <div style="width:2rem;flex-shrink:0"></div>
+          <input type="text" class="hc-sub-add-input" placeholder="${UI.t('pomo_add_sub_ph')}"
+            onkeydown="PomodoroPage._subAddKeydown('${t.id}',this,event)">
+          <button class="hc-del hc-edit-btn" data-tooltip="${UI.t('btn_add')}"
+            onclick="event.stopPropagation();PomodoroPage._subAddSave('${t.id}',this.previousElementSibling)">
+            <svg data-lucide="plus" style="width:0.75rem;height:0.75rem"></svg>
+          </button>
+        </div>`;
+      return `<div id="subtasks-${t.id}" style="display:${isOpen ? '' : 'none'}">${rows}${addRow}</div>`;
     };
 
     const row = (t, isCompleted) => {
@@ -2045,16 +2114,26 @@
     // Spacer: panel fixed olduğunda layout'u etkilemez — her zaman gizli
     if (spacer) spacer.style.display = 'none';
 
-    const header = isFS
-      ? `<div style="font-size:0.625rem;font-weight:700;color:var(--text-muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:0.625rem;padding:0 2px">${UI.t('pomo_subtasks_header')}</div>`
-      : '';
+    const header = `<div style="font-size:0.625rem;font-weight:700;color:var(--text-muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:0.625rem;padding:0 2px">${UI.t('pomo_subtasks_header')}</div>`;
 
     panel.innerHTML = header + subs.map((s, i) => `
-      <div class="pomo-fsub"
-        ${isFS ? `style="animation-delay:${i * 70}ms"` : ''}
-        onclick="PomodoroPage.toggleFocusSubtask('${s.id}','${taskId}')">
-        ${CheckboxCore.html({ done: s.done, type: 'sm', color: 'var(--accent)', extraClass: 'pomo-fsub-cb' })}
-        <span class="pomo-fsub-text${s.done ? ' done' : ''}">${s.text}</span>
+      <div class="pomo-fsub" data-sub-id="${s.id}"
+        ${isFS ? `style="animation-delay:${i * 70}ms"` : ''}>
+        <div style="flex-shrink:0" onclick="event.stopPropagation();PomodoroPage.toggleFocusSubtask('${s.id}','${taskId}')">
+          ${CheckboxCore.html({ done: s.done, type: 'sm', color: 'var(--accent)', extraClass: 'pomo-fsub-cb' })}
+        </div>
+        <span class="pomo-fsub-text${s.done ? ' done' : ''}"
+          onclick="PomodoroPage.toggleFocusSubtask('${s.id}','${taskId}')">${s.text}</span>
+        <div class="pomo-fsub-actions">
+          <button class="pomo-fsub-action-btn" data-tooltip="Düzenle"
+            onclick="event.stopPropagation();PomodoroPage._focusSubEdit('${s.id}','${taskId}')">
+            <svg data-lucide="pencil" style="width:0.6875rem;height:0.6875rem"></svg>
+          </button>
+          <button class="pomo-fsub-action-btn pomo-fsub-del-btn" data-tooltip="Sil"
+            onclick="event.stopPropagation();PomodoroPage._focusSubDelete('${s.id}','${taskId}')">
+            <svg data-lucide="trash-2" style="width:0.6875rem;height:0.6875rem"></svg>
+          </button>
+        </div>
       </div>`).join('');
 
     lucide.createIcons({ nodes: [panel] });
@@ -2069,6 +2148,138 @@
     Store.set('habits_todos', data);
     this._renderSubtaskPanel();
     this.renderTodoList();
+  },
+
+  _todoSubEdit(todoId, subId) {
+    const container = document.getElementById(`subtasks-${todoId}`);
+    const row  = container?.querySelector(`[data-sub-id="${subId}"]`);
+    const span = row?.querySelector('span');
+    if (!span) return;
+    const origText = span.textContent;
+
+    const ta = document.createElement('textarea');
+    ta.style.cssText = 'flex:1;background:var(--bg-base);border:1px solid var(--accent);border-radius:0.25rem;padding:0.125rem 0.375rem;font-size:0.8125rem;color:var(--text-primary);resize:none;overflow:hidden;line-height:1.45;font-family:inherit;outline:none';
+    ta.value = origText;
+    ta.rows  = 1;
+
+    const _resize = () => { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; };
+
+    const _cancel = () => { span.style.display = ''; ta.remove(); };
+
+    const _save = () => {
+      const newText = ta.value.trim();
+      ta.removeEventListener('blur', _save);
+      if (!newText || newText === origText) { _cancel(); return; }
+      const d = Store.get('habits_todos') || { items: [] };
+      const t = d.items.find(x => x.id === todoId);
+      if (t?.subtasks) {
+        const s = t.subtasks.find(x => x.id === subId);
+        if (s) s.text = newText;
+        Store.set('habits_todos', d);
+      }
+      this.renderTodoList();
+      this._renderSubtaskPanel();
+    };
+
+    span.style.display = 'none';
+    span.after(ta);
+    _resize();
+    ta.focus();
+    ta.select();
+    ta.addEventListener('input', _resize);
+    ta.addEventListener('blur', _save);
+    ta.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ta.blur(); }
+      if (e.key === 'Escape') { e.preventDefault(); _cancel(); }
+    });
+  },
+
+  _focusSubEdit(subId, taskId) {
+    const panel = document.getElementById('pomo-subtask-panel');
+    if (!panel) return;
+    const row  = panel.querySelector(`[data-sub-id="${subId}"]`);
+    const span = row?.querySelector('.pomo-fsub-text');
+    if (!span) return;
+    const origText = span.textContent;
+
+    const ta = document.createElement('textarea');
+    ta.className = 'pomo-fsub-edit-ta';
+    ta.value = origText;
+    ta.rows  = 1;
+
+    const _resize = () => { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; };
+
+    const _cancel = () => { span.style.display = ''; ta.remove(); };
+
+    const _save = () => {
+      const newText = ta.value.trim();
+      ta.removeEventListener('blur', _save);
+      if (!newText || newText === origText) { _cancel(); return; }
+      const d = Store.get('habits_todos') || { items: [] };
+      const t = d.items.find(x => x.id === taskId);
+      if (t?.subtasks) {
+        const s = t.subtasks.find(x => x.id === subId);
+        if (s) s.text = newText;
+        Store.set('habits_todos', d);
+      }
+      this._renderSubtaskPanel();
+      this.renderTodoList();
+    };
+
+    span.style.display = 'none';
+    span.after(ta);
+    _resize();
+    ta.focus();
+    ta.select();
+    ta.addEventListener('input', _resize);
+    ta.addEventListener('blur', _save);
+    ta.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ta.blur(); }
+      if (e.key === 'Escape') { e.preventDefault(); _cancel(); }
+    });
+  },
+
+  _focusSubDelete(subId, taskId) {
+    const d    = Store.get('habits_todos') || { items: [] };
+    const todo = d.items.find(t => t.id === taskId);
+    const sub  = todo?.subtasks?.find(s => s.id === subId);
+    if (!sub) return;
+    DeleteManager.confirm({
+      module:       'todo_sub',
+      title:        UI.t('btn_delete'),
+      message:      `"${sub.text}"`,
+      confirmLabel: UI.t('btn_delete'),
+      onConfirm: () => {
+        const d2    = Store.get('habits_todos') || { items: [] };
+        const todo2 = d2.items.find(t => t.id === taskId);
+        if (todo2?.subtasks) {
+          todo2.subtasks = todo2.subtasks.filter(s => s.id !== subId);
+          Store.set('habits_todos', d2);
+        }
+        this._renderSubtaskPanel();
+        this.renderTodoList();
+      },
+    });
+  },
+
+  _subAddKeydown(todoId, input, e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this._subAddSave(todoId, input); }
+    if (e.key === 'Escape') { input.value = ''; }
+  },
+
+  _subAddSave(todoId, input) {
+    const text = input.value.trim();
+    if (!text) { input.focus(); return; }
+    const data = Store.get('habits_todos') || { items: [] };
+    const todo = data.items.find(t => t.id === todoId);
+    if (!todo) return;
+    if (!todo.subtasks) todo.subtasks = [];
+    todo.subtasks.push({ id: Store._id(), text, done: false });
+    Store.set('habits_todos', data);
+    this.renderTodoList();
+    this._renderSubtaskPanel();
+    const newInput = document.querySelector(`#subtasks-${todoId} .hc-sub-add-input`);
+    if (newInput) newInput.focus();
   },
 
   // Bitir'e basıldığında kalan alt görevleri otomatik işaretle

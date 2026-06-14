@@ -589,6 +589,25 @@
       ]});
       this.set('pomo_seeded', true);
     }
+
+    // ── Todos seed ────────────────────────────────────────────────
+    if (!this.get('todos_seeded') && !(this.get('habits_todos') || { items: [] }).items.length) {
+      const tk   = T.todos;
+      const cats = ['Çalışma', 'Öğrenme', 'Egzersiz'];
+      const pomos = [2, 1, null];
+      this.set('habits_todos', { items: tk.map((text, i) => ({
+        id:          this._id(),
+        text,
+        date:        ago(0),
+        done:        false,
+        pomodoros:   pomos[i],
+        pomoDone:    0,
+        category:    cats[i],
+        note:        null,
+        subtasks:    [],
+      }))});
+      this.set('todos_seeded', true);
+    }
   },
 
   // Updates text fields of still-seeded modules in-place when language changes.
@@ -678,6 +697,12 @@
         this.setGymTemplates(tmpl);
       }
     }
+
+    if (this.get('todos_seeded')) {
+      const todosData = this.get('habits_todos') || { items: [] };
+      T.todos.forEach((text, i) => { if (todosData.items[i]) todosData.items[i].text = text; });
+      this.set('habits_todos', todosData);
+    }
   }
 };
 
@@ -718,6 +743,7 @@ const _SEED_TEXTS = {
     },
     pomo: ['Main Project','JavaScript','Main Project','Learning','Algorithms','Main Project','Data Structures','Main Project','Side Project','Side Project'],
     gym:  { n:['Great session, PR on bench!','Pull day — felt strong on rows.','Leg day — pushed hard on squats.','Morning run — steady pace.','','Deadlift focus.','AMRAP 20min — brutal.','Long easy run.','','Yoga + mobility work.','','Heavy leg day.'], tn:['Push Day','Pull Day','Leg Day','Cardio Run'] },
+    todos: ['Main Project Research','JavaScript Practice','Evening Run'],
   },
   tr: {
     time: [
@@ -748,6 +774,7 @@ const _SEED_TEXTS = {
     },
     pomo: ['Ana Proje','JavaScript','Ana Proje','Öğrenme','Algoritmalar','Ana Proje','Veri Yapıları','Ana Proje','Yan Proje','Yan Proje'],
     gym:  { n:['Harika seans, bench\'te PR kırdım!','Çekiş günü — sırtta güçlü hissettim.','Bacak günü — squatta çok zorladım.','Sabah koşusu — sabit tempo.','','Deadlift odaklı seans.','AMRAP 20dk — çok zordu.','Uzun ve rahat koşu.','','Yoga + mobilite çalışması.','','Ağır bacak günü.'], tn:['İtme Günü','Çekme Günü','Bacak Günü','Kardiyo Koşusu'] },
+    todos: ['Ana Proje Araştırma','JavaScript Pratik','Akşam Koşusu'],
   },
   zh: {
     time: [
@@ -778,6 +805,7 @@ const _SEED_TEXTS = {
     },
     pomo: ['主项目','JavaScript','主项目','学习','算法','主项目','数据结构','主项目','副项目','副项目'],
     gym:  { n:['超棒的训练，卧推创个人记录！','背部训练日 — 划船感觉很强。','腿部训练日 — 深蹲全力以赴。','晨跑 — 稳定配速。','','硬拉专项训练。','AMRAP 20分钟 — 非常艰苦。','长距离轻松跑。','','瑜伽 + 灵活性训练。','','重量腿部训练日。'], tn:['推举日','拉力日','腿部日','有氧跑步'] },
+    todos: ['主项目研究','JavaScript练习','傍晚跑步'],
   },
   es: {
     time: [
@@ -808,6 +836,7 @@ const _SEED_TEXTS = {
     },
     pomo: ['Proyecto Principal','JavaScript','Proyecto Principal','Aprendizaje','Algoritmos','Proyecto Principal','Estructuras de Datos','Proyecto Principal','Proyecto Secundario','Proyecto Secundario'],
     gym:  { n:['¡Gran sesión, PR en press banca!','Día de jalones — me sentí fuerte en los remos.','Día de piernas — me esforcé en sentadillas.','Carrera matutina — ritmo constante.','','Enfoque en peso muerto.','AMRAP 20min — brutal.','Carrera larga y suave.','','Yoga + trabajo de movilidad.','','Día de piernas pesado.'], tn:['Día de Empuje','Día de Jalón','Día de Piernas','Carrera Cardio'] },
+    todos: ['Investigación Proyecto Principal','Práctica JavaScript','Carrera Vespertina'],
   },
   fr: {
     time: [
@@ -838,6 +867,7 @@ const _SEED_TEXTS = {
     },
     pomo: ['Projet Principal','JavaScript','Projet Principal','Apprentissage','Algorithmes','Projet Principal','Structures de Données','Projet Principal','Projet Secondaire','Projet Secondaire'],
     gym:  { n:['Super séance, PR au développé couché !','Jour tirage — me suis senti fort aux rowing.','Jour jambes — me suis poussé dur au squat.','Course matinale — allure régulière.','','Focus soulevé de terre.','AMRAP 20min — brutal.','Longue course facile.','','Yoga + travail de mobilité.','','Jour jambes lourd.'], tn:['Jour Poussée','Jour Tirage','Jour Jambes','Course Cardio'] },
+    todos: ['Recherche Projet Principal','Pratique JavaScript','Course du Soir'],
   },
 };
 

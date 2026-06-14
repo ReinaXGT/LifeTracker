@@ -452,26 +452,26 @@ const Dashboard = {
           </div>`).join('')}
       </div>` : ''}
 
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);border-radius:var(--radius-sm);overflow:hidden">
-        <div style="background:var(--bg-elevated);display:flex;align-items:center;gap:0.625rem;padding:0.6875rem 0.875rem">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border)">
+        <div style="background:var(--bg-elevated);display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.75rem 0.5rem;border-right:1px solid var(--border)">
           <svg data-lucide="timer" style="width:0.9375rem;height:0.9375rem;color:var(--accent);flex-shrink:0"></svg>
-          <div>
+          <div style="text-align:center">
             <div style="font-family:var(--font-mono);font-size:0.9375rem;font-weight:700;color:${kpi.sessionCount > 0 ? 'var(--accent)' : 'var(--text-muted)'};line-height:1">${kpi.sessionCount > 0 ? UI.t('pomo_sessions_n', kpi.sessionCount) : '—'}</div>
-            <div style="font-size:0.625rem;color:var(--text-muted);margin-top:0.1875rem;text-transform:uppercase;letter-spacing:0.05em">${UI.t('pomo_kpi_today')}</div>
+            <div style="font-size:0.625rem;color:var(--text-muted);margin-top:0.25rem;text-transform:uppercase;letter-spacing:0.05em">${UI.t('pomo_kpi_today')}</div>
           </div>
         </div>
-        <div style="background:var(--bg-elevated);display:flex;align-items:center;gap:0.625rem;padding:0.6875rem 0.875rem">
+        <div style="background:var(--bg-elevated);display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.75rem 0.5rem;border-right:1px solid var(--border)">
           <svg data-lucide="clock" style="width:0.9375rem;height:0.9375rem;color:var(--green);flex-shrink:0"></svg>
-          <div>
+          <div style="text-align:center">
             <div style="font-family:var(--font-mono);font-size:0.9375rem;font-weight:700;color:${kpi.flowMins > 0 ? 'var(--green)' : 'var(--text-muted)'};line-height:1">${kpi.flowMins > 0 ? UI.fmtMinutes(kpi.flowMins) : '—'}</div>
-            <div style="font-size:0.625rem;color:var(--text-muted);margin-top:0.1875rem;text-transform:uppercase;letter-spacing:0.05em">${UI.t('pomo_kpi_flow')}</div>
+            <div style="font-size:0.625rem;color:var(--text-muted);margin-top:0.25rem;text-transform:uppercase;letter-spacing:0.05em">${UI.t('pomo_kpi_flow')}</div>
           </div>
         </div>
-        <div style="background:var(--bg-elevated);display:flex;align-items:center;gap:0.625rem;padding:0.6875rem 0.875rem">
+        <div style="background:var(--bg-elevated);display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.75rem 0.5rem">
           <svg data-lucide="flame" style="width:0.9375rem;height:0.9375rem;color:var(--yellow);flex-shrink:0"></svg>
-          <div>
+          <div style="text-align:center">
             <div style="font-family:var(--font-mono);font-size:0.9375rem;font-weight:700;color:${kpi.streak > 0 ? 'var(--yellow)' : 'var(--text-muted)'};line-height:1">${kpi.streak > 0 ? UI.t('dash_focus_streak_days', kpi.streak) : '—'}</div>
-            <div style="font-size:0.625rem;color:var(--text-muted);margin-top:0.1875rem;text-transform:uppercase;letter-spacing:0.05em">${UI.t('dash_focus_streak')}</div>
+            <div style="font-size:0.625rem;color:var(--text-muted);margin-top:0.25rem;text-transform:uppercase;letter-spacing:0.05em">${UI.t('dash_focus_streak')}</div>
           </div>
         </div>
       </div>
