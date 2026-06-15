@@ -30,6 +30,11 @@
   _deleteFlagModal:    null,
   _finishHandled:      false,
   _finishModal:        null,
+  _cdH:           0,      // Countdown picker — saat
+  _cdM:           0,      // Countdown picker — dakika
+  _cdS:           0,      // Countdown picker — saniye
+  _cdPickerActive: false,
+  _cdHandlers:    null,
 
   _fmtSecs(s) {
     s = Math.round(s);
@@ -42,10 +47,9 @@
 
   get cfg() {
     return {
-      work:      (parseInt(document.getElementById('pomoWorkDur')?.value)      || 25) * 60,
-      short:     (parseInt(document.getElementById('pomoShortDur')?.value)     || 5)  * 60,
-      long:      (parseInt(document.getElementById('pomoLongDur')?.value)      || 15) * 60,
-      countdown: (parseInt(document.getElementById('pomoCountdownDur')?.value) || 25) * 60,
+      work:  (parseInt(document.getElementById('pomoWorkDur')?.value)  || 25) * 60,
+      short: (parseInt(document.getElementById('pomoShortDur')?.value) || 5)  * 60,
+      long:  (parseInt(document.getElementById('pomoLongDur')?.value)  || 15) * 60,
     };
   },
 
@@ -53,12 +57,13 @@
     const prev = (Store.get('pomo_cfg') || {}).work || 25;
     const next = parseInt(document.getElementById('pomoWorkDur')?.value) || 25;
     Store.set('pomo_cfg', {
-      work:      next,
-      short:     parseInt(document.getElementById('pomoShortDur')?.value)     || 5,
-      long:      parseInt(document.getElementById('pomoLongDur')?.value)      || 15,
-      countdown: parseInt(document.getElementById('pomoCountdownDur')?.value) || 25,
+      work:  next,
+      short: parseInt(document.getElementById('pomoShortDur')?.value) || 5,
+      long:  parseInt(document.getElementById('pomoLongDur')?.value)  || 15,
+      cdH: this._cdH,
+      cdM: this._cdM,
+      cdS: this._cdS,
     });
-    // Work süresi değişince tüm görevlerin pomoDone'unu yeni süreye göre yeniden hesapla
     if (prev !== next) Store.syncAllTaskProgress();
   },
 
@@ -66,16 +71,25 @@
     const c = Store.get('pomo_cfg');
     if (!c) return;
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
-    if (c.work)      set('pomoWorkDur',      c.work);
-    if (c.short)     set('pomoShortDur',     c.short);
-    if (c.long)      set('pomoLongDur',      c.long);
-    if (c.countdown) set('pomoCountdownDur', c.countdown);
+    if (c.work)  set('pomoWorkDur',  c.work);
+    if (c.short) set('pomoShortDur', c.short);
+    if (c.long)  set('pomoLongDur',  c.long);
+    // Countdown picker state
+    if (c.cdH !== undefined || c.cdM !== undefined || c.cdS !== undefined) {
+      this._cdH = c.cdH || 0;
+      this._cdM = c.cdM || 0;
+      this._cdS = c.cdS || 0;
+    }
     this._syncFsKpiToggle();
+  },
+
+  _getCdSecs() {
+    return this._cdH * 3600 + this._cdM * 60 + this._cdS;
   },
 
   _initialTime() {
     if (this.timerType === 'flow')      return 0;
-    if (this.timerType === 'countdown') return this.cfg.countdown;
+    if (this.timerType === 'countdown') return this._getCdSecs();
     return this.cfg[this.mode];
   },
 
@@ -202,6 +216,11 @@
     const active = document.getElementById('pomo-active-task');
     this._activeTaskId   = this._restoredTaskId;
     this._activeTaskText = this._restoredTaskText;
+    // Loglardan güncel sayacı yeniden hesapla (F5 sonrası veya gün geçişi için)
+    if (this._taskPomosTotal !== null) {
+      const pomoDone = Store.calcTaskPomodoros(this._activeTaskId, this._activeTaskText);
+      this._taskPomosRemaining = Math.round((this._taskPomosTotal - pomoDone) * 1000) / 1000;
+    }
     this._updateTaskTrigger();
     wrap.classList.add('task-hidden');
     active.textContent = this._restoredTaskText;
@@ -235,13 +254,22 @@
       start.style.minWidth = '180px';
       start.style.fontSize = '15px';
       start.style.padding  = '12px 32px';
+      if (this.timerType === 'countdown') {
+        this._cdH = this._cdM = this._cdS = 0; // Her idle'da temiz başla
+        this.timeLeft = 0;
+        this._renderCountdownPicker();
+      } else {
+        this._destroyCountdownPicker();
+      }
     } else if (state === 'running') {
+      this._destroyCountdownPicker();
       show(pause);
       show(flag);
       show(reset);
       if (this._overtime) show(finish);
       if (minLabel) minLabel.style.display = '';
     } else if (state === 'paused') {
+      this._destroyCountdownPicker();
       show(finish);
       show(start);
       start.innerHTML = `<svg data-lucide="play" style="width:1.0625rem;height:1.0625rem"></svg> ${UI.t('pomo_resume')}`;
@@ -253,6 +281,90 @@
     }
 
     lucide.createIcons({ nodes: [document.getElementById('pomo-btn-row')] });
+  },
+
+  // ── Countdown scroll picker ──────────────────────────────────
+  _updatePickerRing() {
+    const ring = document.getElementById('pomoRing');
+    if (!ring) return;
+    const secs = this._getCdSecs();
+    const offset = secs > 0 ? 0 : this.C;
+    ring.style.transition = 'stroke-dashoffset .3s ease';
+    ring.style.strokeDashoffset = offset;
+  },
+
+  _renderCountdownPicker() {
+    if (this._cdPickerActive) return;
+    this._cdPickerActive = true;
+    const el = document.getElementById('pomoTime');
+    if (!el) return;
+    el.style.fontSize = '';
+    const pad = n => String(n).padStart(2, '0');
+    el.innerHTML = `<div class="pomo-cd-picker">
+      <span class="pomo-cd-seg" data-unit="h" tabindex="0">${pad(this._cdH)}</span>
+      <span class="pomo-cd-colon">:</span>
+      <span class="pomo-cd-seg" data-unit="m" tabindex="0">${pad(this._cdM)}</span>
+      <span class="pomo-cd-colon">:</span>
+      <span class="pomo-cd-seg" data-unit="s" tabindex="0">${pad(this._cdS)}</span>
+    </div>`;
+    this._updatePickerRing();
+    this._cdHandlers = [];
+    el.querySelectorAll('.pomo-cd-seg').forEach(seg => {
+      const unit = seg.dataset.unit;
+      const wrap = n => unit === 'h' ? (n + 24) % 24 : (n + 60) % 60;
+      const getVal = () => unit === 'h' ? this._cdH : unit === 'm' ? this._cdM : this._cdS;
+      const setVal = v => { if (unit === 'h') this._cdH = v; else if (unit === 'm') this._cdM = v; else this._cdS = v; };
+      const change = delta => { setVal(wrap(getVal() + delta)); seg.textContent = String(getVal()).padStart(2, '0'); this._updatePickerRing(); };
+
+      const onWheel = e => { e.preventDefault(); change(e.deltaY > 0 ? -1 : 1); };
+
+      let _dy = 0, _acc = 0, _moving = false;
+      const onMouseDown = e => {
+        e.preventDefault();
+        _dy = e.clientY; _acc = 0; _moving = true;
+        seg.classList.add('pomo-cd-active');
+        const onMove = me => {
+          if (!_moving) return;
+          _acc += me.clientY - _dy; _dy = me.clientY;
+          const steps = Math.floor(_acc / 10);
+          if (steps) { change(-steps); _acc -= steps * 10; }
+        };
+        const onUp = () => {
+          _moving = false;
+          seg.classList.remove('pomo-cd-active');
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+        };
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+      };
+
+      const onKeyDown = e => {
+        if (e.key === 'ArrowUp')   { e.preventDefault(); change(1); }
+        if (e.key === 'ArrowDown') { e.preventDefault(); change(-1); }
+      };
+
+      seg.addEventListener('wheel', onWheel, { passive: false });
+      seg.addEventListener('mousedown', onMouseDown);
+      seg.addEventListener('keydown', onKeyDown);
+      this._cdHandlers.push({ el: seg, onWheel, onMouseDown, onKeyDown });
+    });
+  },
+
+  _destroyCountdownPicker() {
+    if (!this._cdPickerActive) return;
+    this._cdPickerActive = false;
+    if (this._cdHandlers) {
+      this._cdHandlers.forEach(({ el, onWheel, onMouseDown, onKeyDown }) => {
+        el.removeEventListener('wheel', onWheel);
+        el.removeEventListener('mousedown', onMouseDown);
+        el.removeEventListener('keydown', onKeyDown);
+      });
+      this._cdHandlers = null;
+    }
+    // içeriği _updateDisplay temizleyecek; burada boşaltırsak flicker olur
+    const el = document.getElementById('pomoTime');
+    if (el) el.innerHTML = '';
   },
 
   // ── Init ─────────────────────────────────────────────────────
@@ -344,6 +456,16 @@
       }
     });
 
+    // Zaman logu eklenince/silinince (başka sayfa veya manuel kayıt dahil) sayacı güncelle
+    document.addEventListener('lt:pomo-kpi-change', () => {
+      if (this._taskPomosTotal !== null && this._activeTaskId && !this.running) {
+        const pomoDone = Store.calcTaskPomodoros(this._activeTaskId, this._activeTaskText);
+        this._taskPomosRemaining = Math.round((this._taskPomosTotal - pomoDone) * 1000) / 1000;
+        this._updatePomosCounter();
+        this.renderTodoList();
+      }
+    });
+
 
     document.getElementById('pomoStart' ).addEventListener('click', () => this.toggleStart());
     document.getElementById('pomoPause' ).addEventListener('click', () => this.pause());
@@ -383,7 +505,7 @@
 
     document.getElementById('pomoTaskSelect').addEventListener('change', () => this._onTaskChange());
 
-    ['pomoWorkDur', 'pomoShortDur', 'pomoLongDur', 'pomoCountdownDur'].forEach(id => {
+    ['pomoWorkDur', 'pomoShortDur', 'pomoLongDur'].forEach(id => {
       document.getElementById(id)?.addEventListener('change', () => {
         this._saveCfg();
         if (!this.running) {
@@ -420,7 +542,7 @@
     if (this._taskPomosTotal !== null) {
       const done  = Math.round((this._taskPomosTotal - (this._taskPomosRemaining || 0)) * 10) / 10;
       const total = this._taskPomosTotal;
-      el.textContent = `🍅 ${done} / ${total}`;
+      el.innerHTML = `🍅 <span style="color:var(--green);font-weight:700">${done}</span><span style="color:var(--text-muted)"> / ${total}</span>`;
       el.style.display = '';
     } else {
       el.style.display = 'none';
@@ -442,14 +564,13 @@
       const pomCount = parseFloat(opt?.dataset.pomodoros);
       const durMins  = parseInt(opt?.dataset.duration);
       if (!isNaN(pomCount) && pomCount > 0 && this.timerType === 'pomodoro' && this.mode === 'work') {
-        // Pomodoro tabanlı: timer'ı kesirli pomodoro sayısına göre ayarla
+        // Pomodoro tabanlı: mevcut log ilerlemesini her zaman oku (çalışıyor olsun ya da olmasın)
         this._taskPomosTotal = pomCount;
+        const pomoDoneFromLogs = Store.calcTaskPomodoros(this._activeTaskId, taskText);
+        this._taskPomosRemaining = Math.round((pomCount - pomoDoneFromLogs) * 1000) / 1000;
         if (!this.running) {
-          this._taskPomosRemaining = pomCount;
           this._applyTaskPomoSession();
         } else {
-          const pomoDoneFromLogs = Store.calcTaskPomodoros(this._activeTaskId, taskText);
-          this._taskPomosRemaining = Math.round((pomCount - pomoDoneFromLogs) * 1000) / 1000;
           this._taskPomoCurrent = 0;
         }
         this._updatePomosCounter();
@@ -728,6 +849,7 @@
 
   _doSetTimerType(type) {
     if (this.running) this._stopAndSave();
+    this._destroyCountdownPicker();
     this.timerType   = type;
     this._flowSaved  = false;
     this._laps       = [];
@@ -779,6 +901,16 @@
       this._startTimer();
       this._showButtons('running');
       return;
+    }
+    // Countdown picker aktifken: picker değerlerini oku, picker'ı kapat
+    if (this.timerType === 'countdown' && this._cdPickerActive) {
+      const secs = this._getCdSecs();
+      if (secs <= 0) return; // 00:00:00 — başlatma
+      this.timeLeft    = secs;
+      this._sessionDur = secs;
+      this._destroyCountdownPicker();
+      this._updateDisplay(true); // anında göster — flicker önleme
+      this._saveCfg();
     }
     if (this.timerType !== 'flow' && this.timeLeft <= 0) this.timeLeft = this._initialTime();
     if (this.timerType === 'flow' && this.timeLeft === 0) this._flowSaved = false;
@@ -948,7 +1080,6 @@
     this.timeLeft = this._initialTime();
     this._updateDisplay(true);
     this._showButtons('idle');
-    this._resetTaskUI();
     Store.set('pomo_state', null);
     document.title = UI.pageTitle();
   },
@@ -959,7 +1090,22 @@
   },
 
   _showFinishModal() {
-    const timeDisplay = document.getElementById('pomoTime')?.textContent?.trim() || '';
+    // Kaydedilecek süre: geçen süre (kalan değil)
+    let elapsedSecs;
+    if (this._overtime) {
+      elapsedSecs = (this._sessionDur || 0) + (this._overtimeSecs || 0);
+    } else if (this.timerType === 'flow') {
+      elapsedSecs = this.timeLeft;
+    } else {
+      elapsedSecs = Math.max(0, (this._sessionDur || 0) - this.timeLeft);
+    }
+    elapsedSecs = Math.round(elapsedSecs);
+    const _eh = Math.floor(elapsedSecs / 3600);
+    const _em = Math.floor((elapsedSecs % 3600) / 60);
+    const _es = elapsedSecs % 60;
+    const timeDisplay = _eh > 0
+      ? `${String(_eh).padStart(2,'0')}:${String(_em).padStart(2,'0')}:${String(_es).padStart(2,'0')}`
+      : `${String(_em).padStart(2,'0')}:${String(_es).padStart(2,'0')}`;
     const hasLaps  = this._laps.length > 0;
     const lastLap  = hasLaps ? this._laps[this._laps.length - 1] : null;
     const flagFmt  = lastLap ? this._fmtSecs(lastLap.elapsed) : '';
@@ -1039,24 +1185,33 @@
       this._renderDots();
     }
 
-    // Pomodoro sayacını güncelle — bu oturumda kaç pomodoro tamamlandı?
-    const sessionPomos = this._taskPomoCurrent;
-    if (this._taskPomosRemaining !== null && sessionPomos > 0) {
-      this._taskPomosRemaining = this._taskPomosRemaining - sessionPomos;
+    // Pomodoro sayacını güncelle
+    if (this.timerType === 'pomodoro' && this._taskPomosTotal !== null && taskId) {
+      // Oturum az önce loglara kaydedildi — logdan yeniden hesapla (flag kaynaklı double-count önlenir)
+      const pomoDone = Store.calcTaskPomodoros(taskId, taskText);
+      this._taskPomosRemaining = Math.round((this._taskPomosTotal - pomoDone) * 1000) / 1000;
       this._taskPomoCurrent    = 0;
-    }
-
-    if (taskId) {
-      if (sessionPomos > 0) {
-        this._incrementTaskPomoDone(taskId, durationMin, sessionPomos);
-      }
-      if (this._taskPomosRemaining === null && sessionPomos === 0) {
-        // Pomodoro takibi yok (dakika tabanlı veya takipsiz) — finish her zaman tamamlar
-        this._checkAllFocusSubtasks();
-        this._markTaskDone(taskId, durationMin);
-      }
+      if (elapsed > 0) this._incrementTaskPomoDone(taskId, durationMin, 0);
       this._loadTasks();
       this.renderTodoList();
+    } else {
+      const sessionPomos = this._taskPomoCurrent;
+      if (this._taskPomosRemaining !== null && sessionPomos > 0) {
+        this._taskPomosRemaining = this._taskPomosRemaining - sessionPomos;
+        this._taskPomoCurrent    = 0;
+      }
+      if (taskId) {
+        if (sessionPomos > 0) {
+          this._incrementTaskPomoDone(taskId, durationMin, sessionPomos);
+        }
+        if (this._taskPomosRemaining === null && sessionPomos === 0) {
+          // Pomodoro takibi yok (dakika tabanlı veya takipsiz) — finish her zaman tamamlar
+          this._checkAllFocusSubtasks();
+          this._markTaskDone(taskId, durationMin);
+        }
+        this._loadTasks();
+        this.renderTodoList();
+      }
     }
 
     // Overtime bitişinde otomatik molaya geç
@@ -1172,35 +1327,40 @@
     const taskText = this._activeTaskText || '';
     const now       = new Date();
     const completedAt = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-    const durationMin = Math.round(this._sessionDur / 60) || 1;
+    const durationMin = (this._sessionDur || 0) / 60;
 
     if (this.timerType === 'countdown') {
-      Store.addPomoSession({ date: UI.today(), mode: 'countdown', task: taskText, duration: durationMin, completedAt });
-      this._autoLogTime(durationMin, completedAt, UI.today(), 'countdown');
-      if (taskId2) {
-        if (this._taskPomosRemaining !== null) {
-          const _cdDoneFromLogs = Store.calcTaskPomodoros(taskId2, taskText);
-          this._taskPomosRemaining = Math.round((this._taskPomosTotal - _cdDoneFromLogs) * 1000) / 1000;
-          this._taskPomoCurrent = 0;
-        } else {
-          this._checkAllFocusSubtasks(); this._markTaskDone(taskId2, durationMin);
+      this._playAlarm();
+      // Alarm çalarken 2.5sn bekle, sonra sıfırla
+      setTimeout(() => {
+        Store.addPomoSession({ date: UI.today(), mode: 'countdown', task: taskText, duration: durationMin, completedAt });
+        this._autoLogTime(durationMin, completedAt, UI.today(), 'countdown');
+        if (taskId2) {
+          if (this._taskPomosRemaining !== null) {
+            const _cdDoneFromLogs = Store.calcTaskPomodoros(taskId2, taskText);
+            this._taskPomosRemaining = Math.round((this._taskPomosTotal - _cdDoneFromLogs) * 1000) / 1000;
+            this._taskPomoCurrent = 0;
+          } else {
+            this._checkAllFocusSubtasks(); this._markTaskDone(taskId2, durationMin);
+          }
+          this._loadTasks(); this.renderTodoList();
         }
-        this._loadTasks(); this.renderTodoList();
-      }
-      UI.toast(UI.t('pomo_toast_countdown_done'), 'success');
-      this._showButtons('idle');
-      this.timeLeft = this._initialTime();
-      this._updateDisplay(true);
-      if (this._taskPomosRemaining === null) {
-        this._resetTaskUI();
-      } else {
-        this._updatePomosCounter();
-      }
-      Store.set('pomo_state', null);
-      this.renderKPIs();
-      this._renderDots();
+        UI.toast(UI.t('pomo_toast_countdown_done'), 'success');
+        this._showButtons('idle');
+        this.timeLeft = this._initialTime();
+        this._updateDisplay(true);
+        if (this._taskPomosRemaining === null) {
+          this._resetTaskUI();
+        } else {
+          this._updatePomosCounter();
+        }
+        Store.set('pomo_state', null);
+        this.renderKPIs();
+        this._renderDots();
+      }, 2500);
     } else if (this.mode === 'work') {
-      // Süresi doldu ama kullanıcı hazır değil — overtime başlat
+      // Süresi doldu — alarm çal, overtime başlat
+      this._playAlarm();
       this._overtime = true;
       this._overtimeSecs = 0;
       this.running = true;
@@ -1213,6 +1373,7 @@
       // Do NOT save session or switch mode yet
     } else {
       // Mola bitti
+      this._playAlarm();
       UI.toast(UI.t('pomo_toast_break_done'), 'info');
       this.setMode('work');
       // Görevde kalan pomodoro varsa sonraki oturumu ayarla
@@ -1239,18 +1400,25 @@
     this._laps.push({ elapsed, split, num: this._laps.length + 1, localTime });
     this._renderLaps();
 
-    // Flow / countdown modu + pomodoro takibi: flag split süresi üzerinden sayacı ilerlet
-    if ((this.timerType === 'flow' || this.timerType === 'countdown') && this._taskPomosRemaining !== null && split > 0) {
-      const pomoFraction = Math.round((split / this.cfg.work) * 1000) / 1000;
-      this._taskPomoCurrent    = Math.round((this._taskPomoCurrent + pomoFraction) * 1000) / 1000;
-      this._taskPomosRemaining = Math.round((this._taskPomosRemaining - pomoFraction) * 1000) / 1000;
-      this._updatePomosCounter();
-      // pomoDone'u habits_todos'a yaz ki todo listesi de güncellensin
-      const flagTaskId = this._activeTaskId;
-      if (flagTaskId) {
-        this._incrementTaskPomoDone(flagTaskId, split / 60, pomoFraction);
-        this.renderTodoList();
+    // Tüm modlarda pomodoro takibi varsa sayacı güncelle
+    if (this._taskPomosRemaining !== null && this._taskPomosTotal !== null && split > 0) {
+      if (this.timerType === 'flow' || this.timerType === 'countdown') {
+        // Flow/countdown: doğrudan split fraksiyonunu ekle
+        const pomoFraction = Math.round((split / this.cfg.work) * 1000) / 1000;
+        this._taskPomoCurrent    = Math.round((this._taskPomoCurrent + pomoFraction) * 1000) / 1000;
+        this._taskPomosRemaining = Math.round((this._taskPomosRemaining - pomoFraction) * 1000) / 1000;
+        const flagTaskId = this._activeTaskId;
+        if (flagTaskId) {
+          this._incrementTaskPomoDone(flagTaskId, split / 60, pomoFraction);
+        }
+      } else if (this.timerType === 'pomodoro') {
+        // Pomodoro: log + tüm lapların toplamından yeniden hesapla (double-count önlenir)
+        const fromLogs = Store.calcTaskPomodoros(this._activeTaskId, this._activeTaskText);
+        const fromLaps = Math.round(this._laps.reduce((s, l) => s + l.split / this.cfg.work, 0) * 1000) / 1000;
+        this._taskPomosRemaining = Math.round((this._taskPomosTotal - fromLogs - fromLaps) * 1000) / 1000;
       }
+      this._updatePomosCounter();
+      this.renderTodoList();
       this._saveState();
     }
     // Her flag'de KPI'ı güncelle (akış süresi dahil)
@@ -1260,15 +1428,12 @@
 
   _renderLaps() {
     const el    = document.getElementById('pomo-laps');
-    const fsEl  = document.getElementById('pomo-fs-flags');
     if (!el) return;
     if (!this._laps.length) {
       el.style.display = 'none';
-      if (fsEl) fsEl.style.display = 'none';
       return;
     }
     el.style.display = '';
-    this._renderFsFlags(fsEl);
 
     const _fmt = s => {
       const m = Math.floor(s / 60), sec = s % 60;
@@ -1309,35 +1474,6 @@
           </div>
         </div>`;
       }).join('');
-  },
-
-  _renderFsFlags(fsEl) {
-    if (!fsEl) return;
-    const isFS = document.body.classList.contains('pomo-fullscreen');
-    if (!isFS || !this._laps.length) { fsEl.style.display = 'none'; return; }
-
-    const _fmt = s => { const m = Math.floor(s / 60), sec = s % 60; return `${m}:${String(sec).padStart(2, '0')}`; };
-    const SG = "font-family:'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums;";
-    const last3 = this._laps.slice(-3);
-
-    fsEl.style.display = 'flex';
-    fsEl.innerHTML =
-      `<div style="font-size:0.625rem;font-weight:700;color:var(--text-muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:0.625rem;padding:0 2px">
-        ${UI.t('pomo_btn_flag')} (${this._laps.length})
-       </div>` +
-      last3.map((l, i) => `
-        <div class="pomo-fsub" style="animation-delay:${i * 70}ms">
-          <div style="width:1.125rem;height:1.125rem;border-radius:0.3125rem;border:2px solid #34D399;
-                      display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#34D39918">
-            <svg data-lucide="flag" style="width:0.5625rem;height:0.5625rem;color:#34D399"></svg>
-          </div>
-          <div style="flex:1;display:flex;flex-direction:column;gap:1px">
-            <span style="${SG}font-size:0.8125rem;font-weight:700;color:#34D399">+${_fmt(l.split)}</span>
-            <span style="${SG}font-size:0.75rem;color:var(--text-muted)">#${l.num} — ${_fmt(l.elapsed)}</span>
-          </div>
-        </div>`).join('');
-
-    lucide.createIcons({ nodes: [fsEl] });
   },
 
   // ── Flag silindi: pomo sayacını kalan lap'lardan yeniden hesapla ──
@@ -1436,18 +1572,23 @@
     Store.set('habits_todos', { items });
   },
 
-  // Tamamlanmamış eski tarihli todoları bugüne taşı
+  // Gün geçişi: tamamlananlar silinir; diğerleri bugüne taşınır,
+  // pomodoro sayaçlı olanların sayacı sıfırlanır
   _carryOverTodos() {
-    const td    = UI.today();
-    const items = this._getTodos();
-    let changed = false;
-    items.forEach(t => {
-      if (!t.done && t.date && t.date < td) {
-        t.date  = td;
-        changed = true;
+    const td      = UI.today();
+    const items   = this._getTodos();
+    let   changed = false;
+    const next    = items.filter(t => {
+      if (!t.date || t.date >= td) return true;  // bugünkü veya tarihsiz — dokunma
+      if (t.done) { changed = true; return false; } // tamamlanan → sil
+      t.date = td;
+      if (t.pomodoros != null) {                 // pomodoro sayaçlı → sayacı sıfırla
+        t.pomoDone = 0;
       }
+      changed = true;
+      return true;
     });
-    if (changed) this._saveTodos(items);
+    if (changed) this._saveTodos(next);
   },
 
   _todoFormHTML(mode) {
@@ -1979,7 +2120,7 @@
         }
         if (t.pomodoros) {
           const pd = Math.round((t.pomoDone || 0) * 10) / 10;
-          timeBadge += `<span style="font-size:0.6875rem;font-weight:700;color:var(--green);flex-shrink:0;white-space:nowrap;margin-left:0.25rem">🍅 ${pd}/${t.pomodoros}</span>`;
+          timeBadge += `<span style="font-size:0.6875rem;font-weight:700;color:var(--text-muted);flex-shrink:0;white-space:nowrap;margin-left:0.25rem">🍅 <span style="color:var(--green);font-weight:700">${pd}</span>/${t.pomodoros}</span>`;
         }
       } else {
         if (t.pomodoros) {
@@ -1989,8 +2130,7 @@
           } else {
             pd = Math.round((t.pomoDone || 0) * 10) / 10;
           }
-          const color = pd > 0 ? 'var(--green)' : 'var(--accent)';
-          timeBadge = `<span style="font-size:0.6875rem;font-weight:700;color:${color};flex-shrink:0;white-space:nowrap">🍅 ${pd}/${t.pomodoros}</span>`;
+          timeBadge = `<span style="font-size:0.6875rem;font-weight:700;color:var(--text-muted);flex-shrink:0;white-space:nowrap">🍅 <span style="color:var(--green);font-weight:700">${pd}</span>/${t.pomodoros}</span>`;
         } else if (t.duration) {
           timeBadge = `<span style="font-family:var(--font-mono);font-size:0.6875rem;font-weight:700;color:var(--accent);flex-shrink:0;white-space:nowrap">${t.duration}${UI.t('mins_suffix')}</span>`;
         }
@@ -2111,7 +2251,6 @@
     const isFS = document.body.classList.contains('pomo-fullscreen');
 
     panel.style.display = 'flex';
-    // Spacer: panel fixed olduğunda layout'u etkilemez — her zaman gizli
     if (spacer) spacer.style.display = 'none';
 
     const header = `<div style="font-size:0.625rem;font-weight:700;color:var(--text-muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:0.625rem;padding:0 2px">${UI.t('pomo_subtasks_header')}</div>`;
@@ -2347,6 +2486,7 @@
 
   // ── Display ──────────────────────────────────────────────────
   _updateDisplay(instant = false) {
+    if (this._cdPickerActive) return; // Picker kendi içeriğini yönetir
     const secs = this.timeLeft;
     let ts;
 
@@ -2362,8 +2502,14 @@
         ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
         : `${m}:${String(s).padStart(2, '0')}`;
     } else {
-      const m = Math.floor(secs / 60), s = secs % 60;
-      ts = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      const h = Math.floor(secs / 3600);
+      const m = Math.floor((secs % 3600) / 60);
+      const s = secs % 60;
+      if (this.timerType === 'countdown' && h > 0) {
+        ts = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      } else {
+        ts = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      }
     }
 
     const el = document.getElementById('pomoTime');
@@ -2538,9 +2684,9 @@
           if (item._isPlaceholder) {
             return `<span class="dd-item-label" style="color:var(--text-muted);font-style:italic">${item.label}</span>`;
           }
-          return `<div style="flex:1;min-width:0">` +
+          return `<div style="flex:1;min-width:0;overflow:hidden">` +
             `<div style="font-size:0.8125rem;color:var(--text-muted);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:${isActive ? '600' : '400'}">${item.label}</div>` +
-            (item._meta ? `<div style="font-size:0.6875rem;color:var(--text-muted);margin-top:2px;font-style:normal">${item._meta}</div>` : '') +
+            (item._meta ? `<div style="font-size:0.6875rem;color:var(--text-muted);margin-top:2px;font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item._meta}</div>` : '') +
             `</div>` +
             `<svg class="dd-item-check" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
         },
@@ -2556,7 +2702,6 @@
             PomodoroPage._activateFreeFlow();
           }
         },
-        minWidth: 320,
         maxHeight: 320,
         align: 'left',
         keepOpenOnScroll: true,
@@ -2666,9 +2811,8 @@
       document.exitFullscreen?.().catch(() => {});
     }
 
-    // Subtask ve flags panellerini tam ekran moduna göre yeniden konumlandır
+    // Subtask panelini tam ekran moduna göre yeniden konumlandır
     this._renderSubtaskPanel();
-    this._renderFsFlags(document.getElementById('pomo-fs-flags'));
     this._renderFsKpi();
     this._updateDisplay(true);
   },
@@ -2716,6 +2860,26 @@
         this._settingsPanelParent.insertBefore(panel, this._settingsPanelNext || null);
       }
     }
-  }
+  },
+
+  // ── Alarm sesi (Web Audio API — harici dosya gerekmez) ──────────
+  _playAlarm() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [[0, 880], [0.55, 880], [1.1, 1108]].forEach(([dt, freq]) => {
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        const t = ctx.currentTime + dt;
+        gain.gain.setValueAtTime(0.45, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.9);
+        osc.start(t);
+        osc.stop(t + 0.9);
+      });
+    } catch (_) {}
+  },
 };
 

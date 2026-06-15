@@ -72,6 +72,20 @@ label:hover .cbx:not(.cbx-checked) {
           drop-shadow(0 0 2px var(--cbx-color, var(--accent)));
 }
 
+/* ── Square & sm checked: tick draw animation ── */
+
+.cbx-square.cbx-checked svg polyline,
+.cbx-sm.cbx-checked svg polyline {
+  stroke-dasharray: 32;
+  stroke-dashoffset: 0;
+  animation: cbx-draw 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes cbx-draw {
+  from { stroke-dashoffset: 32; }
+  to   { stroke-dashoffset: 0;  }
+}
+
 /* ── Renk yardımcı sınıfları ── */
 
 .cbx-blue   { --cbx-color: var(--blue); }

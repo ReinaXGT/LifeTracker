@@ -36,7 +36,7 @@ const FocusWidget = (() => {
     const cfg = Store.get('pomo_cfg') || {};
     const modeMap = { work: cfg.work || 25, short: cfg.short || 5, long: cfg.long || 15 };
     const cfgSec  = state.timerType === 'countdown'
-      ? (cfg.countdown || 25) * 60
+      ? ((cfg.cdH || 0) * 3600 + (cfg.cdM || 0) * 60 + (cfg.cdS || 0)) || 1
       : (modeMap[state.mode] || 25) * 60;
     return state.timeLeft >= cfgSec;
   }

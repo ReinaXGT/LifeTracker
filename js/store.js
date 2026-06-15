@@ -59,9 +59,9 @@
       ? (this.get('habits_todos') || { items: [] }).items.find(t => t.id === taskId)?.date ?? null
       : null;
     const logs = this.getTime().logs.filter(l =>
-      (l.taskId && l.taskId === taskId) ||
-      (!l.taskId && l.source === 'pomodoro' && l.project === taskText &&
-        (!taskDate || l.date === taskDate))
+      ((l.taskId && l.taskId === taskId) ||
+       (!l.taskId && l.source === 'pomodoro' && l.project === taskText)) &&
+      (!taskDate || l.date === taskDate)
     );
     return Math.round(logs.reduce((s, l) => s + (l.duration || 0), 0) / workMin * 1000) / 1000;
   },
