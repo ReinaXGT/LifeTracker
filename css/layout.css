@@ -77,14 +77,14 @@ body {
   background: none;
   border: none;
   cursor: pointer;
-  width: 34px; height: 34px;
+  width: 32px; height: 32px;
   border-radius: var(--radius-sm);
-  color: var(--text-secondary);
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   justify-content: center;
   transition: background var(--transition-fast), color var(--transition-fast);
-  align-self: center;
+  margin-left: auto;
 }
 .sidebar-toggle-btn:hover { background: var(--bg-elevated); color: var(--text-primary); }
 .sidebar-toggle-btn svg { width: 15px; height: 15px; }
@@ -377,8 +377,10 @@ body {
   flex: none;
 }
 
+/* Collapsed: hamburger goes above the logo icon */
 .sidebar.collapsed .sidebar-toggle-btn {
   order: -1;
+  margin-left: 0;
   align-self: center;
 }
 
@@ -415,6 +417,7 @@ body {
   flex: 0 0 auto;
   width: 100%;
 }
+
 
 /* ── MAIN ───────────────────────────────────────────────── */
 .main-content {

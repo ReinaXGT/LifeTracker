@@ -5,6 +5,22 @@ Format: **New** · **Fixed** · **Changed** · **Removed**
 
 ---
 
+## [v1.6] — 2026-06-16
+
+### New
+- **Theme-aware favicon** — the browser tab icon updates its stroke color to match the active theme's `--accent` on every theme switch; implemented via a Blob URL SVG regenerated at runtime (no external file needed)
+- **Sidebar hamburger button restored** — the `☰` (menu) toggle button is back in the sidebar logo area, to the right of the logo text; when the sidebar is collapsed it appears above the logo icon (`order: -1`) so it remains always reachable
+- **FOUC prevention** — an inline `<script>` at the top of every HTML page reads `lt_settings.theme` and `lt_settings.uiScale` from `localStorage` before any CSS loads, applying `data-theme` and `font-size` immediately to eliminate the brief white-flash / wrong-scale flicker on page load
+
+### Fixed
+- **Settings/panel overlay clipping** — the dropdown overlay that opens from topbar buttons (panel manager, settings) no longer slides under the sidebar or topbar; minimum `left` is now clamped to `sidebar.offsetWidth + 4 px` and minimum `top` to `topbar.offsetHeight + 4 px`
+
+### Changed
+- **Sidebar toggle icon** — changed from `panel-left-close` back to `menu` (three-line hamburger); position is now the logo area for both expanded and collapsed states, consistent with the pre-v1.5 behavior
+- **Dashboard time-distribution chart** — line and point colors changed from `--chart-3` (fixed blue) to `--accent` (theme-aware); dark theme renders a silver-white line, other themes use their accent color
+
+---
+
 ## [v1.5] — 2026-06-16
 
 ### New

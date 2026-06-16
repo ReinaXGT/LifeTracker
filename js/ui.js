@@ -5352,6 +5352,21 @@ const UI = {
     if (theme === 'dark') document.documentElement.removeAttribute('data-theme');
     this._renderSettingsModal();
     document.dispatchEvent(new CustomEvent('lt:theme-change', { detail: { theme } }));
+    requestAnimationFrame(() => this._updateFavicon());
+  },
+
+  _updateFavicon() {
+    const isWhite = (Store.getSettings().theme || 'dark') === 'white';
+    const bg     = isWhite ? '#F2F2F2' : '#0D0D0D';
+    const stroke = isWhite ? '#111111' : (getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#DEDEDE');
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="${bg}"/><polyline points="3,20 7,20 10,10 13.5,25 17,13 20.5,22 24,16 29,16" fill="none" stroke="${stroke}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const blob = new Blob([svg], { type: 'image/svg+xml' });
+    const url  = URL.createObjectURL(blob);
+    let link = document.querySelector('link[rel="icon"]');
+    if (!link) { link = document.createElement('link'); link.rel = 'icon'; link.type = 'image/svg+xml'; document.head.appendChild(link); }
+    const old = link.href;
+    link.href = url;
+    if (old && old.startsWith('blob:')) URL.revokeObjectURL(old);
   },
 
   _setLang(lang) {
@@ -5720,25 +5735,17 @@ const UI = {
       });
     });
 
-    const footer = sidebar.querySelector('.sidebar-footer');
-    if (footer && !document.getElementById('sidebar-toggle-btn')) {
+    const logo = sidebar.querySelector('.sidebar-logo');
+    if (logo && !document.getElementById('sidebar-toggle-btn')) {
       const btn = document.createElement('button');
       btn.id = 'sidebar-toggle-btn';
       btn.className = 'sidebar-toggle-btn';
       btn.dataset.tooltip = this.t('sidebar_toggle');
       btn.dataset.tooltipPos = 'right';
-      btn.innerHTML = '<svg data-lucide="panel-left-close"></svg>';
+      btn.innerHTML = '<svg data-lucide="menu"></svg>';
       btn.addEventListener('click', () => UI.toggleSidebar());
-      footer.appendChild(btn);
+      logo.appendChild(btn);
       lucide.createIcons({ nodes: [btn] });
-    }
-
-    const settingsLink = sidebar.querySelector('.sidebar-footer .nav-link');
-    if (settingsLink) {
-      settingsLink.addEventListener('click', e => {
-        e.preventDefault();
-        UI.openSettings();
-      });
     }
 
     if (Store.get('lt_sidebar_collapsed')) {
@@ -5827,6 +5834,7 @@ const UI = {
     const savedTheme = Store.getSettings().theme || 'dark';
     if (savedTheme !== 'dark') document.documentElement.setAttribute('data-theme', savedTheme);
     else document.documentElement.removeAttribute('data-theme');
+    this._updateFavicon();
 
     if (!noPrivacy && !document.getElementById('privacy-toggle-btn')) {
       const header = document.querySelector('header.topbar');
@@ -5962,12 +5970,17 @@ const UI = {
     const panelRect = panel ? panel.getBoundingClientRect() : null;
     const btnRect = btnEl.getBoundingClientRect();
     const w = panelRect ? Math.floor(panelRect.width) : Math.min(520, window.innerWidth - 32);
+    const _sidebarEl = document.querySelector('.sidebar');
+    const _topbarEl  = document.querySelector('.topbar');
+    const minX = _sidebarEl ? _sidebarEl.offsetWidth + 4 : 8;
+    const minY = _topbarEl  ? _topbarEl.offsetHeight + 4 : 8;
     let left = panelRect ? panelRect.left : btnRect.left;
-    if (left < 8) left = 8;
+    if (left < minX) left = minX;
     if (left + w > window.innerWidth - 8) left = window.innerWidth - w - 8;
     let top = btnRect.bottom + 6;
     if (top + window.innerHeight * 0.55 > window.innerHeight - 16)
-      top = Math.max(16, btnRect.top - Math.min(window.innerHeight * 0.55, 400) - 6);
+      top = Math.max(minY, btnRect.top - Math.min(window.innerHeight * 0.55, 400) - 6);
+    if (top < minY) top = minY;
 
     overlay.style.cssText = `display:block;left:${left}px;top:${top}px;width:${w}px`;
     lucide.createIcons({ nodes: [overlay] });

@@ -255,11 +255,11 @@ const Dashboard = {
         labels.push(dayLabels[(d.getDay()+6)%7]);
         data.push(mins);
         const isToday = ds === todayStr;
-        ptColors.push(isToday ? _cv('--green') : _cv('--chart-3'));
+        ptColors.push(isToday ? _cv('--green') : _cv('--accent'));
         ptRadius.push(isToday ? 5 : 3);
       }
       Charts.line('weeklyTimeChart', labels, [
-        { label: UI.t('time_duration_label'), data, color: _cv('--chart-3'), pointColors: ptColors, pointRadius: ptRadius }
+        { label: UI.t('time_duration_label'), data, color: _cv('--accent'), pointColors: ptColors, pointRadius: ptRadius }
       ], { solidFill: true, yFmt, tip, yMinWidth: 52 });
 
     } else if (this._period === 'month') {
@@ -271,11 +271,11 @@ const Dashboard = {
         labels.push(`${d.getDate()} ${monthShort[d.getMonth()]}`);
         data.push(mins);
         const isToday = ds === todayStr;
-        ptColors.push(isToday ? _cv('--green') : _cv('--chart-3'));
+        ptColors.push(isToday ? _cv('--green') : _cv('--accent'));
         ptRadius.push(isToday ? 5 : 2);
       }
       Charts.line('weeklyTimeChart', labels, [
-        { label: UI.t('time_duration_label'), data, color: _cv('--chart-3'), pointColors: ptColors, pointRadius: ptRadius }
+        { label: UI.t('time_duration_label'), data, color: _cv('--accent'), pointColors: ptColors, pointRadius: ptRadius }
       ], { solidFill: true, yFmt, tip, yMinWidth: 52 });
 
     } else {
@@ -288,11 +288,11 @@ const Dashboard = {
         const isCur = i === 0;
         labels.push(monthShort[m]);
         data.push(mins);
-        ptColors.push(isCur ? _cv('--green') : _cv('--chart-3'));
+        ptColors.push(isCur ? _cv('--green') : _cv('--accent'));
         ptRadius.push(isCur ? 5 : 3);
       }
       Charts.line('weeklyTimeChart', labels, [
-        { label: UI.t('time_duration_label'), data, color: _cv('--chart-3'), pointColors: ptColors, pointRadius: ptRadius }
+        { label: UI.t('time_duration_label'), data, color: _cv('--accent'), pointColors: ptColors, pointRadius: ptRadius }
       ], { solidFill: true, yFmt, tip, yMinWidth: 52 });
     }
   },
