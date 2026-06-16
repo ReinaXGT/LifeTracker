@@ -1,5 +1,10 @@
 const Investments = (() => {
   let _currency = 'USD';
+  let _currentView    = 'portfolio';
+  let _tradeCycleMonth  = '';
+  let _tradeHistModal   = null;
+  let _tradeHistMonths  = [];
+  let _tradeHistIdx     = 0;
   let _addDateCdp  = null;
   let _editDateCdp = null;
   let _sellDateCdp       = null;
@@ -92,6 +97,28 @@ const Investments = (() => {
     Store.set('inv_trades', migrated);
   }
 
+  function _fixBackfilledQty() {
+    if (Store.get('inv_backfill_qty_fixed')) return;
+    const assets = Store.getInvestments().assets || [];
+    const trades = _getTrades();
+    let changed = false;
+    assets.forEach(a => {
+      const buyTrades = trades.filter(t => t.type === 'buy' && t.symbol === a.symbol);
+      if (buyTrades.length !== 1) return; // birden fazla buy trade varsa backfill ürünü değil
+      const soldQty = trades
+        .filter(t => t.type === 'sell' && t.symbol === a.symbol)
+        .reduce((sum, t) => sum + (Number(t.quantity) || 0), 0);
+      if (soldQty <= 0) return; // hiç satış yok, sorun yok
+      const expectedQty = Math.round((Number(a.quantity) + soldQty) * 1e8) / 1e8;
+      if (Math.abs(buyTrades[0].quantity - expectedQty) > 0.000001) {
+        buyTrades[0].quantity = expectedQty;
+        changed = true;
+      }
+    });
+    if (changed) Store.set('inv_trades', trades);
+    Store.set('inv_backfill_qty_fixed', true);
+  }
+
   function _backfillAssetTrades() {
     const assets = Store.getInvestments().assets || [];
     if (!assets.length) return;
@@ -100,11 +127,16 @@ const Investments = (() => {
     let changed = false;
     assets.forEach(a => {
       if (buySymbols.has(a.symbol)) return;
+      // Satışları ekleyerek orijinal alım miktarını yeniden hesapla
+      const soldQty = trades
+        .filter(t => t.type === 'sell' && t.symbol === a.symbol)
+        .reduce((sum, t) => sum + (Number(t.quantity) || 0), 0);
+      const originalQty = Math.round((Number(a.quantity) + soldQty) * 1e8) / 1e8;
       trades.push({
         id: Store._id(), type: 'buy',
         date: a.purchaseDate || _today(),
         symbol: a.symbol, name: a.name, assetType: a.assetType,
-        quantity: a.quantity, price: a.buyPrice,
+        quantity: originalQty, price: a.buyPrice,
         buyCurrency: a.buyCurrency || null,
       });
       changed = true;
@@ -400,13 +432,10 @@ const Investments = (() => {
     }
 
     legendEl.innerHTML = sorted.map((a, i) => `
-      <div class="legend-item" style="gap:0.375rem;min-width:0;width:100%">
+      <div class="legend-item" style="gap:0.375rem;min-width:0;width:100%;justify-content:flex-start">
         <div class="legend-dot" style="background:${colors[i]};flex-shrink:0"></div>
-        <span style="font-size:0.8125rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1">${a.symbol}</span>
-        <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;white-space:nowrap">
-          <span style="font-family:var(--font-mono);font-size:0.75rem;font-weight:700;color:${colors[i]}">%${a.allocationPercent}</span>
-          <span style="font-size:0.6875rem;color:var(--text-muted)">${_typeLabel(a.assetType)}</span>
-        </div>
+        <span style="font-size:0.8125rem;font-weight:600;white-space:nowrap">${a.symbol}</span>
+        <span style="white-space:nowrap;font-size:0.75rem"><span style="font-family:var(--font-mono);font-weight:700;color:${colors[i]}">%${a.allocationPercent}</span> <span style="color:var(--text-muted)">${_typeLabel(a.assetType)}</span></span>
       </div>`).join('');
   }
 
@@ -1589,12 +1618,17 @@ const Investments = (() => {
     const tbody = document.getElementById('tradesBody');
     if (!tbody) return;
 
-    const dfFrom = document.getElementById('tradeFilterFrom')?.value || '';
-    const dfTo   = document.getElementById('tradeFilterTo')?.value   || '';
+    const dfFrom  = document.getElementById('tradeFilterFrom')?.value || '';
+    const dfTo    = document.getElementById('tradeFilterTo')?.value   || '';
+    const search  = (document.getElementById('tradeSearch')?.value || '').toLowerCase().trim();
 
     let trades = _getTrades().slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-    if (dfFrom) trades = trades.filter(t => (t.date || '') >= dfFrom);
-    if (dfTo)   trades = trades.filter(t => (t.date || '') <= dfTo);
+    if (dfFrom)  trades = trades.filter(t => (t.date || '') >= dfFrom);
+    if (dfTo)    trades = trades.filter(t => (t.date || '') <= dfTo);
+    if (search)  trades = trades.filter(t =>
+      (t.symbol || '').toLowerCase().includes(search) ||
+      (t.name   || '').toLowerCase().includes(search)
+    );
 
     if (!trades.length) {
       tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">${UI.t('inv_no_trades')}</td></tr>`;
@@ -1612,7 +1646,7 @@ const Investments = (() => {
       let pnlCell = '<td></td>';
       if (!isBuy && t.realizedPnL != null) {
         const pnlDisp = _toDisplay((t.price - t.costBasis), aCur) * t.quantity;
-        pnlCell = `<td class="mono" style="text-align:right;font-weight:600;color:${pnlDisp >= 0 ? 'var(--green)' : 'var(--red)'}">
+        pnlCell = `<td class="mono" style="text-align:center;font-weight:600;color:${pnlDisp >= 0 ? 'var(--green)' : 'var(--red)'}">
           ${pnlDisp >= 0 ? '+' : ''}${_mask(pnlDisp)}
         </td>`;
       }
@@ -1626,8 +1660,8 @@ const Investments = (() => {
             <span style="font-size:0.75rem;color:var(--text-muted)">${t.name || ''}</span>
           </div>
         </td>
-        <td class="mono" style="text-align:right">${UI.isPrivate() ? '••••' : t.quantity}</td>
-        <td class="mono" style="text-align:right;color:var(--text-secondary)">${_mask(priceDisp)}</td>
+        <td class="mono" style="text-align:center">${UI.isPrivate() ? '••••' : t.quantity}</td>
+        <td class="mono" style="text-align:center;color:var(--text-secondary)">${_mask(priceDisp)}</td>
         ${pnlCell}
       </tr>`;
     }).join('');
@@ -1863,6 +1897,7 @@ const Investments = (() => {
     _migrateLegacySymbols();
     _migrateRealizedToTrades();
     _backfillAssetTrades();
+    _fixBackfilledQty();
     UI.initTopbar();
     UI.initEsc();
     const _s = Store.getSettings();
@@ -1991,5 +2026,171 @@ const Investments = (() => {
     reader.readAsText(file);
   }
 
-  return { init, setDisplayCurrency, getUserCurrencyCode, setExchangeRate, editManualPrice, saveManualPrice: _saveManualPrice, openAddAsset: _openAddAsset, editAsset, deleteAsset, sellAsset: _openSellAsset, buyAsset: _openBuyAsset, toggleSellDate: () => _sellDateCdp?.toggle(), toggleBuyDate: () => _buyDateCdp?.toggle(), openSellPicker, openBuyPicker, openTradeDropdown, _tradeActionPick, toggleTradeFilter: () => _tradeFilterCdp?.toggle(), refreshPrices: _manualRefresh, togglePnlPeriodMenu: _togglePnlPeriodMenu, setPnlPeriod: _setPnlPeriodFn, fetchAllRates: _fetchAllRatesPublic, openInvDropdown, toggleInvDatePicker: _toggleInvDatePicker, triggerImport: _triggerInvImport, importData: _importInvData };
+  function _openTradeHistModal() {
+    const trades  = _getTrades();
+    const months  = [...new Set(trades.map(t => (t.date || '').slice(0, 7)).filter(Boolean))].sort().reverse();
+    if (!months.length) { UI.toast(UI.t('inv_no_trades'), 'info'); return; }
+    _tradeHistMonths = months;
+    _tradeHistIdx    = 0;
+    _tradeHistModal  = new CustomModal({
+      title:   UI.t('inv_history_btn'),
+      icon:    'history',
+      width:   820,
+      content: '<div id="inv-hist-inner" style="min-height:7.5rem"></div>',
+      buttons: [{ label: UI.t('btn_cancel'), variant: 'secondary', onClick: m => m.close() }],
+    });
+    _tradeHistModal.open();
+    _renderTradeHistModal();
+  }
+
+  function _renderTradeHistModal() {
+    const el = document.getElementById('inv-hist-inner');
+    if (!el) return;
+    const month = _tradeHistMonths[_tradeHistIdx];
+    const [y, m] = month.split('-').map(Number);
+    const lang   = UI.getLang();
+    const locale = lang === 'tr' ? 'tr-TR' : lang === 'zh' ? 'zh-CN' : lang === 'es' ? 'es-ES' : lang === 'fr' ? 'fr-FR' : 'en-US';
+    const label  = new Date(y, m - 1, 1).toLocaleDateString(locale, { month: 'long', year: 'numeric' });
+    const monthLabel = label.charAt(0).toUpperCase() + label.slice(1);
+
+    const monthTrades = _getTrades()
+      .filter(t => (t.date || '').startsWith(month))
+      .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+    const buys  = monthTrades.filter(t => t.type === 'buy');
+    const sells = monthTrades.filter(t => t.type === 'sell');
+    const pnl   = sells.reduce((s, t) => {
+      const aCur = _assetCur(t.symbol, t.buyCurrency);
+      return s + _toDisplay((t.realizedPnL || 0), aCur);
+    }, 0);
+    const pnlColor = pnl >= 0 ? 'var(--green)' : 'var(--red)';
+
+    const kpiHtml = `
+      <div style="display:flex;gap:0.75rem;margin-bottom:1rem">
+        <div style="flex:1;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.75rem 0.875rem">
+          <div style="font-size:0.625rem;font-weight:700;letter-spacing:.1em;color:var(--green);text-transform:uppercase;margin-bottom:4px">${UI.t('inv_trade_type_buy')}</div>
+          <div class="mono" style="font-size:0.9375rem;font-weight:600;color:var(--text-primary)">${buys.length} ${UI.t('inv_col_trade_type').toLowerCase()}</div>
+        </div>
+        <div style="flex:1;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.75rem 0.875rem">
+          <div style="font-size:0.625rem;font-weight:700;letter-spacing:.1em;color:var(--red);text-transform:uppercase;margin-bottom:4px">${UI.t('inv_trade_type_sell')}</div>
+          <div class="mono" style="font-size:0.9375rem;font-weight:600;color:var(--text-primary)">${sells.length} ${UI.t('inv_col_trade_type').toLowerCase()}</div>
+        </div>
+        <div style="flex:1;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.75rem 0.875rem">
+          <div style="font-size:0.625rem;font-weight:700;letter-spacing:.1em;color:${pnlColor};text-transform:uppercase;margin-bottom:4px">${UI.t('inv_pnl')}</div>
+          <div class="mono" style="font-size:0.9375rem;font-weight:600;color:${pnlColor}">${pnl >= 0 ? '+' : ''}${_mask(pnl)}</div>
+        </div>
+      </div>`;
+
+    const rowsHtml = monthTrades.length ? `
+      <div style="overflow-x:auto">
+        <table class="data-table" style="width:100%">
+          <thead><tr>
+            <th data-i18n="lbl_date">Tarih</th>
+            <th data-i18n="inv_col_trade_type">İşlem</th>
+            <th data-i18n="inv_col_asset">Varlık / Sembol</th>
+            <th style="text-align:center" data-i18n="inv_col_qty">Adet</th>
+            <th style="text-align:center" data-i18n="inv_col_trade_price">Fiyat</th>
+            <th style="text-align:center" data-i18n="inv_pnl">K/Z</th>
+          </tr></thead>
+          <tbody>${monthTrades.map(t => {
+            const isBuy  = t.type === 'buy';
+            const color  = isBuy ? 'var(--green)' : 'var(--red)';
+            const typeLabel = UI.t(isBuy ? 'inv_trade_type_buy' : 'inv_trade_type_sell');
+            const aCur   = _assetCur(t.symbol, t.buyCurrency);
+            const price  = _toDisplay(t.price || 0, aCur);
+            let pnlCell  = '<td></td>';
+            if (!isBuy && t.realizedPnL != null) {
+              const p = _toDisplay((t.price - t.costBasis), aCur) * t.quantity;
+              pnlCell = `<td class="mono" style="text-align:center;font-weight:600;color:${p >= 0 ? 'var(--green)' : 'var(--red)'}">${p >= 0 ? '+' : ''}${_mask(p)}</td>`;
+            }
+            return `<tr>
+              <td style="color:var(--text-secondary);font-size:0.8125rem">${UI.formatDate(t.date || '')}</td>
+              <td><span style="font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:${color};background:${color}18;border:1px solid ${color}35;padding:2px 7px;border-radius:4px">${typeLabel}</span></td>
+              <td><div style="display:flex;align-items:baseline;gap:0.5rem">
+                <span style="font-weight:600;font-family:var(--font-mono);font-size:0.875rem">${t.symbol}</span>
+                <span style="font-size:0.75rem;color:var(--text-muted)">${t.name || ''}</span>
+              </div></td>
+              <td class="mono" style="text-align:center">${UI.isPrivate() ? '••••' : t.quantity}</td>
+              <td class="mono" style="text-align:center;color:var(--text-secondary)">${_mask(price)}</td>
+              ${pnlCell}
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      </div>` : `<div style="padding:2rem 0;text-align:center">${UI.emptyState(UI.t('inv_no_trades'), 'receipt')}</div>`;
+
+    el.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;gap:0.75rem">
+        <button class="btn btn-icon btn-secondary" onclick="Investments.tradeHistNavTo(1)" ${_tradeHistIdx >= _tradeHistMonths.length - 1 ? 'disabled' : ''} style="width:2.125rem;height:2.125rem;flex-shrink:0"><svg data-lucide="chevron-left"></svg></button>
+        <div style="text-align:center;flex:1">
+          <div style="font-weight:700;font-size:0.875rem;color:var(--text-primary)">${monthLabel}</div>
+          <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:2px">${_tradeHistMonths.length - _tradeHistIdx}. dönem</div>
+        </div>
+        <button class="btn btn-icon btn-secondary" onclick="Investments.tradeHistNavTo(-1)" ${_tradeHistIdx <= 0 ? 'disabled' : ''} style="width:2.125rem;height:2.125rem;flex-shrink:0"><svg data-lucide="chevron-right"></svg></button>
+      </div>
+      ${kpiHtml}
+      ${rowsHtml}`;
+    lucide.createIcons({ nodes: [el] });
+  }
+
+  function _tradeHistNavTo(dir) {
+    const next = _tradeHistIdx + dir;
+    if (next < 0 || next >= _tradeHistMonths.length) return;
+    _tradeHistIdx = next;
+    _renderTradeHistModal();
+  }
+
+  function _updateTradeCycle() {
+    const [y, m] = _tradeCycleMonth.split('-').map(Number);
+    const start  = `${y}-${String(m).padStart(2,'0')}-01`;
+    const lastDay = new Date(y, m, 0).toISOString().slice(0, 10);  // last day of month
+    document.getElementById('tradeFilterFrom').value = start;
+    document.getElementById('tradeFilterTo').value   = lastDay;
+
+    const lang = typeof UI !== 'undefined' ? UI.getLang() : 'tr';
+    const locale = lang === 'tr' ? 'tr-TR' : lang === 'zh' ? 'zh-CN' : lang === 'es' ? 'es-ES' : lang === 'fr' ? 'fr-FR' : 'en-US';
+    const label = new Date(y, m - 1, 1).toLocaleDateString(locale, { month: 'long', year: 'numeric' });
+    const el = document.getElementById('tradeCycleLabel');
+    if (el) el.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+
+    const nextBtn = document.getElementById('tradeCycleNext');
+    if (nextBtn) nextBtn.disabled = _tradeCycleMonth >= UI.today().slice(0, 7);
+  }
+
+  function tradeCycleNav(dir) {
+    const [y, m] = _tradeCycleMonth.split('-').map(Number);
+    const d = new Date(y, m - 1 + dir, 1);
+    const newMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    if (newMonth > UI.today().slice(0, 7)) return;
+    _tradeCycleMonth = newMonth;
+    _updateTradeCycle();
+    _renderTradeHistory();
+    lucide.createIcons({ nodes: [document.getElementById('view-trades')] });
+  }
+
+  function _applyViewTopbar(v) {
+    const isTrades = v === 'trades';
+    const exchangeEl  = document.getElementById('exchangeRateSection');
+    const apiKeyEl    = document.getElementById('apiKeyBtn');
+    const histBtn     = document.getElementById('tradeHistBtn');
+    if (exchangeEl) exchangeEl.style.display = isTrades ? 'none' : '';
+    if (apiKeyEl)   apiKeyEl.style.display   = isTrades ? 'none' : '';
+    if (histBtn)    histBtn.style.display     = isTrades ? 'flex' : 'none';
+  }
+
+  function setView(v) {
+    _currentView = v;
+    document.getElementById('view-portfolio').style.display = v === 'portfolio' ? '' : 'none';
+    document.getElementById('view-trades').style.display   = v === 'trades'    ? '' : 'none';
+    document.getElementById('tab-portfolio').classList.toggle('active', v === 'portfolio');
+    document.getElementById('tab-trades').classList.toggle('active', v === 'trades');
+    _applyViewTopbar(v);
+    if (v === 'trades') {
+      if (!_tradeCycleMonth) _tradeCycleMonth = UI.today().slice(0, 7);
+      _updateTradeCycle();
+      _renderTradeHistory();
+      lucide.createIcons({ nodes: [document.getElementById('view-trades')] });
+    }
+  }
+
+  return { init, setView, tradeCycleNav, openTradeHistModal: _openTradeHistModal, tradeHistNavTo: _tradeHistNavTo, setDisplayCurrency, getUserCurrencyCode, setExchangeRate, editManualPrice, saveManualPrice: _saveManualPrice, openAddAsset: _openAddAsset, editAsset, deleteAsset, sellAsset: _openSellAsset, buyAsset: _openBuyAsset, toggleSellDate: () => _sellDateCdp?.toggle(), toggleBuyDate: () => _buyDateCdp?.toggle(), openSellPicker, openBuyPicker, openTradeDropdown, _tradeActionPick, toggleTradeFilter: () => _tradeFilterCdp?.toggle(), onTradeSearch: _renderTradeHistory, refreshPrices: _manualRefresh, togglePnlPeriodMenu: _togglePnlPeriodMenu, setPnlPeriod: _setPnlPeriodFn, fetchAllRates: _fetchAllRatesPublic, openInvDropdown, toggleInvDatePicker: _toggleInvDatePicker, triggerImport: _triggerInvImport, importData: _importInvData };
 })();

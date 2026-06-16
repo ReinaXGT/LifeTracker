@@ -26,14 +26,15 @@
 .acc-action-btn {
   height:34px; display:flex; align-items:center; gap:6px; padding:0 14px;
   background:transparent; border:1px solid color-mix(in srgb, var(--accent) 45%, transparent);
-  border-radius:var(--radius-sm); color:var(--text-secondary); cursor:pointer;
-  font-family:var(--font-body); font-size:0.8125rem; font-weight:500;
+  border-radius:var(--radius-sm); color:var(--accent); cursor:pointer;
+  font-family:var(--font-body); font-size:0.8125rem; font-weight:600;
   transition:background .15s, border-color .15s, color .15s, box-shadow .15s;
 }
+.acc-action-btn svg { color:var(--accent); }
 .acc-action-btn:hover {
-  background:rgba(255,255,255,0.06);
-  border-color:rgba(255,255,255,0.3); color:var(--text-primary);
-  box-shadow:0 0 10px rgba(255,255,255,0.15);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-color: var(--accent); color:var(--accent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 30%, transparent);
 }
 /* ── Investments page-specific ─────────────────────────── */
 .state-screen {
@@ -160,6 +161,32 @@
 .inv-trade-option.opt-sell { border-color:#FB923C50; background:#FB923C08; }
 .inv-trade-option.opt-sell .opt-title { color:#FB923C; }
 .inv-trade-option.opt-sell:hover { border-color:#FB923C; background:#FB923C20; }
+.bview-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+.bvtab {
+  padding: 0.625rem 1.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-body);
+  display: flex;
+  align-items: center;
+  gap: 0.4375rem;
+  margin-bottom: -1px;
+  white-space: nowrap;
+}
+.bvtab:hover { color: var(--text-primary); }
+.bvtab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+.bvtab svg { width: 0.9375rem; height: 0.9375rem; }
 </style>
 </head>
 <body>
@@ -212,6 +239,11 @@
           <span id="rateCurrencySymbol" style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--accent);margin-left:2px;line-height:1;align-self:center">₺</span>
           <span id="rateUpdateInfo" style="font-size:11px;color:var(--text-muted);white-space:nowrap;margin-left:7px;padding-left:7px;border-left:1px solid var(--border);line-height:1;align-self:center"></span>
         </div>
+        <button class="btn btn-icon btn-secondary privacy-toggle-btn" id="privacy-toggle-btn"
+                onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n
+                style="color:var(--text-secondary);width:34px;height:34px">
+          <svg data-lucide="eye"></svg>
+        </button>
         <!-- Currency toggle -->
         <div id="currencyToggleSection" style="display:flex;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);padding:2px;gap:2px;height:34px;box-sizing:border-box">
           <button id="toggleUSER" class="btn btn-primary"
@@ -221,17 +253,13 @@
                   onclick="Investments.setDisplayCurrency('USD')"
                   style="border-radius:5px;border:none;min-width:58px;padding:0 10px;font-size:12px;font-weight:600;height:100%">$ USD</button>
         </div>
-        <button class="btn btn-icon btn-secondary privacy-toggle-btn" id="privacy-toggle-btn"
-                onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n
-                style="color:var(--text-secondary);width:34px;height:34px">
-          <svg data-lucide="eye"></svg>
-        </button>
-        <button class="btn btn-icon btn-secondary" onclick="UI.openSettings()"
+        <button id="apiKeyBtn" class="btn btn-icon btn-secondary" onclick="UI.openSettings('api')"
                 data-tooltip="inv_api_keys_title" data-tooltip-i18n
                 style="color:var(--text-secondary);width:34px;height:34px">
           <svg data-lucide="key-round"></svg>
         </button>
         <button class="btn btn-secondary" onclick="Investments.triggerImport()" style="display:flex;align-items:center;gap:6px;height:34px"><svg data-lucide="upload"></svg><span data-i18n="import_data_btn">Veri Aktar</span></button>
+        <button id="tradeHistBtn" class="btn btn-secondary" onclick="Investments.openTradeHistModal()" style="display:none;align-items:center;gap:6px;height:34px"><svg data-lucide="history"></svg><span data-i18n="inv_history_btn">Geçmiş</span></button>
         <button id="tradeActionBtn" class="acc-action-btn" onclick="Investments.openTradeDropdown(this)">
           <svg data-lucide="layers" style="width:15px;height:15px;flex-shrink:0"></svg>
           <span data-i18n="inv_trade_action">Varlık Al/Sat</span>
@@ -242,92 +270,116 @@
     <!-- ── PORTFOLIO CONTENT ──────────────────────────────── -->
     <main class="page-content" id="portfolioContent" style="transition:opacity 150ms ease-out">
 
-      <!-- KPI cards -->
-      <div class="kpi-grid" id="kpi-grid"></div>
+      <div class="bview-bar">
+        <button class="bvtab active" id="tab-portfolio" onclick="Investments.setView('portfolio')">
+          <svg data-lucide="briefcase"></svg> <span data-i18n="inv_tab_portfolio">Portföy</span>
+        </button>
+        <button class="bvtab" id="tab-trades" onclick="Investments.setView('trades')">
+          <svg data-lucide="history"></svg> <span data-i18n="inv_tab_trades">İşlem Geçmişi</span>
+        </button>
+      </div>
 
-      <!-- Allocation chart + type summary -->
-      <div class="content-grid grid-2" style="margin-bottom:1.25rem">
-        <div class="panel" style="display:flex;flex-direction:column">
-          <div class="panel-header"><span class="panel-title" data-i18n="inv_dist_panel">Varlık Dağılımı</span></div>
-          <div class="panel-body" style="flex:1;display:flex;align-items:center;justify-content:center">
-            <div style="display:inline-flex;gap:1.75rem;align-items:center">
-              <div class="chart-doughnut">
-                <canvas id="allocChart"></canvas>
-                <div id="alloc-center" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;gap:0.125rem"></div>
+      <div id="view-portfolio">
+
+        <!-- KPI cards -->
+        <div class="kpi-grid" id="kpi-grid"></div>
+
+        <!-- Allocation chart + type summary -->
+        <div class="content-grid grid-2" style="margin-bottom:1.25rem">
+          <div class="panel" style="display:flex;flex-direction:column">
+            <div class="panel-header"><span class="panel-title" data-i18n="inv_dist_panel">Varlık Dağılımı</span></div>
+            <div class="panel-body" style="flex:1;display:flex;align-items:center;justify-content:center">
+              <div style="display:inline-flex;gap:1.75rem;align-items:center">
+                <div class="chart-doughnut">
+                  <canvas id="allocChart"></canvas>
+                  <div id="alloc-center" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;gap:0.125rem"></div>
+                </div>
+                <div id="alloc-legend" class="chart-legend" style="flex-direction:column;gap:0.5rem;width:200px"></div>
               </div>
-              <div id="alloc-legend" class="chart-legend" style="flex-direction:column;gap:0.5rem;width:200px"></div>
             </div>
           </div>
+
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title" data-i18n="inv_perf_panel">Getiri Analizi</span></div>
+            <div class="panel-body" id="perf-panel" style="padding:0"></div>
+          </div>
         </div>
 
+        <!-- Portfolio detail table -->
         <div class="panel">
-          <div class="panel-header"><span class="panel-title" data-i18n="inv_perf_panel">Getiri Analizi</span></div>
-          <div class="panel-body" id="perf-panel" style="padding:0"></div>
-        </div>
-      </div>
-
-      <!-- Portfolio detail table -->
-      <div class="panel">
-        <div class="panel-header">
-          <span class="panel-title" data-i18n="inv_portfolio_panel">Portföy Detayı</span>
-          <div style="display:flex;align-items:center;gap:0.625rem">
-            <div id="priceStatusBadge" style="display:none;align-items:center;gap:0.3125rem;font-size:0.75rem;color:var(--text-muted)"></div>
-            <button class="btn btn-icon btn-secondary" id="refreshPricesBtn"
-                    onclick="Investments.refreshPrices()" data-tooltip="inv_refresh_title" data-tooltip-i18n
-                    style="color:var(--text-secondary)">
-              <svg data-lucide="refresh-cw"></svg>
-            </button>
+          <div class="panel-header">
+            <span class="panel-title" data-i18n="inv_portfolio_panel">Portföy Detayı</span>
+            <div style="display:flex;align-items:center;gap:0.625rem">
+              <div id="priceStatusBadge" style="display:none;align-items:center;gap:0.3125rem;font-size:0.75rem;color:var(--text-muted)"></div>
+              <button class="btn btn-icon btn-secondary" id="refreshPricesBtn"
+                      onclick="Investments.refreshPrices()" data-tooltip="inv_refresh_title" data-tooltip-i18n
+                      style="color:var(--text-secondary)">
+                <svg data-lucide="refresh-cw"></svg>
+              </button>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead><tr>
+                <th data-i18n="inv_col_asset">Varlık / Sembol</th>
+                <th data-i18n="inv_col_type">Tür</th>
+                <th style="text-align:right" data-i18n="inv_col_qty">Adet</th>
+                <th style="text-align:right" data-i18n="inv_col_cost">Ort. Maliyet</th>
+                <th style="text-align:right" data-i18n="inv_col_price">Güncel Fiyat</th>
+                <th style="text-align:right" data-i18n="inv_col_value">Toplam Değer</th>
+                <th style="text-align:right;cursor:pointer;user-select:none;white-space:nowrap" id="pnl-col-th" data-i18n="inv_col_pnl" data-tooltip="inv_pnl_toggle_title" data-tooltip-i18n>Toplam K/Z</th>
+                <th style="text-align:right" data-i18n="inv_col_pct">Dağılım %</th>
+                <th></th>
+              </tr></thead>
+              <tbody id="assetBody"></tbody>
+            </table>
           </div>
         </div>
-        <div class="table-container">
-          <table class="data-table">
-            <thead><tr>
-              <th data-i18n="inv_col_asset">Varlık / Sembol</th>
-              <th data-i18n="inv_col_type">Tür</th>
-              <th style="text-align:right" data-i18n="inv_col_qty">Adet</th>
-              <th style="text-align:right" data-i18n="inv_col_cost">Ort. Maliyet</th>
-              <th style="text-align:right" data-i18n="inv_col_price">Güncel Fiyat</th>
-              <th style="text-align:right" data-i18n="inv_col_value">Toplam Değer</th>
-              <th style="text-align:right;cursor:pointer;user-select:none;white-space:nowrap" id="pnl-col-th" data-i18n="inv_col_pnl" data-tooltip="inv_pnl_toggle_title" data-tooltip-i18n>Toplam K/Z</th>
-              <th style="text-align:right" data-i18n="inv_col_pct">Dağılım %</th>
-              <th></th>
-            </tr></thead>
-            <tbody id="assetBody"></tbody>
-          </table>
-        </div>
-      </div>
 
-      <!-- Trade history panel -->
-      <div class="panel" style="margin-top:1.25rem;overflow:visible">
-        <div class="panel-header" style="position:relative;z-index:2">
-          <span class="panel-title" data-i18n="inv_trade_history">İşlem Geçmişi</span>
-          <div style="position:relative;display:inline-flex;height:34px;flex-shrink:0">
-            <button type="button" id="tradeFilterDateBtn" onclick="Investments.toggleTradeFilter()"
-              style="display:flex;align-items:center;gap:6px;padding:0 10px;height:34px;
-                     background:var(--bg-elevated);border:1px solid var(--border);
-                     border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font-body);
-                     font-size:0.8125rem;color:var(--text-secondary)">
-              <svg data-lucide="calendar" style="width:14px;height:14px;flex-shrink:0"></svg>
-              <span id="tradeFilterDateLabel" data-i18n="inv_trade_filter_all">Tüm Tarihler</span>
-            </button>
-            <input type="hidden" id="tradeFilterFrom" value="">
-            <input type="hidden" id="tradeFilterTo" value="">
+      </div><!-- /#view-portfolio -->
+
+      <div id="view-trades" style="display:none">
+
+        <!-- Trade history panel -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title" data-i18n="inv_trade_history">İşlem Geçmişi</span>
+            <div style="display:flex;gap:0.5rem;align-items:center">
+              <div class="search-wrap" style="min-width:12.5rem">
+                <svg data-lucide="search"></svg>
+                <input class="form-control" id="tradeSearch" oninput="Investments.onTradeSearch()"
+                  style="height:2.125rem;padding-top:0;padding-bottom:0;box-sizing:border-box"
+                  placeholder="Sembol, isim..." data-i18n-placeholder="inv_trade_search">
+              </div>
+              <div style="position:relative;display:inline-flex;height:2.125rem;flex-shrink:0">
+                <button type="button" id="tradeFilterDateBtn" onclick="Investments.toggleTradeFilter()"
+                  style="display:flex;align-items:center;gap:0.375rem;padding:0 0.625rem;height:2.125rem;
+                         box-sizing:border-box;background:var(--bg-elevated);border:1px solid var(--border);
+                         border-radius:var(--radius-sm);cursor:pointer;white-space:nowrap">
+                  <svg data-lucide="calendar" style="width:0.9375rem;height:0.9375rem;color:var(--text-muted);flex-shrink:0"></svg>
+                  <span id="tradeFilterDateLabel" style="font-size:0.8125rem;color:var(--text-secondary)" data-i18n="inv_trade_filter_all">Tüm Tarihler</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <input type="hidden" id="tradeFilterFrom" value="">
+          <input type="hidden" id="tradeFilterTo" value="">
+          <div class="table-container">
+            <table class="data-table">
+              <thead><tr>
+                <th data-i18n="lbl_date">Tarih</th>
+                <th data-i18n="inv_col_trade_type">İşlem</th>
+                <th data-i18n="inv_col_asset">Varlık</th>
+                <th style="text-align:center" data-i18n="inv_col_qty">Adet</th>
+                <th style="text-align:center" data-i18n="inv_col_trade_price">Fiyat</th>
+                <th style="text-align:center" data-i18n="inv_pnl">K/Z</th>
+              </tr></thead>
+              <tbody id="tradesBody"></tbody>
+            </table>
           </div>
         </div>
-        <div class="table-container">
-          <table class="data-table">
-            <thead><tr>
-              <th data-i18n="lbl_date">Tarih</th>
-              <th data-i18n="inv_col_trade_type">İşlem</th>
-              <th data-i18n="inv_col_asset">Varlık</th>
-              <th style="text-align:right" data-i18n="inv_col_qty">Adet</th>
-              <th style="text-align:right" data-i18n="inv_col_trade_price">Fiyat</th>
-              <th style="text-align:right" data-i18n="inv_pnl">K/Z</th>
-            </tr></thead>
-            <tbody id="tradesBody"></tbody>
-          </table>
-        </div>
-      </div>
+
+      </div><!-- /#view-trades -->
 
     </main><!-- /#portfolioContent -->
   </div><!-- /.main-content -->

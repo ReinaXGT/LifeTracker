@@ -127,11 +127,28 @@ const Dashboard = {
     document.getElementById('dash-panels-grid')?.classList.toggle('dash-edit-mode', this._editMode);
   },
 
+  _applyHiddenPanels() {
+    const panelMap = {
+      focusmode:   'panel-focus',
+      timelog:     'panel-time',
+      gym:         'panel-gym',
+      plans:       'panel-plans',
+      goals:       'panel-goals',
+      budget:      'panel-budget',
+      investments: 'panel-invest',
+    };
+    Object.entries(panelMap).forEach(([module, panelId]) => {
+      const el = document.querySelector(`[data-panel-id="${panelId}"]`);
+      if (el) el.style.display = UI.isModuleHidden(module) ? 'none' : '';
+    });
+  },
+
   init() {
     UI.initTopbar();
     UI.initEsc();
     this._applyPanelOrder();
     this._initPanelDrag();
+    this._applyHiddenPanels();
 
     this.renderKPIs();
     this.renderTimeChart();
@@ -147,6 +164,7 @@ const Dashboard = {
       this.renderInvestPie();
     });
     const _fullRender = () => {
+      this._applyHiddenPanels();
       this.renderKPIs();
       this.renderTimeChart();
       this.renderPlans();
@@ -157,6 +175,7 @@ const Dashboard = {
       this.renderGym();
     };
     document.addEventListener('lt:theme-change',    _fullRender);
+    document.addEventListener('lt:modules-change',  _fullRender);
     document.addEventListener('lt:currency-change', () => {
       this.renderKPIs();
       this.renderInvestPie();
@@ -214,12 +233,13 @@ const Dashboard = {
 
     const spentKey = `dash_${this._period}_spent`;
 
-    const cards = [
-      { label: UI.t('dash_net_worth'),    value: UI.maskCurrency(net, cur),           mono: true,  change: UI.t('dash_net_worth_change'),                                                              changeUp: true,                       icon: 'trending-up',   iconColor: '#7C6CFC' },
-      { label: UI.t(spentKey),            value: UI.maskCurrency(periodExp, cur),     mono: true,  change: UI.t('dash_in_limit'),                                                                      changeUp: true,                       icon: 'shopping-cart', iconColor: '#F87171' },
-      { label: UI.t('dash_habits_done'),  value: `${periodDone} / ${periodPoss}`,     mono: false, change: UI.t('dash_habits_pct', periodPct),                                                         changeUp: periodDone >= periodPoss * 0.5, icon: 'check-circle', iconColor: '#34D399' },
-      { label: UI.t('dash_active_goals'), value: String(activeGoals),                 mono: false, change: UI.t('dash_goals_of', gls.items.length),                                                    changeUp: true,                       icon: 'star',          iconColor: '#FBBF24' },
+    const _allCards = [
+      { module: null,          label: UI.t('dash_net_worth'),    value: UI.maskCurrency(net, cur),           mono: true,  change: UI.t('dash_net_worth_change'),                                                              changeUp: true,                       icon: 'trending-up',   iconColor: '#7C6CFC' },
+      { module: 'budget',      label: UI.t(spentKey),            value: UI.maskCurrency(periodExp, cur),     mono: true,  change: UI.t('dash_in_limit'),                                                                      changeUp: true,                       icon: 'shopping-cart', iconColor: '#F87171' },
+      { module: 'habits',      label: UI.t('dash_habits_done'),  value: `${periodDone} / ${periodPoss}`,     mono: false, change: UI.t('dash_habits_pct', periodPct),                                                         changeUp: periodDone >= periodPoss * 0.5, icon: 'check-circle', iconColor: '#34D399' },
+      { module: 'goals',       label: UI.t('dash_active_goals'), value: String(activeGoals),                 mono: false, change: UI.t('dash_goals_of', gls.items.length),                                                    changeUp: true,                       icon: 'star',          iconColor: '#FBBF24' },
     ];
+    const cards = _allCards.filter(c => !c.module || !UI.isModuleHidden(c.module));
 
     const grid = document.getElementById('kpi-grid');
     grid.innerHTML = cards.map(c => UI.kpiCard(c)).join('');

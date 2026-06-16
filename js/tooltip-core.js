@@ -34,7 +34,7 @@ const TooltipCore = (() => {
     if (!_el) {
       _el = document.createElement('div');
       _el.className = 'tlt';
-      _el.style.cssText = 'display:none;position:fixed;z-index:1600';
+      _el.style.cssText = 'display:none;position:fixed;z-index:1600;pointer-events:none';
       document.body.appendChild(_el);
     }
     return _el;
@@ -170,7 +170,9 @@ const TooltipCore = (() => {
   function _onOut(e) {
     const el = e.target.closest('[data-tooltip]');
     if (!el) return;
-    if (e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('[data-tooltip]') === el) return;
+    const rt = e.relatedTarget;
+    if (rt && rt.closest && rt.closest('[data-tooltip]') === el) return;
+    if (rt === _el) return;
     hide();
   }
 

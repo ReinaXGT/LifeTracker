@@ -1,5 +1,5 @@
 const UI = {
-  VERSION: 'v1.7',
+  VERSION: 'v1.8',
 
   MONTHS_SHORT: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
   MONTHS_LONG: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'],
@@ -34,6 +34,11 @@ const UI = {
       settings_lang_fr: 'Fransızca',
       settings_currency: 'Kullandığınız para birimi',
       settings_ui_scale: 'Arayüz Ölçeği',
+      settings_tab_ui: 'Arayüz',
+      settings_tab_panels: 'Paneller',
+      settings_panels_hint: 'Seçili modülleri gizleyin — veriler korunur, yalnızca arayüzden kaldırılır.',
+      btn_hide: 'Gizle',
+      btn_show: 'Göster',
       settings_theme: 'Tema Modu',
       settings_theme_dark: 'Karanlık',
       settings_theme_midnight: 'Gece Yarısı',
@@ -61,6 +66,8 @@ const UI = {
       settings_delete_msg: 'Tüm verilerinizi — bütçe, plan, alışkanlık, yatırım, API anahtarları ve ayarlar — kalıcı olarak silmek üzeresiniz. Bu işlem <strong>geri alınamaz</strong>.',
       settings_delete_confirm: '⚠️ DİKKAT\n\nTüm verilerinizi (bütçe, plan, alışkanlık, yatırım, API anahtarları…) kalıcı olarak silmek üzeresiniz.\n\nBu işlem geri alınamaz. Onaylıyor musunuz?',
       settings_delete_ok: 'Tüm veriler silindi.',
+      seed_warning_label: 'Demo Veri Aktif',
+      seed_warning_desc: 'Sisteme geçici örnek veriler yüklü — Ayarlar\'dan temizleyip kendi verilerinizi girin',
       settings_delete_choice_title: 'Veri Sil',
       settings_delete_choice_subtitle: 'Nasıl sıfırlamak istediğinizi seçin:',
       settings_delete_reset_label: 'Demo\'ya Sıfırla',
@@ -350,7 +357,11 @@ const UI = {
       inv_trade_type_sell: 'Satım',
       inv_no_trades: 'Henüz işlem yok',
       inv_trade_action: 'Varlık Al/Sat',
-      inv_trade_filter_all: 'Tüm Tarihler',
+      inv_trade_filter_all: 'Tarih',
+      inv_tab_portfolio: 'Portföy',
+      inv_tab_trades: 'İşlem Geçmişi',
+      inv_history_btn: 'Geçmiş',
+      inv_trade_search: 'Sembol, isim...',
       inv_trade_opt_new_desc: 'Portföyde olmayan yeni bir varlık ekle',
       inv_trade_opt_buy_desc: 'Mevcut varlıktan daha fazla al, ortalama maliyet güncellenir',
       inv_trade_opt_sell_desc: 'Mevcut varlığının bir kısmını veya tamamını sat',
@@ -972,6 +983,11 @@ const UI = {
       settings_lang_fr: 'French',
       settings_currency: 'Currency you use',
       settings_ui_scale: 'Interface Scale',
+      settings_tab_ui: 'Interface',
+      settings_tab_panels: 'Panels',
+      settings_panels_hint: 'Hide modules you don\'t need — data is preserved, only removed from the UI.',
+      btn_hide: 'Hide',
+      btn_show: 'Show',
       settings_theme: 'Theme Mode',
       settings_theme_dark: 'Dark',
       settings_theme_midnight: 'Midnight',
@@ -999,6 +1015,8 @@ const UI = {
       settings_delete_msg: 'You are about to permanently delete <strong>all data</strong> — budget, plans, habits, investments, API keys and settings. This action <strong>cannot be undone</strong>.',
       settings_delete_confirm: '⚠️ WARNING\n\nYou are about to permanently delete all your data (budget, plans, habits, investments, API keys…).\n\nThis action cannot be undone. Are you sure?',
       settings_delete_ok: 'All data deleted.',
+      seed_warning_label: 'Demo Data Active',
+      seed_warning_desc: 'Sample data is loaded — clear it in Settings and enter your own data',
       settings_delete_choice_title: 'Delete Data',
       settings_delete_choice_subtitle: 'Choose how you want to reset:',
       settings_delete_reset_label: 'Reset to Demo',
@@ -1292,7 +1310,11 @@ const UI = {
       inv_trade_type_sell: 'Sell',
       inv_no_trades: 'No trades yet',
       inv_trade_action: 'Trade Assets',
-      inv_trade_filter_all: 'All Dates',
+      inv_trade_filter_all: 'Date',
+      inv_tab_portfolio: 'Portfolio',
+      inv_tab_trades: 'Trade History',
+      inv_history_btn: 'History',
+      inv_trade_search: 'Symbol, name...',
       inv_trade_opt_new_desc: 'Add a new asset not yet in your portfolio',
       inv_trade_opt_buy_desc: 'Buy more of an existing asset, average cost updates',
       inv_trade_opt_sell_desc: 'Sell part or all of an existing asset',
@@ -1907,6 +1929,11 @@ const UI = {
       settings_lang_fr: '法语',
       settings_currency: '您使用的货币',
       settings_ui_scale: '界面缩放',
+      settings_tab_ui: '界面',
+      settings_tab_panels: '面板',
+      settings_panels_hint: '隐藏不需要的模块 — 数据将被保留，仅从界面中移除。',
+      btn_hide: '隐藏',
+      btn_show: '显示',
       settings_theme: '主题模式',
       settings_theme_dark: '深色',
       settings_theme_midnight: '午夜',
@@ -1934,6 +1961,8 @@ const UI = {
       settings_delete_msg: '您即将永久删除<strong>所有数据</strong>——预算、计划、习惯、投资、API 密钥和设置。此操作<strong>无法撤销</strong>。',
       settings_delete_confirm: '⚠️ 警告\n\n您即将永久删除所有数据（预算、计划、习惯、投资、API 密钥…）。\n\n此操作无法撤销。确定吗？',
       settings_delete_ok: '所有数据已删除。',
+      seed_warning_label: '演示数据已启用',
+      seed_warning_desc: '系统已加载示例数据 — 请前往设置清除并输入您自己的数据',
       settings_delete_choice_title: '删除数据',
       settings_delete_choice_subtitle: '选择重置方式：',
       settings_delete_reset_label: '重置为演示',
@@ -2227,7 +2256,11 @@ const UI = {
       inv_trade_type_sell: '卖出',
       inv_no_trades: '暂无交易记录',
       inv_trade_action: '买卖资产',
-      inv_trade_filter_all: '所有日期',
+      inv_trade_filter_all: '日期',
+      inv_tab_portfolio: '投资组合',
+      inv_tab_trades: '交易记录',
+      inv_history_btn: '历史记录',
+      inv_trade_search: '代码、名称...',
       inv_trade_opt_new_desc: '添加投资组合中尚未存在的新资产',
       inv_trade_opt_buy_desc: '买入更多现有资产，平均成本自动更新',
       inv_trade_opt_sell_desc: '卖出现有资产的部分或全部',
@@ -2842,6 +2875,11 @@ const UI = {
       settings_lang_fr: 'Francés',
       settings_currency: 'Moneda que usas',
       settings_ui_scale: 'Escala de interfaz',
+      settings_tab_ui: 'Interfaz',
+      settings_tab_panels: 'Paneles',
+      settings_panels_hint: 'Oculta los módulos que no necesitas — los datos se conservan.',
+      btn_hide: 'Ocultar',
+      btn_show: 'Mostrar',
       settings_theme: 'Modo de tema',
       settings_theme_dark: 'Oscuro',
       settings_theme_midnight: 'Medianoche',
@@ -2869,6 +2907,8 @@ const UI = {
       settings_delete_msg: 'Estás a punto de eliminar permanentemente <strong>todos los datos</strong>: presupuesto, planes, hábitos, inversiones, claves API y configuración. Esta acción <strong>no se puede deshacer</strong>.',
       settings_delete_confirm: '⚠️ ADVERTENCIA\n\nEstás a punto de eliminar permanentemente todos tus datos (presupuesto, planes, hábitos, inversiones, claves API…).\n\nEsta acción no se puede deshacer. ¿Estás seguro?',
       settings_delete_ok: 'Todos los datos eliminados.',
+      seed_warning_label: 'Datos Demo Activos',
+      seed_warning_desc: 'Datos de muestra cargados — bórrelos en Configuración e ingrese sus propios datos',
       settings_delete_choice_title: 'Eliminar datos',
       settings_delete_choice_subtitle: 'Elige cómo quieres reiniciar:',
       settings_delete_reset_label: 'Restablecer a Demo',
@@ -3162,7 +3202,11 @@ const UI = {
       inv_trade_type_sell: 'Venta',
       inv_no_trades: 'Sin operaciones aún',
       inv_trade_action: 'Operar Activos',
-      inv_trade_filter_all: 'Todas las fechas',
+      inv_trade_filter_all: 'Fecha',
+      inv_tab_portfolio: 'Portafolio',
+      inv_tab_trades: 'Historial',
+      inv_history_btn: 'Historial',
+      inv_trade_search: 'Símbolo, nombre...',
       inv_trade_opt_new_desc: 'Añadir un nuevo activo que no está en tu cartera',
       inv_trade_opt_buy_desc: 'Comprar más de un activo existente, se actualiza el coste medio',
       inv_trade_opt_sell_desc: 'Vender parte o todo de un activo existente',
@@ -3777,6 +3821,11 @@ const UI = {
       settings_lang_fr: 'Français',
       settings_currency: 'Devise utilisée',
       settings_ui_scale: "Échelle de l'interface",
+      settings_tab_ui: 'Interface',
+      settings_tab_panels: 'Panneaux',
+      settings_panels_hint: 'Masquez les modules inutiles — vos données sont conservées.',
+      btn_hide: 'Masquer',
+      btn_show: 'Afficher',
       settings_theme: 'Mode de thème',
       settings_theme_dark: 'Sombre',
       settings_theme_midnight: 'Minuit',
@@ -3804,6 +3853,8 @@ const UI = {
       settings_delete_msg: 'Vous êtes sur le point de supprimer définitivement <strong>toutes les données</strong> — budget, plans, habitudes, investissements, clés API et paramètres. Cette action <strong>ne peut pas être annulée</strong>.',
       settings_delete_confirm: '⚠️ AVERTISSEMENT\n\nVous êtes sur le point de supprimer définitivement toutes vos données (budget, plans, habitudes, investissements, clés API…).\n\nCette action ne peut pas être annulée. Êtes-vous sûr ?',
       settings_delete_ok: 'Toutes les données supprimées.',
+      seed_warning_label: 'Données Démo Actives',
+      seed_warning_desc: 'Données de démonstration chargées — effacez-les dans Paramètres et entrez vos propres données',
       settings_delete_choice_title: 'Supprimer les données',
       settings_delete_choice_subtitle: 'Choisissez comment réinitialiser :',
       settings_delete_reset_label: 'Réinitialiser en démo',
@@ -4097,7 +4148,11 @@ const UI = {
       inv_trade_type_sell: 'Vente',
       inv_no_trades: 'Aucune opération pour l\'instant',
       inv_trade_action: 'Opérations',
-      inv_trade_filter_all: 'Toutes les dates',
+      inv_trade_filter_all: 'Date',
+      inv_tab_portfolio: 'Portefeuille',
+      inv_tab_trades: 'Historique',
+      inv_history_btn: 'Historique',
+      inv_trade_search: 'Symbole, nom...',
       inv_trade_opt_new_desc: 'Ajouter un nouvel actif absent de votre portefeuille',
       inv_trade_opt_buy_desc: 'Acheter davantage d\'un actif existant, le coût moyen se met à jour',
       inv_trade_opt_sell_desc: 'Vendre une partie ou la totalité d\'un actif existant',
@@ -5117,7 +5172,59 @@ const UI = {
   },
 
   // ── Settings modal ───────────────────────────────────────
-  openSettings() {
+  isModuleHidden(key) {
+    return !!(Store.get('hidden_modules') || {})[key];
+  },
+
+  _setModuleHidden(key, isHidden) {
+    const hidden = Store.get('hidden_modules') || {};
+    if (isHidden) hidden[key] = true;
+    else delete hidden[key];
+    Store.set('hidden_modules', hidden);
+  },
+
+  applyHiddenModules() {
+    const hidden = Store.get('hidden_modules') || {};
+    const MAP = {
+      focusmode: 'focusmode.html',
+      timelog: 'timelog.html',
+      habits: 'habits.html',
+      gym: 'gym.html',
+      plans: 'plans.html',
+      goals: 'goals.html',
+      budget: 'budget.html',
+      investments: 'investments.html',
+    };
+    Object.entries(MAP).forEach(([key, page]) => {
+      const link = document.querySelector(`.sidebar-nav a[href="${page}"]`);
+      if (link) link.style.display = hidden[key] ? 'none' : '';
+    });
+  },
+
+  _toggleModule(key) {
+    const willHide = !this.isModuleHidden(key);
+    const MAP = {
+      focusmode: 'focusmode.html',
+      timelog: 'timelog.html',
+      habits: 'habits.html',
+      gym: 'gym.html',
+      plans: 'plans.html',
+      goals: 'goals.html',
+      budget: 'budget.html',
+      investments: 'investments.html',
+    };
+    const page = MAP[key];
+    const onPage = page && window.location.href.includes('/' + page);
+    this._setModuleHidden(key, willHide);
+    this.applyHiddenModules();
+    this._renderSettingsModal();
+    document.dispatchEvent(new CustomEvent('lt:modules-change'));
+    if (willHide && onPage) window.location.href = 'index.html';
+  },
+
+  openSettings(tab) {
+    if (tab) this._settingsActiveTab = tab;
+    else if (!this._settingsActiveTab) this._settingsActiveTab = 'ui';
     if (this._settingsModal && this._settingsModal._overlay && this._settingsModal._overlay.isConnected) {
       this._renderSettingsModal();
       return;
@@ -5136,7 +5243,7 @@ const UI = {
     const lang = this.getLang();
     const currentTheme = Store.getSettings().theme || 'dark';
     const themes = [
-      { id: 'dark', accent: '#111111', bg: '#1A1A22' },
+      { id: 'dark', accent: '#404050', bg: '#111111' },
       { id: 'midnight', accent: '#4D9EFF', bg: '#15192E' },
       { id: 'ocean', accent: '#00CBA9', bg: '#122224' },
       { id: 'forest', accent: '#4ADE80', bg: '#142218' },
@@ -5151,11 +5258,11 @@ const UI = {
     ];
     const s = Store.getSettings();
     const _themeSurfaces = {
-      dark: '#1A1A22', midnight: '#15192E', ocean: '#122224', forest: '#142218',
+      dark: '#111111', midnight: '#15192E', ocean: '#122224', forest: '#142218',
       sunset: '#241810', rose: '#221724', amber: '#1E1608', crimson: '#240E0E',
       nebula: '#181224', arctic: '#0D1C28', neon: '#101A10', white: '#FFFFFF',
     };
-    const currentBg = _themeSurfaces[currentTheme] || '#1A1A22';
+    const currentBg = _themeSurfaces[currentTheme] || '#111111';
     const isLightTheme = currentTheme === 'white';
     const swatches = themes.map(th => {
       const active = th.id === currentTheme;
@@ -5175,7 +5282,15 @@ const UI = {
         <span style="font-size:0.625rem;color:${labelColor};font-family:var(--font-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:3.5rem;text-align:center;">${this.t('settings_theme_' + th.id)}</span>
       </button>`;
     }).join('');
-    return `<div style="display:flex;flex-direction:column;gap:0.75rem">
+    const activeTab = this._settingsActiveTab || 'ui';
+    const _tabBtn = (id, label) => {
+      const isActive = activeTab === id;
+      return `<button onclick="UI._switchSettingsTab('${id}')"
+        style="display:flex;align-items:center;padding:0.5rem 1rem;font-size:0.8125rem;font-weight:${isActive ? 600 : 500};cursor:pointer;border:none;background:none;border-bottom:2px solid ${isActive ? 'var(--accent)' : 'transparent'};margin-bottom:-1px;color:${isActive ? 'var(--accent)' : 'var(--text-secondary)'};transition:color var(--transition),border-color var(--transition);white-space:nowrap;flex-shrink:0">
+        ${label}
+      </button>`;
+    };
+    const uiTabHTML = `<div style="display:flex;flex-direction:column;gap:0.75rem">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
         <div class="form-group" style="margin:0">
           <label class="form-label" style="text-align:center">${this.t('settings_lang')}</label>
@@ -5236,12 +5351,10 @@ const UI = {
           <svg data-lucide="trash-2" style="width:0.875rem;height:0.875rem;flex-shrink:0"></svg>${this.t('settings_delete_btn')}
         </button>
       </div>
+    </div>`;
+    const apiTabHTML = `<div style="display:flex;flex-direction:column;gap:0.75rem">
       <div class="form-group" style="margin:0">
-        <label class="form-label" style="display:flex;align-items:center;gap:0.375rem">
-          <svg data-lucide="key-round" style="width:0.8125rem;height:0.8125rem;color:var(--accent)"></svg>
-          ${this.t('settings_api_title')}
-        </label>
-        <p style="font-size:0.6875rem;color:var(--text-muted);margin:0.125rem 0 0.375rem">${this.t('settings_api_hint')}</p>
+        <p style="font-size:0.6875rem;color:var(--text-muted);margin:0 0 0.625rem">${this.t('settings_api_hint')}</p>
         <div style="display:flex;flex-direction:column;gap:0.375rem">
           ${[
         { id: 'lt-api-av', label: this.t('settings_api_av'), val: s.avKey || '' },
@@ -5273,12 +5386,53 @@ const UI = {
         </div>
       </div>
     </div>`;
+    const panelsTabHTML = (() => {
+      const modules = [
+        { key: 'focusmode',   icon: 'timer',        labelKey: 'nav_pomodoro'    },
+        { key: 'timelog',     icon: 'clock',         labelKey: 'nav_time'        },
+        { key: 'habits',      icon: 'check-square',  labelKey: 'nav_habits'      },
+        { key: 'gym',         icon: 'dumbbell',      labelKey: 'nav_gym'         },
+        { key: 'plans',       icon: 'kanban',        labelKey: 'nav_plans'       },
+        { key: 'goals',       icon: 'star',          labelKey: 'nav_goals'       },
+        { key: 'budget',      icon: 'wallet',        labelKey: 'nav_budget'      },
+        { key: 'investments', icon: 'trending-up',   labelKey: 'nav_investments' },
+      ];
+      const rows = modules.map(m => {
+        const hidden = this.isModuleHidden(m.key);
+        return `<div style="display:flex;align-items:center;gap:0.75rem;padding:0.5625rem 0;border-bottom:1px solid var(--border)">
+          <svg data-lucide="${m.icon}" style="width:1rem;height:1rem;color:${hidden ? 'var(--text-muted)' : 'var(--accent)'};flex-shrink:0"></svg>
+          <span style="flex:1;font-size:0.8125rem;color:${hidden ? 'var(--text-muted)' : 'var(--text-primary)'}">${this.t(m.labelKey)}</span>
+          <button onclick="UI._toggleModule('${m.key}')"
+            style="display:flex;align-items:center;gap:0.3125rem;padding:0.25rem 0.625rem;border-radius:var(--radius-sm);border:1px solid ${hidden ? 'var(--border)' : 'var(--accent)'};background:${hidden ? 'var(--bg-elevated)' : 'rgba(124,108,252,0.12)'};cursor:pointer;font-size:0.75rem;font-weight:600;color:${hidden ? 'var(--text-muted)' : 'var(--accent)'};transition:all var(--transition)">
+            <svg data-lucide="${hidden ? 'eye-off' : 'eye'}" style="width:0.75rem;height:0.75rem;flex-shrink:0"></svg>
+            ${hidden ? this.t('btn_show') : this.t('btn_hide')}
+          </button>
+        </div>`;
+      }).join('');
+      return `<div style="display:flex;flex-direction:column;gap:0">
+        <p style="font-size:0.6875rem;color:var(--text-muted);margin:0 0 0.625rem">${this.t('settings_panels_hint')}</p>
+        ${rows}
+      </div>`;
+    })();
+    return `<div style="display:flex;flex-direction:column;gap:0">
+      <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:0.875rem">
+        ${_tabBtn('ui', this.t('settings_tab_ui'))}
+        ${_tabBtn('panels', this.t('settings_tab_panels'))}
+        ${_tabBtn('api', 'API')}
+      </div>
+      ${activeTab === 'panels' ? panelsTabHTML : activeTab === 'api' ? apiTabHTML : uiTabHTML}
+    </div>`;
   },
 
   _renderSettingsModal() {
     if (this._settingsModal && this._settingsModal._overlay && this._settingsModal._overlay.isConnected) {
       this._settingsModal.setContent(this._settingsBodyHTML());
     }
+  },
+
+  _switchSettingsTab(tab) {
+    this._settingsActiveTab = tab;
+    this._renderSettingsModal();
   },
 
   _exportData() {
@@ -5878,6 +6032,7 @@ const UI = {
     document.documentElement.classList.remove('sb-collapsed');
 
     this.applyTranslations();
+    this.applyHiddenModules();
   },
 
   toggleSidebar() {
@@ -5949,6 +6104,43 @@ const UI = {
     document.documentElement.style.fontSize = (16 * scale) + 'px';
   },
 
+  // ── Seed data warning ─────────────────────────────────────
+  _hasSeedData() {
+    if (!Store.get('seed_active')) return false;
+    // Auto-clear seed_active if user has deleted all seeded modules' data.
+    const keys = ['gym_seeded','time_seeded','habits_seeded','plans_seeded','inv_seeded','goals_seeded','budget_seeded','pomo_seeded'];
+    if (!keys.some(k => !!Store.get(k))) {
+      Store.set('seed_active', null);
+      return false;
+    }
+    return true;
+  },
+
+  _injectSeedWarning() {
+    if (!this._hasSeedData()) return;
+    if (document.getElementById('seed-warning-badge')) return;
+    const header = document.querySelector('header.topbar');
+    if (!header) return;
+
+    const badge = document.createElement('div');
+    badge.id = 'seed-warning-badge';
+    badge.className = 'seed-warning-badge';
+    badge.innerHTML = `
+      <svg class="swb-icon" data-lucide="alert-triangle"></svg>
+      <div class="swb-content">
+        <span class="swb-label">${this.t('seed_warning_label')}</span>
+        <span class="swb-sub">${this.t('seed_warning_desc')}</span>
+      </div>
+    `;
+
+    badge.addEventListener('click', () => UI.openSettings());
+
+    // Absolutely centered in topbar — unaffected by topbar-right content changes.
+    header.appendChild(badge);
+
+    lucide.createIcons({ nodes: [badge] });
+  },
+
   // ── Topbar init ──────────────────────────────────────────
   initTopbar({ noPrivacy = false } = {}) {
     this.applyScale();
@@ -5982,6 +6174,7 @@ const UI = {
     }
 
     if (!noPrivacy) this._syncPrivacyBtns();
+    this._injectSeedWarning();
   },
 
   // ── Modal ────────────────────────────────────────────────

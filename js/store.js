@@ -289,6 +289,7 @@
 
     // ── Gym seed ──────────────────────────────────────────────
     if (!this.get('gym_seeded') && !this.getGym().workouts.length) {
+      this.set('seed_active', true);
       const wid = () => this._id();
       const gn = T.gym.n, gtn = T.gym.tn;
 
