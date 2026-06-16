@@ -59,6 +59,14 @@ body {
 
 .sidebar-logo-icon svg { width: 17px; height: 17px; color: var(--accent-contrast, #fff); }
 
+.sidebar-logo-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  gap: 2px;
+}
+
 .sidebar-logo-text {
   font-family: var(--font-display);
   font-size: 15px;
@@ -67,8 +75,20 @@ body {
   letter-spacing: -0.02em;
   white-space: nowrap;
   overflow: hidden;
-  flex: 1;
+  flex: none;
   transition: opacity 150ms ease-out;
+}
+
+.lt-version-badge {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: opacity 150ms ease-out;
+  text-transform: uppercase;
 }
 
 /* ── SIDEBAR TOGGLE BUTTON ──────────────────────────────── */
@@ -251,6 +271,7 @@ body {
 
 /* Collapsed sidebar'da widget gizlenir */
 .sidebar.collapsed .focus-sidebar-widget { display: none !important; }
+html.sb-collapsed .sidebar .focus-sidebar-widget { display: none !important; }
 
 /* ── FOCUS TOPBAR WIDGET (ftw) ──────────────────────────── */
 .ftw {
@@ -370,7 +391,8 @@ body {
   gap: 2px;
 }
 
-.sidebar.collapsed .sidebar-logo-text {
+.sidebar.collapsed .sidebar-logo-text,
+.sidebar.collapsed .lt-version-badge {
   opacity: 0;
   height: 0;
   overflow: hidden;
@@ -436,6 +458,20 @@ body {
 .sidebar.collapsed + .main-content {
   left: var(--sidebar-collapsed-width);
 }
+
+/* ── EARLY COLLAPSE FOUC FIX (html.sb-collapsed set before paint) ─── */
+html.sb-collapsed .sidebar { width: var(--sidebar-collapsed-width); transition: none; }
+html.sb-collapsed .sidebar .sidebar-logo { flex-direction:column;align-items:center;justify-content:center;height:70px;box-sizing:border-box;padding:5px 7px;gap:2px; }
+html.sb-collapsed .sidebar .sidebar-logo-text,
+html.sb-collapsed .sidebar .lt-version-badge { opacity:0;height:0;overflow:hidden;flex:none; }
+html.sb-collapsed .sidebar .sidebar-toggle-btn { order:-1;margin-left:0;align-self:center; }
+html.sb-collapsed .sidebar .nav-label { opacity:0;width:0;overflow:hidden; }
+html.sb-collapsed .sidebar .nav-link { justify-content:center;gap:0;padding:9px 0; }
+html.sb-collapsed .sidebar .nav-link.active::before { opacity:0; }
+html.sb-collapsed .sidebar .sidebar-footer { flex-direction:column;align-items:center; }
+html.sb-collapsed .sidebar .sidebar-footer .privacy-toggle-btn { align-self:center;margin-bottom:0; }
+html.sb-collapsed .sidebar .sidebar-footer .nav-link { justify-content:center;gap:0;padding:9px 0;flex:0 0 auto;width:100%; }
+html.sb-collapsed .main-content { left: var(--sidebar-collapsed-width); }
 
 /* ── TOPBAR ─────────────────────────────────────────────── */
 .topbar {

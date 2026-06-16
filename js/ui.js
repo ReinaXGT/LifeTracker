@@ -1,23 +1,25 @@
 const UI = {
-  MONTHS_SHORT: ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'],
-  MONTHS_LONG:  ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'],
-  DAYS:         ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'],
+  VERSION: 'v1.7',
 
-  MONTHS_SHORT_EN: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-  MONTHS_LONG_EN:  ['January','February','March','April','May','June','July','August','September','October','November','December'],
-  DAYS_EN:         ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+  MONTHS_SHORT: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
+  MONTHS_LONG: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'],
+  DAYS: ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'],
 
-  MONTHS_SHORT_ZH: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
-  MONTHS_LONG_ZH:  ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
-  DAYS_ZH:         ['周日','周一','周二','周三','周四','周五','周六'],
+  MONTHS_SHORT_EN: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+  MONTHS_LONG_EN: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+  DAYS_EN: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
 
-  MONTHS_SHORT_ES: ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'],
-  MONTHS_LONG_ES:  ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'],
-  DAYS_ES:         ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'],
+  MONTHS_SHORT_ZH: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+  MONTHS_LONG_ZH: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+  DAYS_ZH: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
 
-  MONTHS_SHORT_FR: ['jan.','fév.','mar.','avr.','mai','juin','juil.','août','sep.','oct.','nov.','déc.'],
-  MONTHS_LONG_FR:  ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'],
-  DAYS_FR:         ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'],
+  MONTHS_SHORT_ES: ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'],
+  MONTHS_LONG_ES: ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'],
+  DAYS_ES: ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
+
+  MONTHS_SHORT_FR: ['jan.', 'fév.', 'mar.', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sep.', 'oct.', 'nov.', 'déc.'],
+  MONTHS_LONG_FR: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
+  DAYS_FR: ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'],
 
   // ── i18n dictionary ──────────────────────────────────────
   _i18n: {
@@ -667,13 +669,13 @@ const UI = {
       bud_search: 'Ara...',
       bud_no_tx: 'Henüz işlem kaydı yok',
       bud_others: 'Diğer',
-      bud_history_btn:     'Geçmiş',
-      bud_history_title:   'Bütçe Geçmişi',
-      bud_history_empty:   'Henüz tamamlanmış döngü yok',
+      bud_history_btn: 'Geçmiş',
+      bud_history_title: 'Bütçe Geçmişi',
+      bud_history_empty: 'Henüz tamamlanmış döngü yok',
       bud_history_no_data: 'Bu döngü için işlem verisi kaydedilmemiş',
-      bud_history_cycle:   'Döngü',
-      bud_history_add_tx:  'İşlem Ekle',
-      bud_history_no_tx:   'Bu döngüde işlem kaydı yok',
+      bud_history_cycle: 'Döngü',
+      bud_history_add_tx: 'İşlem Ekle',
+      bud_history_no_tx: 'Bu döngüde işlem kaydı yok',
       bud_cycle_settings_title: 'Bütçe Döngüsü',
       bud_cycle_start: 'Başlangıç',
       bud_cycle_end: 'Bitiş',
@@ -681,10 +683,10 @@ const UI = {
       bud_cycle_saved: 'Döngü ayarları kaydedildi',
       bud_add_tx_btn: 'İşlem Ekle',
       bud_import_budget_btn: 'Veri Aktar',
-      import_data_btn:      'Veri Aktar',
-      import_data_confirm:  'Mevcut modül verileri silinecek ve dosyadaki verilerle değiştirilecek. Devam edilsin mi?',
-      import_data_ok:       'Veriler başarıyla aktarıldı',
-      import_data_err:      'Geçerli modül verisi bulunamadı',
+      import_data_btn: 'Veri Aktar',
+      import_data_confirm: 'Mevcut modül verileri silinecek ve dosyadaki verilerle değiştirilecek. Devam edilsin mi?',
+      import_data_ok: 'Veriler başarıyla aktarıldı',
+      import_data_err: 'Geçerli modül verisi bulunamadı',
       bud_import_budget_confirm: 'Mevcut bütçe verileri silinip dosyadaki verilerle değiştirilecek. Devam edilsin mi?',
       bud_import_budget_ok: 'Bütçe verileri başarıyla aktarıldı',
       bud_import_budget_err: 'Geçersiz dosya — bütçe verisi bulunamadı',
@@ -1603,13 +1605,13 @@ const UI = {
       bud_search: 'Search...',
       bud_no_tx: 'No transactions yet',
       bud_others: 'Others',
-      bud_history_btn:     'History',
-      bud_history_title:   'Budget History',
-      bud_history_empty:   'No completed cycles yet',
+      bud_history_btn: 'History',
+      bud_history_title: 'Budget History',
+      bud_history_empty: 'No completed cycles yet',
       bud_history_no_data: 'No transaction data saved for this cycle',
-      bud_history_cycle:   'Cycle',
-      bud_history_add_tx:  'Add Transaction',
-      bud_history_no_tx:   'No transactions in this cycle',
+      bud_history_cycle: 'Cycle',
+      bud_history_add_tx: 'Add Transaction',
+      bud_history_no_tx: 'No transactions in this cycle',
       bud_cycle_settings_title: 'Budget Cycle',
       bud_cycle_start: 'Start',
       bud_cycle_end: 'End',
@@ -1617,10 +1619,10 @@ const UI = {
       bud_cycle_saved: 'Cycle settings saved',
       bud_add_tx_btn: 'Add Transaction',
       bud_import_budget_btn: 'Import Data',
-      import_data_btn:      'Import Data',
-      import_data_confirm:  'Existing module data will be deleted and replaced with the imported data. Continue?',
-      import_data_ok:       'Data imported successfully',
-      import_data_err:      'No valid module data found in file',
+      import_data_btn: 'Import Data',
+      import_data_confirm: 'Existing module data will be deleted and replaced with the imported data. Continue?',
+      import_data_ok: 'Data imported successfully',
+      import_data_err: 'No valid module data found in file',
       bud_import_budget_confirm: 'Current budget data will be deleted and replaced with the file data. Continue?',
       bud_import_budget_ok: 'Budget data imported successfully',
       bud_import_budget_err: 'Invalid file — no budget data found',
@@ -2538,13 +2540,13 @@ const UI = {
       bud_search: '搜索...',
       bud_no_tx: '暂无交易',
       bud_others: '其他',
-      bud_history_btn:     '历史',
-      bud_history_title:   '预算历史',
-      bud_history_empty:   '暂无已完成的周期',
+      bud_history_btn: '历史',
+      bud_history_title: '预算历史',
+      bud_history_empty: '暂无已完成的周期',
       bud_history_no_data: '此周期未保存交易数据',
-      bud_history_cycle:   '周期',
-      bud_history_add_tx:  '添加交易',
-      bud_history_no_tx:   '此周期暂无交易',
+      bud_history_cycle: '周期',
+      bud_history_add_tx: '添加交易',
+      bud_history_no_tx: '此周期暂无交易',
       bud_cycle_settings_title: '预算周期',
       bud_cycle_start: '开始',
       bud_cycle_end: '结束',
@@ -2552,10 +2554,10 @@ const UI = {
       bud_cycle_saved: '周期设置已保存',
       bud_add_tx_btn: '添加交易',
       bud_import_budget_btn: '导入数据',
-      import_data_btn:      '导入数据',
-      import_data_confirm:  '现有模块数据将被删除并替换为导入的数据。是否继续？',
-      import_data_ok:       '数据导入成功',
-      import_data_err:      '文件中未找到有效的模块数据',
+      import_data_btn: '导入数据',
+      import_data_confirm: '现有模块数据将被删除并替换为导入的数据。是否继续？',
+      import_data_ok: '数据导入成功',
+      import_data_err: '文件中未找到有效的模块数据',
       bud_import_budget_confirm: '当前预算数据将被删除并替换为文件中的数据。是否继续？',
       bud_import_budget_ok: '预算数据导入成功',
       bud_import_budget_err: '无效文件 — 未找到预算数据',
@@ -3473,13 +3475,13 @@ const UI = {
       bud_search: 'Buscar...',
       bud_no_tx: 'Sin transacciones aún',
       bud_others: 'Otros',
-      bud_history_btn:     'Historial',
-      bud_history_title:   'Historial de presupuesto',
-      bud_history_empty:   'Aún no hay ciclos completados',
+      bud_history_btn: 'Historial',
+      bud_history_title: 'Historial de presupuesto',
+      bud_history_empty: 'Aún no hay ciclos completados',
       bud_history_no_data: 'No hay datos de transacciones guardados para este ciclo',
-      bud_history_cycle:   'Ciclo',
-      bud_history_add_tx:  'Añadir transacción',
-      bud_history_no_tx:   'No hay transacciones en este ciclo',
+      bud_history_cycle: 'Ciclo',
+      bud_history_add_tx: 'Añadir transacción',
+      bud_history_no_tx: 'No hay transacciones en este ciclo',
       bud_cycle_settings_title: 'Ciclo de presupuesto',
       bud_cycle_start: 'Inicio',
       bud_cycle_end: 'Fin',
@@ -3487,10 +3489,10 @@ const UI = {
       bud_cycle_saved: 'Ajustes del ciclo guardados',
       bud_add_tx_btn: 'Añadir transacción',
       bud_import_budget_btn: 'Importar datos',
-      import_data_btn:      'Importar datos',
-      import_data_confirm:  'Los datos del módulo actuales se eliminarán y reemplazarán con los importados. ¿Continuar?',
-      import_data_ok:       'Datos importados correctamente',
-      import_data_err:      'No se encontraron datos válidos del módulo',
+      import_data_btn: 'Importar datos',
+      import_data_confirm: 'Los datos del módulo actuales se eliminarán y reemplazarán con los importados. ¿Continuar?',
+      import_data_ok: 'Datos importados correctamente',
+      import_data_err: 'No se encontraron datos válidos del módulo',
       bud_import_budget_confirm: 'Los datos de presupuesto actuales serán eliminados y reemplazados por los del archivo. ¿Continuar?',
       bud_import_budget_ok: 'Datos de presupuesto importados correctamente',
       bud_import_budget_err: 'Archivo no válido — no se encontraron datos de presupuesto',
@@ -4408,13 +4410,13 @@ const UI = {
       bud_search: 'Rechercher...',
       bud_no_tx: "Aucune transaction pour l'instant",
       bud_others: 'Autres',
-      bud_history_btn:     'Historique',
-      bud_history_title:   'Historique budgétaire',
-      bud_history_empty:   'Aucun cycle terminé pour le moment',
+      bud_history_btn: 'Historique',
+      bud_history_title: 'Historique budgétaire',
+      bud_history_empty: 'Aucun cycle terminé pour le moment',
       bud_history_no_data: 'Aucune donnée de transaction enregistrée pour ce cycle',
-      bud_history_cycle:   'Cycle',
-      bud_history_add_tx:  'Ajouter une transaction',
-      bud_history_no_tx:   'Aucune transaction dans ce cycle',
+      bud_history_cycle: 'Cycle',
+      bud_history_add_tx: 'Ajouter une transaction',
+      bud_history_no_tx: 'Aucune transaction dans ce cycle',
       bud_cycle_settings_title: 'Cycle budgétaire',
       bud_cycle_start: 'Début',
       bud_cycle_end: 'Fin',
@@ -4422,10 +4424,10 @@ const UI = {
       bud_cycle_saved: 'Paramètres du cycle enregistrés',
       bud_add_tx_btn: 'Ajouter une transaction',
       bud_import_budget_btn: 'Importer les données',
-      import_data_btn:      'Importer les données',
-      import_data_confirm:  "Les données actuelles du module seront supprimées et remplacées. Continuer ?",
-      import_data_ok:       'Données importées avec succès',
-      import_data_err:      'Aucune donnée de module valide trouvée',
+      import_data_btn: 'Importer les données',
+      import_data_confirm: "Les données actuelles du module seront supprimées et remplacées. Continuer ?",
+      import_data_ok: 'Données importées avec succès',
+      import_data_err: 'Aucune donnée de module valide trouvée',
       bud_import_budget_confirm: 'Les données budgétaires actuelles seront supprimées et remplacées par celles du fichier. Continuer ?',
       bud_import_budget_ok: 'Données budgétaires importées avec succès',
       bud_import_budget_err: 'Fichier invalide — aucune donnée budgétaire trouvée',
@@ -4708,8 +4710,8 @@ const UI = {
   t(key, ...args) {
     const lang = this.getLang();
     let text = (this._i18n[lang] && this._i18n[lang][key]) ||
-               (this._i18n.tr && this._i18n.tr[key]) ||
-               key;
+      (this._i18n.tr && this._i18n.tr[key]) ||
+      key;
     args.forEach((arg, i) => { text = text.replace(`{${i}}`, arg); });
     return text;
   },
@@ -4717,14 +4719,14 @@ const UI = {
   applyTranslations() {
     // Nav links
     const navMap = {
-      'index.html':       'nav_dashboard',
-      'focusmode.html':   'nav_pomodoro',
-      'timelog.html':     'nav_time',
-      'habits.html':      'nav_habits',
-      'gym.html':         'nav_gym',
-      'plans.html':       'nav_plans',
-      'goals.html':       'nav_goals',
-      'budget.html':      'nav_budget',
+      'index.html': 'nav_dashboard',
+      'focusmode.html': 'nav_pomodoro',
+      'timelog.html': 'nav_time',
+      'habits.html': 'nav_habits',
+      'gym.html': 'nav_gym',
+      'plans.html': 'nav_plans',
+      'goals.html': 'nav_goals',
+      'budget.html': 'nav_budget',
       'investments.html': 'nav_investments',
     };
     document.querySelectorAll('.sidebar .nav-link').forEach(link => {
@@ -4793,8 +4795,8 @@ const UI = {
       const p = pages[activePage];
       const navItems = pages.map((pg, i) => `
         <button onclick="document.getElementById('lt-help-overlay')._setPage(${i})"
-          style="display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border:none;border-radius:var(--radius-sm);cursor:pointer;text-align:left;font-size:0.8125rem;font-weight:${i===activePage?'600':'400'};color:${i===activePage?'var(--accent)':'var(--text-secondary)'};background:${i===activePage?'rgba(124,108,252,.12)':'transparent'};transition:background 120ms">
-          <svg data-lucide="${pg.icon}" style="width:15px;height:15px;flex-shrink:0;color:${i===activePage?'var(--accent)':'var(--text-muted)'}"></svg>
+          style="display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border:none;border-radius:var(--radius-sm);cursor:pointer;text-align:left;font-size:0.8125rem;font-weight:${i === activePage ? '600' : '400'};color:${i === activePage ? 'var(--accent)' : 'var(--text-secondary)'};background:${i === activePage ? 'rgba(124,108,252,.12)' : 'transparent'};transition:background 120ms">
+          <svg data-lucide="${pg.icon}" style="width:15px;height:15px;flex-shrink:0;color:${i === activePage ? 'var(--accent)' : 'var(--text-muted)'}"></svg>
           <span>${pg.title}</span>
         </button>`).join('');
 
@@ -4852,164 +4854,264 @@ const UI = {
   _helpPages() {
     return {
       tr: [
-        { icon:'settings', title:'Ayarlar', desc:'Genel tercihler, görünüm ve veri yönetimi merkezi. Sidebar alt kısmındaki dişli çark ikonuna tıklayarak her sayfadan açılır. Değişiklikler tüm sayfalara anında yansır.',
-          features:['Dil seçimi: TR / EN / ZH / ES / FR — arayüz seçilen dile anında geçer','Para birimi: ₺, $, €, £ ve diğerleri — finansal değerlerin gösterim sembolü','Tema: 12 tema (Dark, Midnight, Ocean, Forest, Sunset, Rose, Amber, Crimson, Nebula, Arctic, Neon, White)','Arayüz Ölçeği: %60–%140 arası kaydırıcı — rem tabanlı tüm ölçüler orantılı büyür/küçülür','Gizlilik Modu: para değerlerini •••• ile maskeler; sidebar\'daki göz butonu ya da buradan açılıp kapatılır','Hafta Başlangıcı: Pazartesi veya Pazar seçilebilir — alışkanlık ve zaman grafiklerini etkiler','Yatırım API Anahtarları: Alpha Vantage (hisse/ETF/kripto fiyatı) ve Exchange Rates API (döviz kuru)','Veri Dışa Aktar: tüm lt_ verilerini JSON dosyası olarak bilgisayara indirir','Veri İçe Aktar: JSON dosyasındaki verilerle mevcut tüm verilerin üzerine yazar (geri dönüşü yok)','Tüm Verileri Sil: 🔄 Seed veriye dön — tüm veriler silinir, uygulama örnek verilerle yeniden başlar (sıfırlama güvenli kapı); 💥 Tamamen sil — hiçbir veri kalmaz, geri dönüş yoktur'],
-          tip:'İçe Aktar, mevcut tüm verileri silerek dosyadakileri yazar — önce Dışa Aktar ile yedek al. Verilerini kaybetme endişesi varsa "Seed veriye dön" seçeneği her zaman örnek içerikli temiz bir başlangıç sağlar.' },
-        { icon:'layout-dashboard', title:'Dashboard', desc:'Tüm modüllerin merkezi özet ekranı. Net varlık, harcama, alışkanlık tamamlama oranı ve aktif hedef sayısı gibi kritik metrikleri tek bakışta görürsün. Panel sırasını ve görünürlüğünü kendi tercihine göre düzenleyebilirsin.',
-          features:['Haftalık / Aylık / Yıllık period seçimi ile trend analizi','Panelleri kilit butonuyla sürükle-bırak ile yeniden sırala','Yaklaşan planlar ve gecikmiş görev uyarıları','Yatırım portföyü pasta grafiği ve varlık dağılımı','Hedefler ilerleme çubukları ve milestone sayacı','Son antrenmanlar ve egzersiz detayları','Bütçe harcama durumu — kategori bazlı progress bar\'lar'],
-          tip:'Sağ üstteki kilit ikonuna tıklayarak panelleri sürükleyip sıralayabilir, göz ikonuyla da istediğin paneli gizleyebilirsin.' },
-        { icon:'timer', title:'Pomodoro', desc:'Üç modlu odak zamanlayıcı. Klasik Pomodoro döngüsü (çalışma + mola), sınırsız Flow modu veya özel geri sayımla derinlemesine odaklanabilirsin. Her oturum otomatik olarak Zaman sayfasına kaydedilir.',
-          features:['Pomodoro (25 dk çalışma + mola döngüsü), Flow (sınırsız) ve Geri Sayım modları','Göreve bağlama — aktif görevi başlığa yansıtır; harcanan pomodoro sayısı takip edilir','Alt görev paneli — çalışırken subtask\'ları görüntüle ve işaretle','Bayrak butonu: timer çalışırken anlık split noktası işaretler; geçen süre ve saat kaydedilir','Sıfırla butonu: son flag\'e kadar kaydet / son flag\'e sar / tümünü sil — 3 seçenek sunar','Bitir butonu: tüm süreyi kaydet ya da flag\'lere göre bölerek kaydet seçeneği sunar','Fazla mesai modu: süre dolunca +MM:SS ile devam eder, Bitir butonuyla sonlandırılır','Tarayıcı kapatılsa veya sayfa yenilense bile timer kaldığı yerden devam eder (8 saatlik TTL)','Birden fazla açık sekme gerçek zamanlı olarak birbiriyle senkronize çalışır'],
-          tip:'Ayarlar bölümünden çalışma, kısa mola ve uzun mola sürelerini ihtiyacına göre değiştirebilirsin.' },
-        { icon:'clock', title:'Zaman Takibi', desc:'Günlük aktivitelerini kategori ve projeye göre kaydet. Pomodoro tamamlandığında loglar otomatik aktarılır; manuel giriş de her zaman yapabilirsin. 30 günlük bar grafik ile zaman dağılımını analiz et.',
-          features:['Manuel log ekleme: tarih, kategori, proje, başlangıç–bitiş saati','Pomodoro oturumları otomatik olarak "pomodoro" kaynağıyla aktarılır','Kaynak filtresi: Tümü / Sadece Manuel / Sadece Pomodoro','Tarih aralığı seçimi ile geçmişi analiz et','30 günlük ve haftalık bar grafikler','Aylık geçmiş modalı — gün ve hafta toplamlarıyla'],
-          tip:'Pomodoro\'dan gelen kayıtlar "pomodoro" kaynağıyla otomatik eklenir; kaynak filtresiyle sadece Pomodoro veya sadece manuel girişleri ayrı ayrı görüntüleyebilirsin.' },
-        { icon:'check-circle', title:'Alışkanlıklar', desc:'Günlük alışkanlıklarını takip et ve seri oluştur. Kalıcı (her gün) veya zamanlanmış (belirli günlerde) alışkanlıklar ekleyebilir, günlük ilerlemeyi görsel ızgara ve grafiklerle izleyebilirsin.',
-          features:['İki alışkanlık tipi: Kalıcı (her gün) ve Zamanlanmış (seçili günler)','Günlük atlama (Skip) sistemi — o günü kayıp saymadan geçebilirsin','🔥 Seri sayacı: kaç gün üst üste tamamladığını gösterir','30 günlük tamamlama ızgarası — her alışkanlık için geçmiş','Haftalık donut grafikler ile tamamlama yüzdesi','Sürükle-bırak ile alışkanlık sıralamasını düzenle'],
-          tip:'Zamanlanmış bir alışkanlık, seçili olmayan günlerde listede görünmez — o günlerin serini etkilemez.' },
-        { icon:'dumbbell', title:'Spor', desc:'Antrenman günlüğü. Kuvvet, kardiyo, esneklik ve diğer türlerde antrenman ekle; egzersizlerini set/tekrar/ağırlık veya süre/mesafe ile kaydet. Şablon kaydet ve birden fazla seferde kullan.',
-          features:['Antrenman türleri: Kuvvet, Kardiyo, Esneklik, CrossFit, Spor, Diğer','Kuvvet: set, tekrar, ağırlık (kg/lb) ve kas grubu','Kardiyo: süre (dk) ve mesafe (km)','Şablon kaydetme — sık kullandığın egzersiz setlerini yeniden kullan','Vücut ölçümleri takibi (göğüs, bel, kalça vb.)','1 Tekrar Maksimum (1TM) otomatik hesaplama','Haftalık antrenman hacmi ve ilerleme grafikleri'],
-          tip:'kg ve lb arasında geçiş yapmak için sağ üstteki birim toggle\'ını kullan — tüm veriler otomatik dönüştürülür.' },
-        { icon:'kanban', title:'Planlar', desc:'Kanban tarzı görev yöneticisi. Görevlerini Yapılacak, Devam Eden ve Tamamlandı sütunlarında takip et. Her görevin altında sürükleyip sıralayabileceğin alt görevler ekleyebilirsin.',
-          features:['Kanban (sütun) ve Liste (tablo) görünümleri arasında geçiş','Alt görevler: tamamlandı işareti, çok satırlı metin, sürükle-bırak sıralama','Öncelik seviyeleri: Yüksek (kırmızı), Orta (sarı), Düşük (mavi)','Kategori etiketleri ve son tarih ile organize et','Gecikmiş görevlerde kırmızı tarih uyarısı','Alt görev metni Shift+Enter ile çok satırlı olabilir'],
-          tip:'Kanban ve Liste görünümleri arasında geçiş yapabilirsin — Liste modu tüm görevleri son tarihe göre sıralı tek tabloda gösterir, takibi kolaylaştırır.' },
-        { icon:'star', title:'Hayaller & Hedefler', desc:'Hayallerini ve hedeflerini milestone\'larla takip et. Her hedefe ilerleme yüzdesi, hedef tarihi, emoji ve renk atayabilirsin. Tamamlanma yaklaştığında kalan gün sayısını gösterir.',
-          features:['Milestone (kilometre taşı) listesi — her tik ilerlemeyi günceller','Tamamlama yüzdesi milestone oranından otomatik hesaplanır','Hedef tarihine kaç gün kaldığını gösterir (30 günden az ise kırmızı)','Emoji ve renk özelleştirmesi — her hedef kendine özgü görünür','Düzenleme modunda sürükle-bırak ile hedef sıralaması','Kategori grupları: Kariyer, Seyahat, Sağlık, Eğitim ve daha fazlası'],
-          tip:'%100 tamamlandığında konfeti animasyonu ve tebrik bildirimi çıkar.' },
-        { icon:'wallet', title:'Bütçe', desc:'Aylık bütçe ve harcama takibi. 3 sekmeli yapısıyla gelir/gider kategori yönetimi, bütçe limitleri ve döngü tabanlı tarihsel arşiv sunar.',
-          features:['3 sekme: Özet (KPI ve grafikler), Kategoriler (bütçe yapısı), İşlem Takibi (tüm hareketler)','Özet sekmesi: net gelir, toplam gider, bütçe doluluğu pasta grafiği ve panel sıralama','Kategoriler sekmesi: gelir/gider grupları ve alt kategoriler oluştur, her birine bütçe limiti ata','İşlem Takibi: tüm kayıtlar, metin arama ve kategori/tarih aralığı filtresi','Döngü sistemi: bütçe her ayın belirlenen gününde sıfırlanır; geçmiş dönemler otomatik arşivlenir','Geçmiş döngü modalı: önceki aylara göz at, her dönemin gelir/gider/net özetini incele'],
-          tip:'Bütçe > Veri Aktar butonuyla tam bir yedekten yalnızca bütçe verilerini geri yükleyebilirsin.' },
-        { icon:'trending-up', title:'Yatırım', desc:'Yatırım portföyünü takip et. Alpha Vantage API ile hisse, ETF ve kripto fiyatlarını otomatik çek; döviz kuru entegrasyonuyla TRY/USD çift para birimi desteği kullan.',
-          features:['Varlık türleri: Hisse, ETF, Kripto, Emtia, Tahvil, Nakit','Alpha Vantage API ile otomatik fiyat güncelleme (24 saatlik önbellek)','K/Z hesaplama: Günlük / Haftalık / Aylık / Toplam dönem seçimi','TRY ↔ USD görüntüleme para birimi toggle\'ı','Portföy dağılımı pasta grafiği ve yüzdesel paylar','Ayarlar\'dan Alpha Vantage ve Döviz Kuru API anahtarı girilebilir'],
-          tip:'Fiyat çekilemeyen varlıklar (Emtia, Tahvil, Nakit) alış fiyatını kullanır. Gerekirse kalemek üzerinden manuel fiyat girebilirsin.' }
+        {
+          icon: 'settings', title: 'Ayarlar', desc: 'Genel tercihler, görünüm ve veri yönetimi merkezi. Sidebar alt kısmındaki dişli çark ikonuna tıklayarak her sayfadan açılır. Değişiklikler tüm sayfalara anında yansır.',
+          features: ['Dil seçimi: TR / EN / ZH / ES / FR — arayüz seçilen dile anında geçer', 'Para birimi: ₺, $, €, £ ve diğerleri — finansal değerlerin gösterim sembolü', 'Tema: 12 tema (Dark, Midnight, Ocean, Forest, Sunset, Rose, Amber, Crimson, Nebula, Arctic, Neon, White)', 'Arayüz Ölçeği: %60–%140 arası kaydırıcı — rem tabanlı tüm ölçüler orantılı büyür/küçülür', 'Gizlilik Modu: para değerlerini •••• ile maskeler; sidebar\'daki göz butonu ya da buradan açılıp kapatılır', 'Hafta Başlangıcı: Pazartesi veya Pazar seçilebilir — alışkanlık ve zaman grafiklerini etkiler', 'Yatırım API Anahtarları: Alpha Vantage (hisse/ETF/kripto fiyatı) ve Exchange Rates API (döviz kuru)', 'Veri Dışa Aktar: tüm lt_ verilerini JSON dosyası olarak bilgisayara indirir', 'Veri İçe Aktar: JSON dosyasındaki verilerle mevcut tüm verilerin üzerine yazar (geri dönüşü yok)', 'Tüm Verileri Sil: 🔄 Seed veriye dön — tüm veriler silinir, uygulama örnek verilerle yeniden başlar (sıfırlama güvenli kapı); 💥 Tamamen sil — hiçbir veri kalmaz, geri dönüş yoktur'],
+          tip: 'İçe Aktar, mevcut tüm verileri silerek dosyadakileri yazar — önce Dışa Aktar ile yedek al. Verilerini kaybetme endişesi varsa "Seed veriye dön" seçeneği her zaman örnek içerikli temiz bir başlangıç sağlar.'
+        },
+        {
+          icon: 'layout-dashboard', title: 'Dashboard', desc: 'Tüm modüllerin merkezi özet ekranı. Net varlık, harcama, alışkanlık tamamlama oranı ve aktif hedef sayısı gibi kritik metrikleri tek bakışta görürsün. Panel sırasını ve görünürlüğünü kendi tercihine göre düzenleyebilirsin.',
+          features: ['Haftalık / Aylık / Yıllık period seçimi ile trend analizi', 'Panelleri kilit butonuyla sürükle-bırak ile yeniden sırala', 'Yaklaşan planlar ve gecikmiş görev uyarıları', 'Yatırım portföyü pasta grafiği ve varlık dağılımı', 'Hedefler ilerleme çubukları ve milestone sayacı', 'Son antrenmanlar ve egzersiz detayları', 'Bütçe harcama durumu — kategori bazlı progress bar\'lar'],
+          tip: 'Sağ üstteki kilit ikonuna tıklayarak panelleri sürükleyip sıralayabilir, göz ikonuyla da istediğin paneli gizleyebilirsin.'
+        },
+        {
+          icon: 'timer', title: 'Pomodoro', desc: 'Üç modlu odak zamanlayıcı. Klasik Pomodoro döngüsü (çalışma + mola), sınırsız Flow modu veya özel geri sayımla derinlemesine odaklanabilirsin. Her oturum otomatik olarak Zaman sayfasına kaydedilir.',
+          features: ['Pomodoro (25 dk çalışma + mola döngüsü), Flow (sınırsız) ve Geri Sayım modları', 'Göreve bağlama — aktif görevi başlığa yansıtır; harcanan pomodoro sayısı takip edilir', 'Alt görev paneli — çalışırken subtask\'ları görüntüle ve işaretle', 'Bayrak butonu: timer çalışırken anlık split noktası işaretler; geçen süre ve saat kaydedilir', 'Sıfırla butonu: son flag\'e kadar kaydet / son flag\'e sar / tümünü sil — 3 seçenek sunar', 'Bitir butonu: tüm süreyi kaydet ya da flag\'lere göre bölerek kaydet seçeneği sunar', 'Fazla mesai modu: süre dolunca +MM:SS ile devam eder, Bitir butonuyla sonlandırılır', 'Tarayıcı kapatılsa veya sayfa yenilense bile timer kaldığı yerden devam eder (8 saatlik TTL)', 'Birden fazla açık sekme gerçek zamanlı olarak birbiriyle senkronize çalışır'],
+          tip: 'Ayarlar bölümünden çalışma, kısa mola ve uzun mola sürelerini ihtiyacına göre değiştirebilirsin.'
+        },
+        {
+          icon: 'clock', title: 'Zaman Takibi', desc: 'Günlük aktivitelerini kategori ve projeye göre kaydet. Pomodoro tamamlandığında loglar otomatik aktarılır; manuel giriş de her zaman yapabilirsin. 30 günlük bar grafik ile zaman dağılımını analiz et.',
+          features: ['Manuel log ekleme: tarih, kategori, proje, başlangıç–bitiş saati', 'Pomodoro oturumları otomatik olarak "pomodoro" kaynağıyla aktarılır', 'Kaynak filtresi: Tümü / Sadece Manuel / Sadece Pomodoro', 'Tarih aralığı seçimi ile geçmişi analiz et', '30 günlük ve haftalık bar grafikler', 'Aylık geçmiş modalı — gün ve hafta toplamlarıyla'],
+          tip: 'Pomodoro\'dan gelen kayıtlar "pomodoro" kaynağıyla otomatik eklenir; kaynak filtresiyle sadece Pomodoro veya sadece manuel girişleri ayrı ayrı görüntüleyebilirsin.'
+        },
+        {
+          icon: 'check-circle', title: 'Alışkanlıklar', desc: 'Günlük alışkanlıklarını takip et ve seri oluştur. Kalıcı (her gün) veya zamanlanmış (belirli günlerde) alışkanlıklar ekleyebilir, günlük ilerlemeyi görsel ızgara ve grafiklerle izleyebilirsin.',
+          features: ['İki alışkanlık tipi: Kalıcı (her gün) ve Zamanlanmış (seçili günler)', 'Günlük atlama (Skip) sistemi — o günü kayıp saymadan geçebilirsin', '🔥 Seri sayacı: kaç gün üst üste tamamladığını gösterir', '30 günlük tamamlama ızgarası — her alışkanlık için geçmiş', 'Haftalık donut grafikler ile tamamlama yüzdesi', 'Sürükle-bırak ile alışkanlık sıralamasını düzenle'],
+          tip: 'Zamanlanmış bir alışkanlık, seçili olmayan günlerde listede görünmez — o günlerin serini etkilemez.'
+        },
+        {
+          icon: 'dumbbell', title: 'Spor', desc: 'Antrenman günlüğü. Kuvvet, kardiyo, esneklik ve diğer türlerde antrenman ekle; egzersizlerini set/tekrar/ağırlık veya süre/mesafe ile kaydet. Şablon kaydet ve birden fazla seferde kullan.',
+          features: ['Antrenman türleri: Kuvvet, Kardiyo, Esneklik, CrossFit, Spor, Diğer', 'Kuvvet: set, tekrar, ağırlık (kg/lb) ve kas grubu', 'Kardiyo: süre (dk) ve mesafe (km)', 'Şablon kaydetme — sık kullandığın egzersiz setlerini yeniden kullan', 'Vücut ölçümleri takibi (göğüs, bel, kalça vb.)', '1 Tekrar Maksimum (1TM) otomatik hesaplama', 'Haftalık antrenman hacmi ve ilerleme grafikleri'],
+          tip: 'kg ve lb arasında geçiş yapmak için sağ üstteki birim toggle\'ını kullan — tüm veriler otomatik dönüştürülür.'
+        },
+        {
+          icon: 'kanban', title: 'Planlar', desc: 'Kanban tarzı görev yöneticisi. Görevlerini Yapılacak, Devam Eden ve Tamamlandı sütunlarında takip et. Her görevin altında sürükleyip sıralayabileceğin alt görevler ekleyebilirsin.',
+          features: ['Kanban (sütun) ve Liste (tablo) görünümleri arasında geçiş', 'Alt görevler: tamamlandı işareti, çok satırlı metin, sürükle-bırak sıralama', 'Öncelik seviyeleri: Yüksek (kırmızı), Orta (sarı), Düşük (mavi)', 'Kategori etiketleri ve son tarih ile organize et', 'Gecikmiş görevlerde kırmızı tarih uyarısı', 'Alt görev metni Shift+Enter ile çok satırlı olabilir'],
+          tip: 'Kanban ve Liste görünümleri arasında geçiş yapabilirsin — Liste modu tüm görevleri son tarihe göre sıralı tek tabloda gösterir, takibi kolaylaştırır.'
+        },
+        {
+          icon: 'star', title: 'Hayaller & Hedefler', desc: 'Hayallerini ve hedeflerini milestone\'larla takip et. Her hedefe ilerleme yüzdesi, hedef tarihi, emoji ve renk atayabilirsin. Tamamlanma yaklaştığında kalan gün sayısını gösterir.',
+          features: ['Milestone (kilometre taşı) listesi — her tik ilerlemeyi günceller', 'Tamamlama yüzdesi milestone oranından otomatik hesaplanır', 'Hedef tarihine kaç gün kaldığını gösterir (30 günden az ise kırmızı)', 'Emoji ve renk özelleştirmesi — her hedef kendine özgü görünür', 'Düzenleme modunda sürükle-bırak ile hedef sıralaması', 'Kategori grupları: Kariyer, Seyahat, Sağlık, Eğitim ve daha fazlası'],
+          tip: '%100 tamamlandığında konfeti animasyonu ve tebrik bildirimi çıkar.'
+        },
+        {
+          icon: 'wallet', title: 'Bütçe', desc: 'Aylık bütçe ve harcama takibi. 3 sekmeli yapısıyla gelir/gider kategori yönetimi, bütçe limitleri ve döngü tabanlı tarihsel arşiv sunar.',
+          features: ['3 sekme: Özet (KPI ve grafikler), Kategoriler (bütçe yapısı), İşlem Takibi (tüm hareketler)', 'Özet sekmesi: net gelir, toplam gider, bütçe doluluğu pasta grafiği ve panel sıralama', 'Kategoriler sekmesi: gelir/gider grupları ve alt kategoriler oluştur, her birine bütçe limiti ata', 'İşlem Takibi: tüm kayıtlar, metin arama ve kategori/tarih aralığı filtresi', 'Döngü sistemi: bütçe her ayın belirlenen gününde sıfırlanır; geçmiş dönemler otomatik arşivlenir', 'Geçmiş döngü modalı: önceki aylara göz at, her dönemin gelir/gider/net özetini incele'],
+          tip: 'Bütçe > Veri Aktar butonuyla tam bir yedekten yalnızca bütçe verilerini geri yükleyebilirsin.'
+        },
+        {
+          icon: 'trending-up', title: 'Yatırım', desc: 'Yatırım portföyünü takip et. Alpha Vantage API ile hisse, ETF ve kripto fiyatlarını otomatik çek; döviz kuru entegrasyonuyla TRY/USD çift para birimi desteği kullan.',
+          features: ['Varlık türleri: Hisse, ETF, Kripto, Emtia, Tahvil, Nakit', 'Alpha Vantage API ile otomatik fiyat güncelleme (24 saatlik önbellek)', 'K/Z hesaplama: Günlük / Haftalık / Aylık / Toplam dönem seçimi', 'TRY ↔ USD görüntüleme para birimi toggle\'ı', 'Portföy dağılımı pasta grafiği ve yüzdesel paylar', 'Ayarlar\'dan Alpha Vantage ve Döviz Kuru API anahtarı girilebilir'],
+          tip: 'Fiyat çekilemeyen varlıklar (Emtia, Tahvil, Nakit) alış fiyatını kullanır. Gerekirse kalemek üzerinden manuel fiyat girebilirsin.'
+        }
       ],
       en: [
-        { icon:'settings', title:'Settings', desc:'General preferences, appearance, and data management hub. Open it from the gear icon at the bottom of the sidebar on any page. Changes apply instantly across all pages.',
-          features:['Language: TR / EN / ZH / ES / FR — the entire interface switches immediately','Currency: ₺, $, €, £, and others — controls the display symbol for all financial values','Theme: 12 themes (Dark, Midnight, Ocean, Forest, Sunset, Rose, Amber, Crimson, Nebula, Arctic, Neon, White)','UI Scale: 60%–140% slider — all rem-based sizes scale proportionally up or down','Privacy Mode: masks all currency values with ••••; toggle here or via the eye icon in the sidebar','Week Start: Monday or Sunday — affects habit and time tracking charts','Investment API Keys: Alpha Vantage (stock/ETF/crypto prices) and Exchange Rates API (FX rate)','Export Data: downloads all lt_ data as a JSON backup file to your computer','Import Data: replaces all existing data with the contents of a JSON file (irreversible)','Delete All Data: two options — 🔄 Reset to seed data (all data cleared, app restarts with built-in sample data — safe escape hatch); 💥 Wipe everything (complete erasure, no recovery possible)'],
-          tip:'Import overwrites all existing data — always Export a backup first. If you just want a clean slate, "Reset to seed data" is a safe way to restart with sample content.' },
-        { icon:'layout-dashboard', title:'Dashboard', desc:'Central overview of all modules. See critical metrics like net worth, spending, habit completion rate, and active goals at a glance. Customize which panels are shown and in what order.',
-          features:['Week / Month / Year period selector for trend analysis','Drag-to-reorder panels via the lock button in the top bar','Upcoming plans with overdue task alerts','Investment portfolio pie chart and asset allocation','Goals progress bars and milestone counters','Recent workouts with exercise details','Budget spending status — per-category progress bars'],
-          tip:'Click the lock icon in the top bar to enter edit mode, then drag panels to rearrange. Use the eye icon to hide panels you don\'t need.' },
-        { icon:'timer', title:'Pomodoro', desc:'Three-mode focus timer. Use classic Pomodoro cycles (work + break), unlimited Flow mode, or a custom countdown. Every completed session is automatically logged to the Time Tracking page.',
-          features:['Pomodoro (25 min work + break cycle), Flow (unlimited), and Countdown modes','Link sessions to a task — active task name shown in header; pomodoro usage is tracked','Subtask panel — view and check off subtasks while working','Flag button: marks a split point while the timer runs; records elapsed time and current clock time','Reset button: 3 options — save up to last flag / rewind to last flag / hard reset (discard all)','Finish button: save the full elapsed time, or split by flags and save each segment separately','Overtime mode: continues past the time limit with a +MM:SS counter; ended via the Finish button','Timer state auto-saves — reloading or reopening the tab resumes from where you left off (8h TTL)','Real-time sync across multiple browser tabs'],
-          tip:'Adjust work, short break, and long break durations from the settings panel at the top of the timer page.' },
-        { icon:'clock', title:'Time Tracking', desc:'Log daily activities by category and project. Pomodoro sessions auto-import; you can also add manual entries anytime. Analyze time distribution with 30-day bar charts.',
-          features:['Manual log: date, category, project, start and end time','Pomodoro sessions auto-import tagged with "pomodoro" source','Source filter: All / Manual only / Pomodoro only','Date range picker for historical analysis','30-day and weekly bar charts','Monthly history modal — daily and weekly totals'],
-          tip:'Pomodoro sessions are auto-imported with a "pomodoro" source tag. Use the source filter to view only Pomodoro or only manual entries separately.' },
-        { icon:'check-circle', title:'Habits', desc:'Track daily habits and build streaks. Add permanent (every day) or scheduled (specific days) habits, and monitor progress through visual grids and charts.',
-          features:['Two habit types: Permanent (daily) and Scheduled (selected days only)','Skip system for today — doesn\'t break your streak','🔥 Streak counter: consecutive days completed','30-day completion grid — visual history per habit','Weekly donut charts with completion percentage','Drag-to-reorder habits in the daily checklist'],
-          tip:'Scheduled habits only appear on their assigned days — they won\'t affect streaks on other days.' },
-        { icon:'dumbbell', title:'Gym', desc:'Workout journal. Add strength, cardio, flexibility and other workouts; log exercises with sets/reps/weight or duration/distance. Save templates to reuse across sessions.',
-          features:['Workout types: Strength, Cardio, Flexibility, CrossFit, Sport, Other','Strength: sets, reps, weight (kg/lb) and muscle group','Cardio: duration (min) and distance (km)','Template saving — reuse your most common exercise sets','Body measurements tracker (chest, waist, hips, etc.)','1 Rep Max (1RM) auto-calculation','Weekly volume and progress charts per exercise'],
-          tip:'Use the unit toggle in the top right to switch between kg and lb — all existing data converts automatically.' },
-        { icon:'kanban', title:'Plans', desc:'Kanban-style task manager. Track tasks across Todo, In Progress, and Done columns. Add subtasks to each task with drag-to-reorder support.',
-          features:['Switch between Kanban (columns) and List (table) views','Subtasks: checkboxes, multi-line text, drag-to-reorder','Priority levels: High (red), Medium (yellow), Low (blue)','Category tags and due dates to stay organized','Red overdue alert on past-due tasks','Shift+Enter in subtask text creates a new line'],
-          tip:'Switch between Kanban and List views — List mode shows all tasks sorted by due date in a single table, ideal when managing many tasks at once.' },
-        { icon:'star', title:'Goals & Dreams', desc:'Track your dreams and goals with milestones. Assign a progress percentage, target date, emoji, and color to each goal. Days remaining is shown as the deadline approaches.',
-          features:['Milestone checklist — each tick auto-updates progress percentage','Completion % calculated automatically from milestone ratio','Days remaining shown (red when fewer than 30 days left)','Emoji and color customization for each goal','Drag-to-reorder goals in edit mode','Category groups: Career, Travel, Health, Education, and more'],
-          tip:'Reaching 100% triggers a confetti animation and a congratulation toast.' },
-        { icon:'wallet', title:'Budget', desc:'Monthly budget and expense tracker with a 3-tab layout. Manage categories, set budget limits, and review historical cycles with full income/expense breakdowns.',
-          features:['3 tabs: Overview (KPIs & charts), Categories (budget structure), Transactions (all entries)','Overview tab: net income, total expenses, spending allocation pie chart, and panel reordering','Categories tab: create income/expense groups and subcategories, assign budget limits to each','Transactions tab: full list of entries with text search and date/category filters','Cycle system: budget resets on a chosen day each month; all past periods are archived automatically','Past cycle modal: browse previous months with income, expense, and net summary per period'],
-          tip:'Use the "Import Data" button in the Transactions tab to restore only budget data from a full backup.' },
-        { icon:'trending-up', title:'Investments', desc:'Track your investment portfolio. Auto-fetch stock, ETF, and crypto prices via the Alpha Vantage API. Multi-currency support with live exchange rate integration.',
-          features:['Asset types: Stock, ETF, Crypto, Commodity, Bond, Cash','Auto price updates via Alpha Vantage API (24-hour cache)','P&L tracking: Daily / Weekly / Monthly / Total period selector','TRY ↔ USD display currency toggle','Portfolio allocation pie chart with percentage breakdown','Enter Alpha Vantage and Exchange Rate API keys in Settings'],
-          tip:'Assets without API prices (Commodity, Bond, Cash) use the purchase price. You can also override any asset\'s price manually.' }
+        {
+          icon: 'settings', title: 'Settings', desc: 'General preferences, appearance, and data management hub. Open it from the gear icon at the bottom of the sidebar on any page. Changes apply instantly across all pages.',
+          features: ['Language: TR / EN / ZH / ES / FR — the entire interface switches immediately', 'Currency: ₺, $, €, £, and others — controls the display symbol for all financial values', 'Theme: 12 themes (Dark, Midnight, Ocean, Forest, Sunset, Rose, Amber, Crimson, Nebula, Arctic, Neon, White)', 'UI Scale: 60%–140% slider — all rem-based sizes scale proportionally up or down', 'Privacy Mode: masks all currency values with ••••; toggle here or via the eye icon in the sidebar', 'Week Start: Monday or Sunday — affects habit and time tracking charts', 'Investment API Keys: Alpha Vantage (stock/ETF/crypto prices) and Exchange Rates API (FX rate)', 'Export Data: downloads all lt_ data as a JSON backup file to your computer', 'Import Data: replaces all existing data with the contents of a JSON file (irreversible)', 'Delete All Data: two options — 🔄 Reset to seed data (all data cleared, app restarts with built-in sample data — safe escape hatch); 💥 Wipe everything (complete erasure, no recovery possible)'],
+          tip: 'Import overwrites all existing data — always Export a backup first. If you just want a clean slate, "Reset to seed data" is a safe way to restart with sample content.'
+        },
+        {
+          icon: 'layout-dashboard', title: 'Dashboard', desc: 'Central overview of all modules. See critical metrics like net worth, spending, habit completion rate, and active goals at a glance. Customize which panels are shown and in what order.',
+          features: ['Week / Month / Year period selector for trend analysis', 'Drag-to-reorder panels via the lock button in the top bar', 'Upcoming plans with overdue task alerts', 'Investment portfolio pie chart and asset allocation', 'Goals progress bars and milestone counters', 'Recent workouts with exercise details', 'Budget spending status — per-category progress bars'],
+          tip: 'Click the lock icon in the top bar to enter edit mode, then drag panels to rearrange. Use the eye icon to hide panels you don\'t need.'
+        },
+        {
+          icon: 'timer', title: 'Pomodoro', desc: 'Three-mode focus timer. Use classic Pomodoro cycles (work + break), unlimited Flow mode, or a custom countdown. Every completed session is automatically logged to the Time Tracking page.',
+          features: ['Pomodoro (25 min work + break cycle), Flow (unlimited), and Countdown modes', 'Link sessions to a task — active task name shown in header; pomodoro usage is tracked', 'Subtask panel — view and check off subtasks while working', 'Flag button: marks a split point while the timer runs; records elapsed time and current clock time', 'Reset button: 3 options — save up to last flag / rewind to last flag / hard reset (discard all)', 'Finish button: save the full elapsed time, or split by flags and save each segment separately', 'Overtime mode: continues past the time limit with a +MM:SS counter; ended via the Finish button', 'Timer state auto-saves — reloading or reopening the tab resumes from where you left off (8h TTL)', 'Real-time sync across multiple browser tabs'],
+          tip: 'Adjust work, short break, and long break durations from the settings panel at the top of the timer page.'
+        },
+        {
+          icon: 'clock', title: 'Time Tracking', desc: 'Log daily activities by category and project. Pomodoro sessions auto-import; you can also add manual entries anytime. Analyze time distribution with 30-day bar charts.',
+          features: ['Manual log: date, category, project, start and end time', 'Pomodoro sessions auto-import tagged with "pomodoro" source', 'Source filter: All / Manual only / Pomodoro only', 'Date range picker for historical analysis', '30-day and weekly bar charts', 'Monthly history modal — daily and weekly totals'],
+          tip: 'Pomodoro sessions are auto-imported with a "pomodoro" source tag. Use the source filter to view only Pomodoro or only manual entries separately.'
+        },
+        {
+          icon: 'check-circle', title: 'Habits', desc: 'Track daily habits and build streaks. Add permanent (every day) or scheduled (specific days) habits, and monitor progress through visual grids and charts.',
+          features: ['Two habit types: Permanent (daily) and Scheduled (selected days only)', 'Skip system for today — doesn\'t break your streak', '🔥 Streak counter: consecutive days completed', '30-day completion grid — visual history per habit', 'Weekly donut charts with completion percentage', 'Drag-to-reorder habits in the daily checklist'],
+          tip: 'Scheduled habits only appear on their assigned days — they won\'t affect streaks on other days.'
+        },
+        {
+          icon: 'dumbbell', title: 'Gym', desc: 'Workout journal. Add strength, cardio, flexibility and other workouts; log exercises with sets/reps/weight or duration/distance. Save templates to reuse across sessions.',
+          features: ['Workout types: Strength, Cardio, Flexibility, CrossFit, Sport, Other', 'Strength: sets, reps, weight (kg/lb) and muscle group', 'Cardio: duration (min) and distance (km)', 'Template saving — reuse your most common exercise sets', 'Body measurements tracker (chest, waist, hips, etc.)', '1 Rep Max (1RM) auto-calculation', 'Weekly volume and progress charts per exercise'],
+          tip: 'Use the unit toggle in the top right to switch between kg and lb — all existing data converts automatically.'
+        },
+        {
+          icon: 'kanban', title: 'Plans', desc: 'Kanban-style task manager. Track tasks across Todo, In Progress, and Done columns. Add subtasks to each task with drag-to-reorder support.',
+          features: ['Switch between Kanban (columns) and List (table) views', 'Subtasks: checkboxes, multi-line text, drag-to-reorder', 'Priority levels: High (red), Medium (yellow), Low (blue)', 'Category tags and due dates to stay organized', 'Red overdue alert on past-due tasks', 'Shift+Enter in subtask text creates a new line'],
+          tip: 'Switch between Kanban and List views — List mode shows all tasks sorted by due date in a single table, ideal when managing many tasks at once.'
+        },
+        {
+          icon: 'star', title: 'Goals & Dreams', desc: 'Track your dreams and goals with milestones. Assign a progress percentage, target date, emoji, and color to each goal. Days remaining is shown as the deadline approaches.',
+          features: ['Milestone checklist — each tick auto-updates progress percentage', 'Completion % calculated automatically from milestone ratio', 'Days remaining shown (red when fewer than 30 days left)', 'Emoji and color customization for each goal', 'Drag-to-reorder goals in edit mode', 'Category groups: Career, Travel, Health, Education, and more'],
+          tip: 'Reaching 100% triggers a confetti animation and a congratulation toast.'
+        },
+        {
+          icon: 'wallet', title: 'Budget', desc: 'Monthly budget and expense tracker with a 3-tab layout. Manage categories, set budget limits, and review historical cycles with full income/expense breakdowns.',
+          features: ['3 tabs: Overview (KPIs & charts), Categories (budget structure), Transactions (all entries)', 'Overview tab: net income, total expenses, spending allocation pie chart, and panel reordering', 'Categories tab: create income/expense groups and subcategories, assign budget limits to each', 'Transactions tab: full list of entries with text search and date/category filters', 'Cycle system: budget resets on a chosen day each month; all past periods are archived automatically', 'Past cycle modal: browse previous months with income, expense, and net summary per period'],
+          tip: 'Use the "Import Data" button in the Transactions tab to restore only budget data from a full backup.'
+        },
+        {
+          icon: 'trending-up', title: 'Investments', desc: 'Track your investment portfolio. Auto-fetch stock, ETF, and crypto prices via the Alpha Vantage API. Multi-currency support with live exchange rate integration.',
+          features: ['Asset types: Stock, ETF, Crypto, Commodity, Bond, Cash', 'Auto price updates via Alpha Vantage API (24-hour cache)', 'P&L tracking: Daily / Weekly / Monthly / Total period selector', 'TRY ↔ USD display currency toggle', 'Portfolio allocation pie chart with percentage breakdown', 'Enter Alpha Vantage and Exchange Rate API keys in Settings'],
+          tip: 'Assets without API prices (Commodity, Bond, Cash) use the purchase price. You can also override any asset\'s price manually.'
+        }
       ],
       zh: [
-        { icon:'settings', title:'设置', desc:'通用偏好设置、外观和数据管理中心。点击任意页面侧边栏底部的齿轮图标即可打开。更改立即反映到所有页面。',
-          features:['语言：TR / EN / ZH / ES / FR — 整个界面立即切换','货币：₺、$、€、£等 — 控制所有财务值的显示符号','主题：12个主题（Dark、Midnight、Ocean、Forest、Sunset、Rose、Amber、Crimson、Nebula、Arctic、Neon、White）','界面缩放：60%–140%滑块 — 所有基于rem的尺寸按比例缩放','隐私模式：用••••遮盖所有货币值；在此处或侧边栏眼睛图标切换','周起始日：周一或周日 — 影响习惯和时间追踪图表','投资API密钥：Alpha Vantage（股票/ETF/加密货币价格）和汇率API','导出数据：将所有lt_数据下载为JSON备份文件','导入数据：用JSON文件内容替换所有现有数据（不可撤销）','删除所有数据：两个选项 — 🔄 重置为种子数据（所有数据清除，应用以内置示例数据重新启动，安全的后路）；💥 彻底清除（完全擦除，无法恢复）'],
-          tip:'导入会用文件内容覆盖所有现有数据 — 导入前请先导出备份。如果只想重新开始，"重置为种子数据"是安全地以示例内容重启的方式。' },
-        { icon:'layout-dashboard', title:'仪表盘', desc:'所有模块的中央概览。一目了然地查看净资产、支出、习惯完成率和活跃目标等关键指标。可自定义面板的显示和排列顺序。',
-          features:['周/月/年时间段选择器，用于趋势分析','通过顶部栏的锁定按钮拖拽重新排列面板','即将到期的计划及逾期任务提醒','投资组合饼图和资产分配','目标进度条和里程碑计数器','最近的训练记录及练习详情','预算支出状态 — 按类别显示进度条'],
-          tip:'点击顶部栏的锁定图标进入编辑模式，然后拖拽面板重新排列。使用眼睛图标可隐藏不需要的面板。' },
-        { icon:'timer', title:'番茄钟', desc:'三模式专注计时器。使用经典番茄钟循环（工作+休息）、无限流动模式或自定义倒计时。每次完成的会话自动记录到时间追踪页面。',
-          features:['番茄钟（25分钟工作+休息循环）、流动（无限）和倒计时模式','关联任务 — 当前任务名称显示在标题中；已使用的番茄钟数量被追踪','子任务面板 — 工作时查看并勾选子任务','标记按钮：计时器运行时标记分割点，记录已用时间和当前时刻','重置按钮：3个选项 — 保存到最后标记 / 回退到最后标记 / 硬重置（丢弃全部）','完成按钮：保存全部时间，或按标记分段分别保存','超时模式：超过时间限制后以+MM:SS继续，通过完成按钮结束','即使关闭浏览器或刷新页面，计时器也会从中断处继续（8小时TTL）','跨多个浏览器标签实时同步'],
-          tip:'从计时器页面顶部的设置面板调整工作、短休息和长休息时长。' },
-        { icon:'clock', title:'时间追踪', desc:'按类别和项目记录每日活动。番茄钟会话自动导入；您也可以随时手动添加记录。通过30天柱状图分析时间分配。',
-          features:['手动记录：日期、类别、项目、开始和结束时间','番茄钟会话自动导入，标记为"pomodoro"来源','来源筛选：全部 / 仅手动 / 仅番茄钟','日期范围选择器用于历史分析','30天和每周柱状图','月度历史弹窗 — 每日和每周合计'],
-          tip:'番茄钟会话以"pomodoro"来源自动导入。使用来源筛选器可单独查看番茄钟或手动记录。' },
-        { icon:'check-circle', title:'习惯', desc:'追踪每日习惯并建立连续记录。添加永久性（每天）或计划性（特定天）习惯，通过可视化网格和图表监控进度。',
-          features:['两种习惯类型：永久性（每日）和计划性（仅限特定天）','今日跳过系统 — 不会中断连续记录','🔥 连续天数计数器：显示连续完成的天数','30天完成网格 — 每个习惯的可视化历史','带完成百分比的每周甜甜圈图','拖拽重新排列习惯列表'],
-          tip:'计划性习惯只在指定天显示 — 在其他天不会影响连续记录。' },
-        { icon:'dumbbell', title:'健身', desc:'训练日志。添加力量、有氧、柔韧等训练；记录组数/次数/重量或时长/距离。保存模板以便在多次训练中复用。',
-          features:['训练类型：力量、有氧、柔韧、CrossFit、运动、其他','力量：组数、次数、重量（kg/lb）和肌肉群','有氧：时长（分钟）和距离（km）','模板保存 — 复用最常用的练习组合','身体测量追踪（胸围、腰围、臀围等）','1次最大重量（1RM）自动计算','每周训练量和每个练习的进度图表'],
-          tip:'使用右上角的单位切换在kg和lb之间切换 — 所有现有数据自动转换。' },
-        { icon:'kanban', title:'计划', desc:'看板式任务管理器。在待办、进行中和已完成列中追踪任务。为每个任务添加支持拖拽排序的子任务。',
-          features:['在看板（列）和列表（表格）视图之间切换','子任务：复选框、多行文本、拖拽排序','优先级：高（红色）、中（黄色）、低（蓝色）','类别标签和截止日期，便于整理','逾期任务显示红色警告','在子任务文本中使用Shift+Enter创建新行'],
-          tip:'可在看板和列表视图之间切换 — 列表模式按截止日期排序显示所有任务，便于管理大量任务。' },
-        { icon:'star', title:'梦想与目标', desc:'用里程碑追踪您的梦想和目标。为每个目标分配进度百分比、目标日期、表情符号和颜色。随着截止日期临近显示剩余天数。',
-          features:['里程碑清单 — 每次勾选自动更新进度百分比','完成百分比根据里程碑比例自动计算','显示剩余天数（少于30天时变为红色）','为每个目标自定义表情符号和颜色','在编辑模式下拖拽重新排列目标','类别组：职业、旅行、健康、教育等'],
-          tip:'完成度达到100%时会触发彩纸动画和祝贺通知。' },
-        { icon:'wallet', title:'预算', desc:'月度预算和支出追踪，三标签页布局。管理类别、设置预算限额，并查看包含完整收支明细的历史周期。',
-          features:['3个标签页：概览（KPI和图表）、类别（预算结构）、交易记录（所有条目）','概览标签页：净收入、总支出、支出分配饼图和面板排序','类别标签页：创建收入/支出组和子类别，为每个分配预算限额','交易记录：完整条目列表，支持文本搜索和日期/类别筛选','周期系统：预算在每月设定日重置；所有历史周期自动归档','历史周期弹窗：浏览以前的月份，查看每期收入、支出和净额摘要'],
-          tip:'使用交易选项卡中的"导入数据"按钮，可从完整备份中仅恢复预算数据。' },
-        { icon:'trending-up', title:'投资', desc:'追踪您的投资组合。通过Alpha Vantage API自动获取股票、ETF和加密货币价格。支持实时汇率整合的多币种功能。',
-          features:['资产类型：股票、ETF、加密货币、大宗商品、债券、现金','通过Alpha Vantage API自动更新价格（24小时缓存）','盈亏追踪：日/周/月/总计时间段选择','人民币 ↔ 美元显示货币切换','带百分比分配的投资组合饼图','在设置中输入Alpha Vantage和汇率API密钥'],
-          tip:'没有API价格的资产（大宗商品、债券、现金）使用购买价格。您也可以手动覆盖任何资产的价格。' }
+        {
+          icon: 'settings', title: '设置', desc: '通用偏好设置、外观和数据管理中心。点击任意页面侧边栏底部的齿轮图标即可打开。更改立即反映到所有页面。',
+          features: ['语言：TR / EN / ZH / ES / FR — 整个界面立即切换', '货币：₺、$、€、£等 — 控制所有财务值的显示符号', '主题：12个主题（Dark、Midnight、Ocean、Forest、Sunset、Rose、Amber、Crimson、Nebula、Arctic、Neon、White）', '界面缩放：60%–140%滑块 — 所有基于rem的尺寸按比例缩放', '隐私模式：用••••遮盖所有货币值；在此处或侧边栏眼睛图标切换', '周起始日：周一或周日 — 影响习惯和时间追踪图表', '投资API密钥：Alpha Vantage（股票/ETF/加密货币价格）和汇率API', '导出数据：将所有lt_数据下载为JSON备份文件', '导入数据：用JSON文件内容替换所有现有数据（不可撤销）', '删除所有数据：两个选项 — 🔄 重置为种子数据（所有数据清除，应用以内置示例数据重新启动，安全的后路）；💥 彻底清除（完全擦除，无法恢复）'],
+          tip: '导入会用文件内容覆盖所有现有数据 — 导入前请先导出备份。如果只想重新开始，"重置为种子数据"是安全地以示例内容重启的方式。'
+        },
+        {
+          icon: 'layout-dashboard', title: '仪表盘', desc: '所有模块的中央概览。一目了然地查看净资产、支出、习惯完成率和活跃目标等关键指标。可自定义面板的显示和排列顺序。',
+          features: ['周/月/年时间段选择器，用于趋势分析', '通过顶部栏的锁定按钮拖拽重新排列面板', '即将到期的计划及逾期任务提醒', '投资组合饼图和资产分配', '目标进度条和里程碑计数器', '最近的训练记录及练习详情', '预算支出状态 — 按类别显示进度条'],
+          tip: '点击顶部栏的锁定图标进入编辑模式，然后拖拽面板重新排列。使用眼睛图标可隐藏不需要的面板。'
+        },
+        {
+          icon: 'timer', title: '番茄钟', desc: '三模式专注计时器。使用经典番茄钟循环（工作+休息）、无限流动模式或自定义倒计时。每次完成的会话自动记录到时间追踪页面。',
+          features: ['番茄钟（25分钟工作+休息循环）、流动（无限）和倒计时模式', '关联任务 — 当前任务名称显示在标题中；已使用的番茄钟数量被追踪', '子任务面板 — 工作时查看并勾选子任务', '标记按钮：计时器运行时标记分割点，记录已用时间和当前时刻', '重置按钮：3个选项 — 保存到最后标记 / 回退到最后标记 / 硬重置（丢弃全部）', '完成按钮：保存全部时间，或按标记分段分别保存', '超时模式：超过时间限制后以+MM:SS继续，通过完成按钮结束', '即使关闭浏览器或刷新页面，计时器也会从中断处继续（8小时TTL）', '跨多个浏览器标签实时同步'],
+          tip: '从计时器页面顶部的设置面板调整工作、短休息和长休息时长。'
+        },
+        {
+          icon: 'clock', title: '时间追踪', desc: '按类别和项目记录每日活动。番茄钟会话自动导入；您也可以随时手动添加记录。通过30天柱状图分析时间分配。',
+          features: ['手动记录：日期、类别、项目、开始和结束时间', '番茄钟会话自动导入，标记为"pomodoro"来源', '来源筛选：全部 / 仅手动 / 仅番茄钟', '日期范围选择器用于历史分析', '30天和每周柱状图', '月度历史弹窗 — 每日和每周合计'],
+          tip: '番茄钟会话以"pomodoro"来源自动导入。使用来源筛选器可单独查看番茄钟或手动记录。'
+        },
+        {
+          icon: 'check-circle', title: '习惯', desc: '追踪每日习惯并建立连续记录。添加永久性（每天）或计划性（特定天）习惯，通过可视化网格和图表监控进度。',
+          features: ['两种习惯类型：永久性（每日）和计划性（仅限特定天）', '今日跳过系统 — 不会中断连续记录', '🔥 连续天数计数器：显示连续完成的天数', '30天完成网格 — 每个习惯的可视化历史', '带完成百分比的每周甜甜圈图', '拖拽重新排列习惯列表'],
+          tip: '计划性习惯只在指定天显示 — 在其他天不会影响连续记录。'
+        },
+        {
+          icon: 'dumbbell', title: '健身', desc: '训练日志。添加力量、有氧、柔韧等训练；记录组数/次数/重量或时长/距离。保存模板以便在多次训练中复用。',
+          features: ['训练类型：力量、有氧、柔韧、CrossFit、运动、其他', '力量：组数、次数、重量（kg/lb）和肌肉群', '有氧：时长（分钟）和距离（km）', '模板保存 — 复用最常用的练习组合', '身体测量追踪（胸围、腰围、臀围等）', '1次最大重量（1RM）自动计算', '每周训练量和每个练习的进度图表'],
+          tip: '使用右上角的单位切换在kg和lb之间切换 — 所有现有数据自动转换。'
+        },
+        {
+          icon: 'kanban', title: '计划', desc: '看板式任务管理器。在待办、进行中和已完成列中追踪任务。为每个任务添加支持拖拽排序的子任务。',
+          features: ['在看板（列）和列表（表格）视图之间切换', '子任务：复选框、多行文本、拖拽排序', '优先级：高（红色）、中（黄色）、低（蓝色）', '类别标签和截止日期，便于整理', '逾期任务显示红色警告', '在子任务文本中使用Shift+Enter创建新行'],
+          tip: '可在看板和列表视图之间切换 — 列表模式按截止日期排序显示所有任务，便于管理大量任务。'
+        },
+        {
+          icon: 'star', title: '梦想与目标', desc: '用里程碑追踪您的梦想和目标。为每个目标分配进度百分比、目标日期、表情符号和颜色。随着截止日期临近显示剩余天数。',
+          features: ['里程碑清单 — 每次勾选自动更新进度百分比', '完成百分比根据里程碑比例自动计算', '显示剩余天数（少于30天时变为红色）', '为每个目标自定义表情符号和颜色', '在编辑模式下拖拽重新排列目标', '类别组：职业、旅行、健康、教育等'],
+          tip: '完成度达到100%时会触发彩纸动画和祝贺通知。'
+        },
+        {
+          icon: 'wallet', title: '预算', desc: '月度预算和支出追踪，三标签页布局。管理类别、设置预算限额，并查看包含完整收支明细的历史周期。',
+          features: ['3个标签页：概览（KPI和图表）、类别（预算结构）、交易记录（所有条目）', '概览标签页：净收入、总支出、支出分配饼图和面板排序', '类别标签页：创建收入/支出组和子类别，为每个分配预算限额', '交易记录：完整条目列表，支持文本搜索和日期/类别筛选', '周期系统：预算在每月设定日重置；所有历史周期自动归档', '历史周期弹窗：浏览以前的月份，查看每期收入、支出和净额摘要'],
+          tip: '使用交易选项卡中的"导入数据"按钮，可从完整备份中仅恢复预算数据。'
+        },
+        {
+          icon: 'trending-up', title: '投资', desc: '追踪您的投资组合。通过Alpha Vantage API自动获取股票、ETF和加密货币价格。支持实时汇率整合的多币种功能。',
+          features: ['资产类型：股票、ETF、加密货币、大宗商品、债券、现金', '通过Alpha Vantage API自动更新价格（24小时缓存）', '盈亏追踪：日/周/月/总计时间段选择', '人民币 ↔ 美元显示货币切换', '带百分比分配的投资组合饼图', '在设置中输入Alpha Vantage和汇率API密钥'],
+          tip: '没有API价格的资产（大宗商品、债券、现金）使用购买价格。您也可以手动覆盖任何资产的价格。'
+        }
       ],
       es: [
-        { icon:'settings', title:'Configuración', desc:'Centro de preferencias generales, apariencia y gestión de datos. Ábrelo desde el icono de engranaje en la parte inferior de la barra lateral en cualquier página. Los cambios se aplican instantáneamente.',
-          features:['Idioma: TR / EN / ZH / ES / FR — toda la interfaz cambia inmediatamente','Moneda: ₺, $, €, £ y otras — controla el símbolo de visualización para todos los valores financieros','Tema: 12 temas (Dark, Midnight, Ocean, Forest, Sunset, Rose, Amber, Crimson, Nebula, Arctic, Neon, White)','Escala de UI: deslizador del 60%–140% — todos los tamaños rem escalan proporcionalmente','Modo privacidad: enmascara todos los valores de moneda con ••••; actívalo aquí o con el icono de ojo','Inicio de semana: Lunes o Domingo — afecta los gráficos de hábitos y seguimiento de tiempo','Claves API de inversión: Alpha Vantage (precios acciones/ETF/cripto) y Exchange Rates API','Exportar datos: descarga todos los datos lt_ como archivo JSON de respaldo','Importar datos: reemplaza todos los datos existentes con el contenido del archivo JSON (irreversible)','Eliminar todos los datos: dos opciones — 🔄 Restablecer datos semilla (todo se borra, la app reinicia con datos de ejemplo integrados); 💥 Borrar todo (borrado completo, sin recuperación posible)'],
-          tip:'Importar sobreescribe todos los datos existentes — exporta una copia de seguridad antes. Si solo quieres empezar de nuevo, "Restablecer datos semilla" es una forma segura de reiniciar con contenido de ejemplo.' },
-        { icon:'layout-dashboard', title:'Dashboard', desc:'Vista general central de todos los módulos. Consulta métricas clave como patrimonio neto, gastos, tasa de hábitos y metas activas de un vistazo. Personaliza qué paneles se muestran y en qué orden.',
-          features:['Selector de período Semanal / Mensual / Anual para análisis de tendencias','Arrastra y reorganiza paneles con el botón de bloqueo en la barra superior','Planes próximos con alertas de tareas vencidas','Gráfico de tarta del portafolio de inversiones y asignación de activos','Barras de progreso de metas y contadores de hitos','Entrenamientos recientes con detalles de ejercicios','Estado de gastos del presupuesto — barras de progreso por categoría'],
-          tip:'Haz clic en el icono de candado en la barra superior para entrar en modo edición y arrastrar paneles. Usa el icono de ojo para ocultar los paneles que no necesitas.' },
-        { icon:'timer', title:'Pomodoro', desc:'Temporizador de enfoque de tres modos. Usa ciclos clásicos Pomodoro (trabajo + descanso), modo Flow ilimitado o una cuenta regresiva personalizada. Cada sesión completada se registra automáticamente en la página de Seguimiento de Tiempo.',
-          features:['Modos Pomodoro (25 min trabajo + descanso), Flow (ilimitado) y Cuenta regresiva','Vincula sesiones a una tarea — el nombre aparece en el encabezado; el uso de pomodoros es rastreado','Panel de subtareas — ve y marca subtareas mientras trabajas','Botón de marca: registra un punto de división mientras el temporizador corre; guarda tiempo y hora','Botón Reiniciar: 3 opciones — guardar hasta la última marca / retroceder / reinicio completo','Botón Finalizar: guarda el tiempo total o divide y guarda cada segmento por separado','Modo horas extra: continúa más allá del límite con +MM:SS; se cierra con el botón Finalizar','El temporizador se guarda automáticamente — recargar la pestaña reanuda desde donde quedaste (8h TTL)','Sincronización en tiempo real entre múltiples pestañas'],
-          tip:'Ajusta las duraciones de trabajo, descanso corto y largo desde el panel de configuración en la parte superior de la página.' },
-        { icon:'clock', title:'Seguimiento de Tiempo', desc:'Registra actividades diarias por categoría y proyecto. Las sesiones Pomodoro se importan automáticamente; también puedes añadir entradas manuales. Analiza la distribución del tiempo con gráficos de barras de 30 días.',
-          features:['Registro manual: fecha, categoría, proyecto, hora de inicio y fin','Las sesiones Pomodoro se importan automáticamente con fuente "pomodoro"','Filtro de fuente: Todo / Solo manual / Solo Pomodoro','Selector de rango de fechas para análisis histórico','Gráficos de barras de 30 días y semanales','Modal de historial mensual — totales diarios y semanales'],
-          tip:'Las sesiones Pomodoro se importan automáticamente con la fuente "pomodoro". Usa el filtro de fuente para ver solo entradas Pomodoro o manuales por separado.' },
-        { icon:'check-circle', title:'Hábitos', desc:'Rastrea hábitos diarios y construye rachas. Añade hábitos permanentes (cada día) o programados (días específicos), y monitorea el progreso con cuadrículas visuales y gráficos.',
-          features:['Dos tipos de hábito: Permanente (diario) y Programado (solo días seleccionados)','Sistema de omisión para hoy — no rompe tu racha','🔥 Contador de racha: días consecutivos completados','Cuadrícula de finalización de 30 días — historial visual por hábito','Gráficos de rosquilla semanales con porcentaje de finalización','Arrastra para reordenar hábitos en la lista diaria'],
-          tip:'Los hábitos programados solo aparecen en sus días asignados — no afectarán las rachas en otros días.' },
-        { icon:'dumbbell', title:'Gimnasio', desc:'Diario de entrenamientos. Añade sesiones de fuerza, cardio, flexibilidad y otros; registra ejercicios con series/repeticiones/peso o duración/distancia. Guarda plantillas para reutilizarlas.',
-          features:['Tipos de entrenamiento: Fuerza, Cardio, Flexibilidad, CrossFit, Deporte, Otros','Fuerza: series, repeticiones, peso (kg/lb) y grupo muscular','Cardio: duración (min) y distancia (km)','Guardado de plantillas — reutiliza tus combinaciones de ejercicios más frecuentes','Seguimiento de medidas corporales (pecho, cintura, caderas, etc.)','Cálculo automático de 1 Repetición Máxima (1RM)','Gráficos de volumen semanal y progreso por ejercicio'],
-          tip:'Usa el botón de cambio de unidad en la esquina superior derecha para cambiar entre kg y lb — todos los datos existentes se convierten automáticamente.' },
-        { icon:'kanban', title:'Planes', desc:'Gestor de tareas estilo Kanban. Rastrea tareas en columnas Pendiente, En Progreso y Completado. Añade subtareas con soporte de arrastrar y soltar para reordenar.',
-          features:['Cambia entre vistas Kanban (columnas) y Lista (tabla)','Subtareas: casillas de verificación, texto multilínea, reordenamiento drag-and-drop','Niveles de prioridad: Alta (rojo), Media (amarillo), Baja (azul)','Etiquetas de categoría y fechas de vencimiento para organización','Alerta de vencimiento roja en tareas atrasadas','Shift+Enter en texto de subtarea crea una nueva línea'],
-          tip:'Cambia entre vistas Kanban y Lista — la vista Lista muestra todas las tareas ordenadas por fecha de vencimiento en una sola tabla, ideal para gestionar muchas tareas a la vez.' },
-        { icon:'star', title:'Sueños y Metas', desc:'Rastrea tus sueños y metas con hitos. Asigna porcentaje de progreso, fecha objetivo, emoji y color a cada meta. Se muestra los días restantes conforme se acerca el plazo.',
-          features:['Lista de hitos — cada marca actualiza automáticamente el porcentaje de progreso','El % de finalización se calcula automáticamente a partir de la proporción de hitos','Días restantes mostrados (rojo cuando quedan menos de 30 días)','Personalización de emoji y color para cada meta','Arrastra para reordenar metas en modo edición','Grupos de categorías: Carrera, Viajes, Salud, Educación y más'],
-          tip:'Alcanzar el 100% activa una animación de confeti y una notificación de felicitación.' },
-        { icon:'wallet', title:'Presupuesto', desc:'Seguimiento de presupuesto y gastos mensuales con diseño de 3 pestañas. Gestiona categorías, establece límites y revisa ciclos históricos con desgloses completos.',
-          features:['3 pestañas: Resumen (KPIs y gráficos), Categorías (estructura), Transacciones (todos los registros)','Pestaña Resumen: ingreso neto, gastos totales, gráfico circular de distribución y reordenamiento de paneles','Pestaña Categorías: crea grupos y subcategorías de ingresos/gastos, asigna límites a cada uno','Pestaña Transacciones: lista completa con búsqueda de texto y filtros de fecha/categoría','Sistema de ciclos: el presupuesto se reinicia en el día elegido cada mes; todos los períodos se archivan','Modal de ciclos pasados: navega por meses anteriores con resumen de ingresos, gastos y neto por período'],
-          tip:'Usa el botón "Importar datos" en la pestaña Transacciones para restaurar solo datos de presupuesto desde una copia de seguridad completa.' },
-        { icon:'trending-up', title:'Inversiones', desc:'Rastrea tu portafolio de inversiones. Obtén precios automáticos de acciones, ETFs y criptomonedas mediante la API Alpha Vantage. Soporte multi-divisa con integración de tipos de cambio en tiempo real.',
-          features:['Tipos de activos: Acciones, ETF, Criptomonedas, Materias primas, Bonos, Efectivo','Actualizaciones automáticas de precios via Alpha Vantage API (caché de 24 horas)','Seguimiento de P&G: selector de período Diario / Semanal / Mensual / Total','Cambio de divisa de visualización entre moneda local ↔ USD','Gráfico de tarta de asignación del portafolio con desglose porcentual','Introduce las claves API de Alpha Vantage y tipo de cambio en Configuración'],
-          tip:'Los activos sin precios de API (Materias primas, Bonos, Efectivo) usan el precio de compra. También puedes anular manualmente el precio de cualquier activo.' }
+        {
+          icon: 'settings', title: 'Configuración', desc: 'Centro de preferencias generales, apariencia y gestión de datos. Ábrelo desde el icono de engranaje en la parte inferior de la barra lateral en cualquier página. Los cambios se aplican instantáneamente.',
+          features: ['Idioma: TR / EN / ZH / ES / FR — toda la interfaz cambia inmediatamente', 'Moneda: ₺, $, €, £ y otras — controla el símbolo de visualización para todos los valores financieros', 'Tema: 12 temas (Dark, Midnight, Ocean, Forest, Sunset, Rose, Amber, Crimson, Nebula, Arctic, Neon, White)', 'Escala de UI: deslizador del 60%–140% — todos los tamaños rem escalan proporcionalmente', 'Modo privacidad: enmascara todos los valores de moneda con ••••; actívalo aquí o con el icono de ojo', 'Inicio de semana: Lunes o Domingo — afecta los gráficos de hábitos y seguimiento de tiempo', 'Claves API de inversión: Alpha Vantage (precios acciones/ETF/cripto) y Exchange Rates API', 'Exportar datos: descarga todos los datos lt_ como archivo JSON de respaldo', 'Importar datos: reemplaza todos los datos existentes con el contenido del archivo JSON (irreversible)', 'Eliminar todos los datos: dos opciones — 🔄 Restablecer datos semilla (todo se borra, la app reinicia con datos de ejemplo integrados); 💥 Borrar todo (borrado completo, sin recuperación posible)'],
+          tip: 'Importar sobreescribe todos los datos existentes — exporta una copia de seguridad antes. Si solo quieres empezar de nuevo, "Restablecer datos semilla" es una forma segura de reiniciar con contenido de ejemplo.'
+        },
+        {
+          icon: 'layout-dashboard', title: 'Dashboard', desc: 'Vista general central de todos los módulos. Consulta métricas clave como patrimonio neto, gastos, tasa de hábitos y metas activas de un vistazo. Personaliza qué paneles se muestran y en qué orden.',
+          features: ['Selector de período Semanal / Mensual / Anual para análisis de tendencias', 'Arrastra y reorganiza paneles con el botón de bloqueo en la barra superior', 'Planes próximos con alertas de tareas vencidas', 'Gráfico de tarta del portafolio de inversiones y asignación de activos', 'Barras de progreso de metas y contadores de hitos', 'Entrenamientos recientes con detalles de ejercicios', 'Estado de gastos del presupuesto — barras de progreso por categoría'],
+          tip: 'Haz clic en el icono de candado en la barra superior para entrar en modo edición y arrastrar paneles. Usa el icono de ojo para ocultar los paneles que no necesitas.'
+        },
+        {
+          icon: 'timer', title: 'Pomodoro', desc: 'Temporizador de enfoque de tres modos. Usa ciclos clásicos Pomodoro (trabajo + descanso), modo Flow ilimitado o una cuenta regresiva personalizada. Cada sesión completada se registra automáticamente en la página de Seguimiento de Tiempo.',
+          features: ['Modos Pomodoro (25 min trabajo + descanso), Flow (ilimitado) y Cuenta regresiva', 'Vincula sesiones a una tarea — el nombre aparece en el encabezado; el uso de pomodoros es rastreado', 'Panel de subtareas — ve y marca subtareas mientras trabajas', 'Botón de marca: registra un punto de división mientras el temporizador corre; guarda tiempo y hora', 'Botón Reiniciar: 3 opciones — guardar hasta la última marca / retroceder / reinicio completo', 'Botón Finalizar: guarda el tiempo total o divide y guarda cada segmento por separado', 'Modo horas extra: continúa más allá del límite con +MM:SS; se cierra con el botón Finalizar', 'El temporizador se guarda automáticamente — recargar la pestaña reanuda desde donde quedaste (8h TTL)', 'Sincronización en tiempo real entre múltiples pestañas'],
+          tip: 'Ajusta las duraciones de trabajo, descanso corto y largo desde el panel de configuración en la parte superior de la página.'
+        },
+        {
+          icon: 'clock', title: 'Seguimiento de Tiempo', desc: 'Registra actividades diarias por categoría y proyecto. Las sesiones Pomodoro se importan automáticamente; también puedes añadir entradas manuales. Analiza la distribución del tiempo con gráficos de barras de 30 días.',
+          features: ['Registro manual: fecha, categoría, proyecto, hora de inicio y fin', 'Las sesiones Pomodoro se importan automáticamente con fuente "pomodoro"', 'Filtro de fuente: Todo / Solo manual / Solo Pomodoro', 'Selector de rango de fechas para análisis histórico', 'Gráficos de barras de 30 días y semanales', 'Modal de historial mensual — totales diarios y semanales'],
+          tip: 'Las sesiones Pomodoro se importan automáticamente con la fuente "pomodoro". Usa el filtro de fuente para ver solo entradas Pomodoro o manuales por separado.'
+        },
+        {
+          icon: 'check-circle', title: 'Hábitos', desc: 'Rastrea hábitos diarios y construye rachas. Añade hábitos permanentes (cada día) o programados (días específicos), y monitorea el progreso con cuadrículas visuales y gráficos.',
+          features: ['Dos tipos de hábito: Permanente (diario) y Programado (solo días seleccionados)', 'Sistema de omisión para hoy — no rompe tu racha', '🔥 Contador de racha: días consecutivos completados', 'Cuadrícula de finalización de 30 días — historial visual por hábito', 'Gráficos de rosquilla semanales con porcentaje de finalización', 'Arrastra para reordenar hábitos en la lista diaria'],
+          tip: 'Los hábitos programados solo aparecen en sus días asignados — no afectarán las rachas en otros días.'
+        },
+        {
+          icon: 'dumbbell', title: 'Gimnasio', desc: 'Diario de entrenamientos. Añade sesiones de fuerza, cardio, flexibilidad y otros; registra ejercicios con series/repeticiones/peso o duración/distancia. Guarda plantillas para reutilizarlas.',
+          features: ['Tipos de entrenamiento: Fuerza, Cardio, Flexibilidad, CrossFit, Deporte, Otros', 'Fuerza: series, repeticiones, peso (kg/lb) y grupo muscular', 'Cardio: duración (min) y distancia (km)', 'Guardado de plantillas — reutiliza tus combinaciones de ejercicios más frecuentes', 'Seguimiento de medidas corporales (pecho, cintura, caderas, etc.)', 'Cálculo automático de 1 Repetición Máxima (1RM)', 'Gráficos de volumen semanal y progreso por ejercicio'],
+          tip: 'Usa el botón de cambio de unidad en la esquina superior derecha para cambiar entre kg y lb — todos los datos existentes se convierten automáticamente.'
+        },
+        {
+          icon: 'kanban', title: 'Planes', desc: 'Gestor de tareas estilo Kanban. Rastrea tareas en columnas Pendiente, En Progreso y Completado. Añade subtareas con soporte de arrastrar y soltar para reordenar.',
+          features: ['Cambia entre vistas Kanban (columnas) y Lista (tabla)', 'Subtareas: casillas de verificación, texto multilínea, reordenamiento drag-and-drop', 'Niveles de prioridad: Alta (rojo), Media (amarillo), Baja (azul)', 'Etiquetas de categoría y fechas de vencimiento para organización', 'Alerta de vencimiento roja en tareas atrasadas', 'Shift+Enter en texto de subtarea crea una nueva línea'],
+          tip: 'Cambia entre vistas Kanban y Lista — la vista Lista muestra todas las tareas ordenadas por fecha de vencimiento en una sola tabla, ideal para gestionar muchas tareas a la vez.'
+        },
+        {
+          icon: 'star', title: 'Sueños y Metas', desc: 'Rastrea tus sueños y metas con hitos. Asigna porcentaje de progreso, fecha objetivo, emoji y color a cada meta. Se muestra los días restantes conforme se acerca el plazo.',
+          features: ['Lista de hitos — cada marca actualiza automáticamente el porcentaje de progreso', 'El % de finalización se calcula automáticamente a partir de la proporción de hitos', 'Días restantes mostrados (rojo cuando quedan menos de 30 días)', 'Personalización de emoji y color para cada meta', 'Arrastra para reordenar metas en modo edición', 'Grupos de categorías: Carrera, Viajes, Salud, Educación y más'],
+          tip: 'Alcanzar el 100% activa una animación de confeti y una notificación de felicitación.'
+        },
+        {
+          icon: 'wallet', title: 'Presupuesto', desc: 'Seguimiento de presupuesto y gastos mensuales con diseño de 3 pestañas. Gestiona categorías, establece límites y revisa ciclos históricos con desgloses completos.',
+          features: ['3 pestañas: Resumen (KPIs y gráficos), Categorías (estructura), Transacciones (todos los registros)', 'Pestaña Resumen: ingreso neto, gastos totales, gráfico circular de distribución y reordenamiento de paneles', 'Pestaña Categorías: crea grupos y subcategorías de ingresos/gastos, asigna límites a cada uno', 'Pestaña Transacciones: lista completa con búsqueda de texto y filtros de fecha/categoría', 'Sistema de ciclos: el presupuesto se reinicia en el día elegido cada mes; todos los períodos se archivan', 'Modal de ciclos pasados: navega por meses anteriores con resumen de ingresos, gastos y neto por período'],
+          tip: 'Usa el botón "Importar datos" en la pestaña Transacciones para restaurar solo datos de presupuesto desde una copia de seguridad completa.'
+        },
+        {
+          icon: 'trending-up', title: 'Inversiones', desc: 'Rastrea tu portafolio de inversiones. Obtén precios automáticos de acciones, ETFs y criptomonedas mediante la API Alpha Vantage. Soporte multi-divisa con integración de tipos de cambio en tiempo real.',
+          features: ['Tipos de activos: Acciones, ETF, Criptomonedas, Materias primas, Bonos, Efectivo', 'Actualizaciones automáticas de precios via Alpha Vantage API (caché de 24 horas)', 'Seguimiento de P&G: selector de período Diario / Semanal / Mensual / Total', 'Cambio de divisa de visualización entre moneda local ↔ USD', 'Gráfico de tarta de asignación del portafolio con desglose porcentual', 'Introduce las claves API de Alpha Vantage y tipo de cambio en Configuración'],
+          tip: 'Los activos sin precios de API (Materias primas, Bonos, Efectivo) usan el precio de compra. También puedes anular manualmente el precio de cualquier activo.'
+        }
       ],
       fr: [
-        { icon:'settings', title:'Paramètres', desc:'Centre de préférences générales, d\'apparence et de gestion des données. Ouvrez-le depuis l\'icône d\'engrenage en bas de la barre latérale sur n\'importe quelle page. Les modifications s\'appliquent instantanément.',
-          features:['Langue : TR / EN / ZH / ES / FR — toute l\'interface bascule immédiatement','Devise : ₺, $, €, £ et autres — contrôle le symbole d\'affichage pour toutes les valeurs financières','Thème : 12 thèmes (Dark, Midnight, Ocean, Forest, Sunset, Rose, Amber, Crimson, Nebula, Arctic, Neon, White)','Échelle UI : curseur 60%–140% — toutes les tailles rem s\'adaptent proportionnellement','Mode confidentialité : masque toutes les valeurs monétaires avec •••• ; activez ici ou via l\'icône œil','Début de semaine : Lundi ou Dimanche — affecte les graphiques habitudes et suivi du temps','Clés API Investissements : Alpha Vantage (prix actions/ETF/crypto) et Exchange Rates API','Exporter les données : télécharge toutes les données lt_ dans un fichier JSON de sauvegarde','Importer les données : remplace toutes les données existantes par le contenu du fichier JSON (irréversible)','Supprimer toutes les données : deux options — 🔄 Réinitialiser aux données initiales (tout effacé, l\'app repart avec des données d\'exemple intégrées) ; 💥 Tout supprimer (suppression complète, aucune récupération possible)'],
-          tip:'Importer écrase toutes les données existantes — exportez une sauvegarde avant. Si vous souhaitez simplement repartir à zéro, "Réinitialiser aux données initiales" permet un redémarrage sûr avec du contenu d\'exemple.' },
-        { icon:'layout-dashboard', title:'Tableau de bord', desc:'Vue d\'ensemble centrale de tous les modules. Consultez les métriques clés comme la valeur nette, les dépenses, le taux de complétion des habitudes et les objectifs actifs en un coup d\'œil. Personnalisez les panneaux affichés et leur ordre.',
-          features:['Sélecteur de période Semaine / Mois / Année pour l\'analyse des tendances','Glissez-déposez les panneaux via le bouton verrou dans la barre supérieure','Plans à venir avec alertes de tâches en retard','Graphique circulaire du portefeuille et répartition des actifs','Barres de progression des objectifs et compteurs de jalons','Entraînements récents avec détails des exercices','État des dépenses du budget — barres de progression par catégorie'],
-          tip:'Cliquez sur l\'icône verrou dans la barre supérieure pour entrer en mode édition et faire glisser les panneaux. Utilisez l\'icône œil pour masquer les panneaux inutiles.' },
-        { icon:'timer', title:'Pomodoro', desc:'Minuteur de concentration à trois modes. Utilisez les cycles Pomodoro classiques (travail + pause), le mode Flow illimité ou un compte à rebours personnalisé. Chaque session terminée est automatiquement enregistrée dans le Suivi du temps.',
-          features:['Modes Pomodoro (25 min travail + pause), Flow (illimité) et Compte à rebours','Liez les sessions à une tâche — le nom s\'affiche dans l\'en-tête ; l\'utilisation des pomodoros est suivie','Panneau de sous-tâches — consultez et cochez les sous-tâches en travaillant','Bouton Drapeau : marque un point de découpe pendant la course ; enregistre le temps écoulé et l\'heure','Bouton Réinitialiser : 3 options — sauvegarder jusqu\'au dernier drapeau / revenir / réinitialisation complète','Bouton Terminer : sauvegarder le temps total ou découper par drapeaux et sauvegarder chaque segment','Mode heures supp. : continue au-delà de la limite avec +MM:SS ; clôturé via le bouton Terminer','L\'état du minuteur est sauvegardé — recharger l\'onglet reprend depuis l\'endroit quitté (TTL 8h)','Synchronisation en temps réel entre plusieurs onglets'],
-          tip:'Ajustez les durées de travail, de courte pause et de longue pause depuis le panneau de réglages en haut de la page.' },
-        { icon:'clock', title:'Suivi du temps', desc:'Enregistrez les activités quotidiennes par catégorie et projet. Les sessions Pomodoro s\'importent automatiquement ; vous pouvez aussi ajouter des entrées manuelles. Analysez la répartition du temps avec des graphiques en barres sur 30 jours.',
-          features:['Saisie manuelle : date, catégorie, projet, heure de début et fin','Les sessions Pomodoro s\'importent avec la source "pomodoro"','Filtre de source : Tout / Manuel uniquement / Pomodoro uniquement','Sélecteur de plage de dates pour l\'analyse historique','Graphiques en barres sur 30 jours et hebdomadaires','Modal d\'historique mensuel — totaux quotidiens et hebdomadaires'],
-          tip:'Les sessions Pomodoro sont auto-importées avec la source "pomodoro". Utilisez le filtre de source pour afficher séparément les entrées Pomodoro ou manuelles.' },
-        { icon:'check-circle', title:'Habitudes', desc:'Suivez vos habitudes quotidiennes et construisez des séries. Ajoutez des habitudes permanentes (chaque jour) ou planifiées (jours spécifiques), et surveillez les progrès avec des grilles visuelles et des graphiques.',
-          features:['Deux types d\'habitude : Permanente (quotidienne) et Planifiée (jours sélectionnés uniquement)','Système de saut pour aujourd\'hui — ne brise pas votre série','🔥 Compteur de série : jours consécutifs complétés','Grille de complétion sur 30 jours — historique visuel par habitude','Graphiques en donut hebdomadaires avec pourcentage de complétion','Glissez pour réorganiser les habitudes dans la liste quotidienne'],
-          tip:'Les habitudes planifiées n\'apparaissent que leurs jours assignés — elles n\'affecteront pas les séries les autres jours.' },
-        { icon:'dumbbell', title:'Salle de sport', desc:'Journal d\'entraînement. Ajoutez des séances de musculation, cardio, flexibilité et autres ; enregistrez les exercices avec séries/répétitions/poids ou durée/distance. Sauvegardez des modèles pour les réutiliser.',
-          features:['Types d\'entraînement : Musculation, Cardio, Flexibilité, CrossFit, Sport, Autre','Musculation : séries, répétitions, poids (kg/lb) et groupe musculaire','Cardio : durée (min) et distance (km)','Sauvegarde de modèles — réutilisez vos combinaisons d\'exercices favorites','Suivi des mesures corporelles (poitrine, taille, hanches, etc.)','Calcul automatique du 1 Répétition Maximum (1RM)','Graphiques de volume hebdomadaire et de progression par exercice'],
-          tip:'Utilisez le bouton de changement d\'unité en haut à droite pour basculer entre kg et lb — toutes les données existantes sont converties automatiquement.' },
-        { icon:'kanban', title:'Plans', desc:'Gestionnaire de tâches style Kanban. Suivez les tâches dans les colonnes À faire, En cours et Terminé. Ajoutez des sous-tâches avec support glisser-déposer pour réorganiser.',
-          features:['Basculez entre les vues Kanban (colonnes) et Liste (tableau)','Sous-tâches : cases à cocher, texte multiligne, réorganisation par glisser-déposer','Niveaux de priorité : Haute (rouge), Moyenne (jaune), Basse (bleu)','Étiquettes de catégorie et dates d\'échéance pour s\'organiser','Alerte rouge sur les tâches en retard','Shift+Entrée dans le texte de sous-tâche crée une nouvelle ligne'],
-          tip:'Basculez entre les vues Kanban et Liste — la vue Liste affiche toutes les tâches triées par échéance dans un seul tableau, idéale pour gérer de nombreuses tâches à la fois.' },
-        { icon:'star', title:'Rêves et Objectifs', desc:'Suivez vos rêves et objectifs avec des jalons. Attribuez un pourcentage de progression, une date cible, un emoji et une couleur à chaque objectif. Les jours restants s\'affichent à l\'approche de l\'échéance.',
-          features:['Liste de jalons — chaque coche met automatiquement à jour le pourcentage de progression','Le % de complétion est calculé automatiquement à partir du ratio de jalons','Jours restants affichés (rouge quand moins de 30 jours)','Personnalisation emoji et couleur pour chaque objectif','Glissez pour réorganiser les objectifs en mode édition','Groupes de catégories : Carrière, Voyage, Santé, Éducation et plus'],
-          tip:'Atteindre 100% déclenche une animation de confettis et une notification de félicitations.' },
-        { icon:'wallet', title:'Budget', desc:'Suivi du budget et des dépenses mensuelles avec une disposition à 3 onglets. Gérez les catégories, définissez des limites et consultez les cycles historiques avec détails complets.',
-          features:['3 onglets : Vue d\'ensemble (KPIs et graphiques), Catégories (structure), Transactions (tous les enregistrements)','Onglet Vue d\'ensemble : revenu net, dépenses totales, graphique circulaire d\'allocation et réorganisation des panneaux','Onglet Catégories : créez des groupes et sous-catégories revenus/dépenses, attribuez des limites à chacun','Onglet Transactions : liste complète avec recherche textuelle et filtres date/catégorie','Système de cycles : le budget se réinitialise le jour choisi chaque mois ; toutes les périodes sont archivées','Modal des cycles passés : parcourez les mois précédents avec résumé revenu, dépenses et net par période'],
-          tip:'Utilisez le bouton "Importer données" dans l\'onglet Transactions pour restaurer uniquement les données de budget depuis une sauvegarde complète.' },
-        { icon:'trending-up', title:'Investissements', desc:'Suivez votre portefeuille d\'investissements. Obtenez automatiquement les prix des actions, ETF et cryptomonnaies via l\'API Alpha Vantage. Support multi-devises avec intégration des taux de change en temps réel.',
-          features:['Types d\'actifs : Actions, ETF, Cryptomonnaies, Matières premières, Obligations, Liquidités','Mises à jour automatiques des prix via Alpha Vantage API (cache 24h)','Suivi P&G : sélecteur de période Quotidien / Hebdomadaire / Mensuel / Total','Basculement de devise d\'affichage devise locale ↔ USD','Graphique circulaire d\'allocation du portefeuille avec répartition en pourcentage','Saisissez les clés API Alpha Vantage et taux de change dans Paramètres'],
-          tip:'Les actifs sans prix API (Matières premières, Obligations, Liquidités) utilisent le prix d\'achat. Vous pouvez aussi remplacer manuellement le prix de n\'importe quel actif.' }
+        {
+          icon: 'settings', title: 'Paramètres', desc: 'Centre de préférences générales, d\'apparence et de gestion des données. Ouvrez-le depuis l\'icône d\'engrenage en bas de la barre latérale sur n\'importe quelle page. Les modifications s\'appliquent instantanément.',
+          features: ['Langue : TR / EN / ZH / ES / FR — toute l\'interface bascule immédiatement', 'Devise : ₺, $, €, £ et autres — contrôle le symbole d\'affichage pour toutes les valeurs financières', 'Thème : 12 thèmes (Dark, Midnight, Ocean, Forest, Sunset, Rose, Amber, Crimson, Nebula, Arctic, Neon, White)', 'Échelle UI : curseur 60%–140% — toutes les tailles rem s\'adaptent proportionnellement', 'Mode confidentialité : masque toutes les valeurs monétaires avec •••• ; activez ici ou via l\'icône œil', 'Début de semaine : Lundi ou Dimanche — affecte les graphiques habitudes et suivi du temps', 'Clés API Investissements : Alpha Vantage (prix actions/ETF/crypto) et Exchange Rates API', 'Exporter les données : télécharge toutes les données lt_ dans un fichier JSON de sauvegarde', 'Importer les données : remplace toutes les données existantes par le contenu du fichier JSON (irréversible)', 'Supprimer toutes les données : deux options — 🔄 Réinitialiser aux données initiales (tout effacé, l\'app repart avec des données d\'exemple intégrées) ; 💥 Tout supprimer (suppression complète, aucune récupération possible)'],
+          tip: 'Importer écrase toutes les données existantes — exportez une sauvegarde avant. Si vous souhaitez simplement repartir à zéro, "Réinitialiser aux données initiales" permet un redémarrage sûr avec du contenu d\'exemple.'
+        },
+        {
+          icon: 'layout-dashboard', title: 'Tableau de bord', desc: 'Vue d\'ensemble centrale de tous les modules. Consultez les métriques clés comme la valeur nette, les dépenses, le taux de complétion des habitudes et les objectifs actifs en un coup d\'œil. Personnalisez les panneaux affichés et leur ordre.',
+          features: ['Sélecteur de période Semaine / Mois / Année pour l\'analyse des tendances', 'Glissez-déposez les panneaux via le bouton verrou dans la barre supérieure', 'Plans à venir avec alertes de tâches en retard', 'Graphique circulaire du portefeuille et répartition des actifs', 'Barres de progression des objectifs et compteurs de jalons', 'Entraînements récents avec détails des exercices', 'État des dépenses du budget — barres de progression par catégorie'],
+          tip: 'Cliquez sur l\'icône verrou dans la barre supérieure pour entrer en mode édition et faire glisser les panneaux. Utilisez l\'icône œil pour masquer les panneaux inutiles.'
+        },
+        {
+          icon: 'timer', title: 'Pomodoro', desc: 'Minuteur de concentration à trois modes. Utilisez les cycles Pomodoro classiques (travail + pause), le mode Flow illimité ou un compte à rebours personnalisé. Chaque session terminée est automatiquement enregistrée dans le Suivi du temps.',
+          features: ['Modes Pomodoro (25 min travail + pause), Flow (illimité) et Compte à rebours', 'Liez les sessions à une tâche — le nom s\'affiche dans l\'en-tête ; l\'utilisation des pomodoros est suivie', 'Panneau de sous-tâches — consultez et cochez les sous-tâches en travaillant', 'Bouton Drapeau : marque un point de découpe pendant la course ; enregistre le temps écoulé et l\'heure', 'Bouton Réinitialiser : 3 options — sauvegarder jusqu\'au dernier drapeau / revenir / réinitialisation complète', 'Bouton Terminer : sauvegarder le temps total ou découper par drapeaux et sauvegarder chaque segment', 'Mode heures supp. : continue au-delà de la limite avec +MM:SS ; clôturé via le bouton Terminer', 'L\'état du minuteur est sauvegardé — recharger l\'onglet reprend depuis l\'endroit quitté (TTL 8h)', 'Synchronisation en temps réel entre plusieurs onglets'],
+          tip: 'Ajustez les durées de travail, de courte pause et de longue pause depuis le panneau de réglages en haut de la page.'
+        },
+        {
+          icon: 'clock', title: 'Suivi du temps', desc: 'Enregistrez les activités quotidiennes par catégorie et projet. Les sessions Pomodoro s\'importent automatiquement ; vous pouvez aussi ajouter des entrées manuelles. Analysez la répartition du temps avec des graphiques en barres sur 30 jours.',
+          features: ['Saisie manuelle : date, catégorie, projet, heure de début et fin', 'Les sessions Pomodoro s\'importent avec la source "pomodoro"', 'Filtre de source : Tout / Manuel uniquement / Pomodoro uniquement', 'Sélecteur de plage de dates pour l\'analyse historique', 'Graphiques en barres sur 30 jours et hebdomadaires', 'Modal d\'historique mensuel — totaux quotidiens et hebdomadaires'],
+          tip: 'Les sessions Pomodoro sont auto-importées avec la source "pomodoro". Utilisez le filtre de source pour afficher séparément les entrées Pomodoro ou manuelles.'
+        },
+        {
+          icon: 'check-circle', title: 'Habitudes', desc: 'Suivez vos habitudes quotidiennes et construisez des séries. Ajoutez des habitudes permanentes (chaque jour) ou planifiées (jours spécifiques), et surveillez les progrès avec des grilles visuelles et des graphiques.',
+          features: ['Deux types d\'habitude : Permanente (quotidienne) et Planifiée (jours sélectionnés uniquement)', 'Système de saut pour aujourd\'hui — ne brise pas votre série', '🔥 Compteur de série : jours consécutifs complétés', 'Grille de complétion sur 30 jours — historique visuel par habitude', 'Graphiques en donut hebdomadaires avec pourcentage de complétion', 'Glissez pour réorganiser les habitudes dans la liste quotidienne'],
+          tip: 'Les habitudes planifiées n\'apparaissent que leurs jours assignés — elles n\'affecteront pas les séries les autres jours.'
+        },
+        {
+          icon: 'dumbbell', title: 'Salle de sport', desc: 'Journal d\'entraînement. Ajoutez des séances de musculation, cardio, flexibilité et autres ; enregistrez les exercices avec séries/répétitions/poids ou durée/distance. Sauvegardez des modèles pour les réutiliser.',
+          features: ['Types d\'entraînement : Musculation, Cardio, Flexibilité, CrossFit, Sport, Autre', 'Musculation : séries, répétitions, poids (kg/lb) et groupe musculaire', 'Cardio : durée (min) et distance (km)', 'Sauvegarde de modèles — réutilisez vos combinaisons d\'exercices favorites', 'Suivi des mesures corporelles (poitrine, taille, hanches, etc.)', 'Calcul automatique du 1 Répétition Maximum (1RM)', 'Graphiques de volume hebdomadaire et de progression par exercice'],
+          tip: 'Utilisez le bouton de changement d\'unité en haut à droite pour basculer entre kg et lb — toutes les données existantes sont converties automatiquement.'
+        },
+        {
+          icon: 'kanban', title: 'Plans', desc: 'Gestionnaire de tâches style Kanban. Suivez les tâches dans les colonnes À faire, En cours et Terminé. Ajoutez des sous-tâches avec support glisser-déposer pour réorganiser.',
+          features: ['Basculez entre les vues Kanban (colonnes) et Liste (tableau)', 'Sous-tâches : cases à cocher, texte multiligne, réorganisation par glisser-déposer', 'Niveaux de priorité : Haute (rouge), Moyenne (jaune), Basse (bleu)', 'Étiquettes de catégorie et dates d\'échéance pour s\'organiser', 'Alerte rouge sur les tâches en retard', 'Shift+Entrée dans le texte de sous-tâche crée une nouvelle ligne'],
+          tip: 'Basculez entre les vues Kanban et Liste — la vue Liste affiche toutes les tâches triées par échéance dans un seul tableau, idéale pour gérer de nombreuses tâches à la fois.'
+        },
+        {
+          icon: 'star', title: 'Rêves et Objectifs', desc: 'Suivez vos rêves et objectifs avec des jalons. Attribuez un pourcentage de progression, une date cible, un emoji et une couleur à chaque objectif. Les jours restants s\'affichent à l\'approche de l\'échéance.',
+          features: ['Liste de jalons — chaque coche met automatiquement à jour le pourcentage de progression', 'Le % de complétion est calculé automatiquement à partir du ratio de jalons', 'Jours restants affichés (rouge quand moins de 30 jours)', 'Personnalisation emoji et couleur pour chaque objectif', 'Glissez pour réorganiser les objectifs en mode édition', 'Groupes de catégories : Carrière, Voyage, Santé, Éducation et plus'],
+          tip: 'Atteindre 100% déclenche une animation de confettis et une notification de félicitations.'
+        },
+        {
+          icon: 'wallet', title: 'Budget', desc: 'Suivi du budget et des dépenses mensuelles avec une disposition à 3 onglets. Gérez les catégories, définissez des limites et consultez les cycles historiques avec détails complets.',
+          features: ['3 onglets : Vue d\'ensemble (KPIs et graphiques), Catégories (structure), Transactions (tous les enregistrements)', 'Onglet Vue d\'ensemble : revenu net, dépenses totales, graphique circulaire d\'allocation et réorganisation des panneaux', 'Onglet Catégories : créez des groupes et sous-catégories revenus/dépenses, attribuez des limites à chacun', 'Onglet Transactions : liste complète avec recherche textuelle et filtres date/catégorie', 'Système de cycles : le budget se réinitialise le jour choisi chaque mois ; toutes les périodes sont archivées', 'Modal des cycles passés : parcourez les mois précédents avec résumé revenu, dépenses et net par période'],
+          tip: 'Utilisez le bouton "Importer données" dans l\'onglet Transactions pour restaurer uniquement les données de budget depuis une sauvegarde complète.'
+        },
+        {
+          icon: 'trending-up', title: 'Investissements', desc: 'Suivez votre portefeuille d\'investissements. Obtenez automatiquement les prix des actions, ETF et cryptomonnaies via l\'API Alpha Vantage. Support multi-devises avec intégration des taux de change en temps réel.',
+          features: ['Types d\'actifs : Actions, ETF, Cryptomonnaies, Matières premières, Obligations, Liquidités', 'Mises à jour automatiques des prix via Alpha Vantage API (cache 24h)', 'Suivi P&G : sélecteur de période Quotidien / Hebdomadaire / Mensuel / Total', 'Basculement de devise d\'affichage devise locale ↔ USD', 'Graphique circulaire d\'allocation du portefeuille avec répartition en pourcentage', 'Saisissez les clés API Alpha Vantage et taux de change dans Paramètres'],
+          tip: 'Les actifs sans prix API (Matières premières, Obligations, Liquidités) utilisent le prix d\'achat. Vous pouvez aussi remplacer manuellement le prix de n\'importe quel actif.'
+        }
       ]
     };
   },
@@ -5021,9 +5123,9 @@ const UI = {
       return;
     }
     this._settingsModal = new CustomModal({
-      title:   this.t('settings_title'),
-      icon:    'settings',
-      width:   440,
+      title: this.t('settings_title'),
+      icon: 'settings',
+      width: 440,
       content: this._settingsBodyHTML(),
       buttons: [],
     });
@@ -5034,26 +5136,26 @@ const UI = {
     const lang = this.getLang();
     const currentTheme = Store.getSettings().theme || 'dark';
     const themes = [
-      { id: 'dark',     accent: '#111111', bg: '#1A1A22' },
+      { id: 'dark', accent: '#111111', bg: '#1A1A22' },
       { id: 'midnight', accent: '#4D9EFF', bg: '#15192E' },
-      { id: 'ocean',    accent: '#00CBA9', bg: '#122224' },
-      { id: 'forest',   accent: '#4ADE80', bg: '#142218' },
-      { id: 'sunset',   accent: '#FB923C', bg: '#241810' },
-      { id: 'rose',     accent: '#F472B6', bg: '#221724' },
-      { id: 'amber',    accent: '#EAB308', bg: '#1E1608' },
-      { id: 'crimson',  accent: '#DC2626', bg: '#240E0E' },
-      { id: 'nebula',   accent: '#A78BFA', bg: '#181224' },
-      { id: 'arctic',   accent: '#22D3EE', bg: '#0D1C28' },
-      { id: 'neon',     accent: '#84CC16', bg: '#101A10' },
-      { id: 'white',    accent: '#6366F1', bg: '#FFFFFF' },
+      { id: 'ocean', accent: '#00CBA9', bg: '#122224' },
+      { id: 'forest', accent: '#4ADE80', bg: '#142218' },
+      { id: 'sunset', accent: '#FB923C', bg: '#241810' },
+      { id: 'rose', accent: '#F472B6', bg: '#221724' },
+      { id: 'amber', accent: '#EAB308', bg: '#1E1608' },
+      { id: 'crimson', accent: '#DC2626', bg: '#240E0E' },
+      { id: 'nebula', accent: '#A78BFA', bg: '#181224' },
+      { id: 'arctic', accent: '#22D3EE', bg: '#0D1C28' },
+      { id: 'neon', accent: '#84CC16', bg: '#101A10' },
+      { id: 'white', accent: '#6366F1', bg: '#FFFFFF' },
     ];
     const s = Store.getSettings();
     const _themeSurfaces = {
-      dark:'#1A1A22',midnight:'#15192E',ocean:'#122224',forest:'#142218',
-      sunset:'#241810',rose:'#221724',amber:'#1E1608',crimson:'#240E0E',
-      nebula:'#181224',arctic:'#0D1C28',neon:'#101A10',white:'#FFFFFF',
+      dark: '#1A1A22', midnight: '#15192E', ocean: '#122224', forest: '#142218',
+      sunset: '#241810', rose: '#221724', amber: '#1E1608', crimson: '#240E0E',
+      nebula: '#181224', arctic: '#0D1C28', neon: '#101A10', white: '#FFFFFF',
     };
-    const currentBg   = _themeSurfaces[currentTheme] || '#1A1A22';
+    const currentBg = _themeSurfaces[currentTheme] || '#1A1A22';
     const isLightTheme = currentTheme === 'white';
     const swatches = themes.map(th => {
       const active = th.id === currentTheme;
@@ -5069,7 +5171,7 @@ const UI = {
         onmouseenter="this.style.borderColor='${hoverBorder}'"
         onmouseleave="this.style.borderColor='${borderColor}'"
         style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;padding:0.4rem 0.25rem;border-radius:var(--radius-sm);border:2px solid ${borderColor};background:${currentBg};cursor:pointer;transition:border-color var(--transition);min-width:0;">
-        <span style="width:1.5rem;height:1.5rem;border-radius:50%;background:${th.id==='white'?'#FFFFFF':th.accent};display:block;flex-shrink:0;border:2px solid ${dotBorder};box-sizing:border-box;${dotExtra}"></span>
+        <span style="width:1.5rem;height:1.5rem;border-radius:50%;background:${th.id === 'white' ? '#FFFFFF' : th.accent};display:block;flex-shrink:0;border:2px solid ${dotBorder};box-sizing:border-box;${dotExtra}"></span>
         <span style="font-size:0.625rem;color:${labelColor};font-family:var(--font-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:3.5rem;text-align:center;">${this.t('settings_theme_' + th.id)}</span>
       </button>`;
     }).join('');
@@ -5077,24 +5179,28 @@ const UI = {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
         <div class="form-group" style="margin:0">
           <label class="form-label" style="text-align:center">${this.t('settings_lang')}</label>
-          ${(() => { const langs = [{ code:'en', flag:'🇬🇧', name:'English' }, { code:'zh', flag:'🇨🇳', name:'中文' }, { code:'es', flag:'🇪🇸', name:'Español' }, { code:'fr', flag:'🇫🇷', name:'Français' }, { code:'tr', flag:'🇹🇷', name:'Türkçe' }];
-            const cur = langs.find(l => l.code === lang) || langs[0];
-            return `<button type="button" onclick="UI._openLangDropdown(this)"
+          ${(() => {
+        const langs = [{ code: 'en', flag: '🇬🇧', name: 'English' }, { code: 'zh', flag: '🇨🇳', name: '中文' }, { code: 'es', flag: '🇪🇸', name: 'Español' }, { code: 'fr', flag: '🇫🇷', name: 'Français' }, { code: 'tr', flag: '🇹🇷', name: 'Türkçe' }];
+        const cur = langs.find(l => l.code === lang) || langs[0];
+        return `<button type="button" onclick="UI._openLangDropdown(this)"
               style="width:100%;display:flex;align-items:center;gap:0.4375rem;padding:0 0.625rem;height:2.25rem;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;overflow:hidden">
               <span style="font-family:var(--font-mono);font-size:0.75rem;font-weight:700;color:var(--accent);flex-shrink:0;letter-spacing:.04em">${cur.code.toUpperCase()}</span>
               <span style="font-size:0.75rem;color:var(--text-secondary);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${cur.name}</span>
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>`; })()}
+            </button>`;
+      })()}
         </div>
         <div class="form-group" style="margin:0">
           <label class="form-label" style="text-align:center">${this.t('settings_currency')}</label>
           <button type="button" onclick="UI._openCurrencyDropdown(this)"
             style="width:100%;display:flex;align-items:center;gap:0.375rem;padding:0 0.625rem;height:2.25rem;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;overflow:hidden">
-            ${(() => { const c = this._CURRENCIES.find(x => x.sym === s.currency) || this._CURRENCIES[0];
-              return `<span style="font-family:var(--font-mono);font-size:0.8125rem;font-weight:700;color:var(--accent);flex-shrink:0">${c.sym}</span>
+            ${(() => {
+        const c = this._CURRENCIES.find(x => x.sym === s.currency) || this._CURRENCIES[0];
+        return `<span style="font-family:var(--font-mono);font-size:0.8125rem;font-weight:700;color:var(--accent);flex-shrink:0">${c.sym}</span>
                       <span style="font-family:var(--font-mono);font-size:0.6875rem;font-weight:600;color:var(--text-muted);flex-shrink:0">${c.code}</span>
                       <span style="font-size:0.75rem;color:var(--text-secondary);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.name}</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>`; })()}
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>`;
+      })()}
           </button>
         </div>
       </div>
@@ -5138,9 +5244,9 @@ const UI = {
         <p style="font-size:0.6875rem;color:var(--text-muted);margin:0.125rem 0 0.375rem">${this.t('settings_api_hint')}</p>
         <div style="display:flex;flex-direction:column;gap:0.375rem">
           ${[
-            { id: 'lt-api-av', label: this.t('settings_api_av'), val: s.avKey || '' },
-            { id: 'lt-api-fx', label: this.t('settings_api_fx'), val: s.fxKey || '' },
-          ].map(f => `
+        { id: 'lt-api-av', label: this.t('settings_api_av'), val: s.avKey || '' },
+        { id: 'lt-api-fx', label: this.t('settings_api_fx'), val: s.fxKey || '' },
+      ].map(f => `
             <div>
               <span style="font-size:0.6875rem;color:var(--text-secondary);display:block;margin-bottom:0.1875rem">${f.label}</span>
               <div style="position:relative">
@@ -5202,15 +5308,17 @@ const UI = {
   _showConfirm({ title, message, confirmLabel, confirmDanger = false, onConfirm, onCancel }) {
     const modal = new CustomModal({
       title,
-      icon:    confirmDanger ? 'triangle-alert' : 'info',
+      icon: confirmDanger ? 'triangle-alert' : 'info',
       variant: confirmDanger ? 'danger' : 'default',
       content: `<p>${message}</p>`,
-      width:   400,
-      zIndex:  9000,
+      width: 400,
+      zIndex: 9000,
       buttons: [
         { label: this.t('btn_cancel'), variant: 'secondary', onClick: m => { m.close(); onCancel?.(); } },
-        { label: confirmLabel, variant: confirmDanger ? 'danger' : 'primary',
-          onClick: m => { m.close(); onConfirm(); } },
+        {
+          label: confirmLabel, variant: confirmDanger ? 'danger' : 'primary',
+          onClick: m => { m.close(); onConfirm(); }
+        },
       ],
     });
     modal.open();
@@ -5218,12 +5326,12 @@ const UI = {
 
   _deleteAllData() {
     const modal = new CustomModal({
-      title:    this.t('settings_delete_choice_title'),
+      title: this.t('settings_delete_choice_title'),
       subtitle: this.t('settings_delete_choice_subtitle'),
-      icon:     'database',
-      variant:  'danger',
-      width:    560,
-      zIndex:   9000,
+      icon: 'database',
+      variant: 'danger',
+      width: 560,
+      zIndex: 9000,
       content: `
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
           <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);padding:1.125rem;display:flex;flex-direction:column;gap:0.625rem">
@@ -5270,13 +5378,13 @@ const UI = {
     body.querySelector('#lt-delete-wipe-btn').addEventListener('click', () => {
       modal.close();
       this._showConfirm({
-        title:         this.t('settings_delete_wipe_label'),
-        message:       this.t('settings_delete_wipe_confirm'),
-        confirmLabel:  this.t('settings_delete_wipe_btn'),
+        title: this.t('settings_delete_wipe_label'),
+        message: this.t('settings_delete_wipe_confirm'),
+        confirmLabel: this.t('settings_delete_wipe_btn'),
         confirmDanger: true,
         onConfirm: () => {
           Object.keys(localStorage).filter(k => k.startsWith('lt_')).forEach(k => localStorage.removeItem(k));
-          ['gym','time','habits','plans','inv','goals','budget','pomo'].forEach(m => localStorage.setItem('lt_'+m+'_seeded','true'));
+          ['gym', 'time', 'habits', 'plans', 'inv', 'goals', 'budget', 'pomo'].forEach(m => localStorage.setItem('lt_' + m + '_seeded', 'true'));
           this.toast(this.t('settings_delete_wipe_ok'), 'success');
           setTimeout(() => location.reload(), 800);
         },
@@ -5319,24 +5427,24 @@ const UI = {
           });
           const budgetCfgRaw = data['lt_budget_cfg'];
           if (budgetCfgRaw && typeof budgetCfgRaw === 'object') {
-            const cycleDay  = budgetCfgRaw.cycleDay || 1;
-            const today     = new Date();
-            const d         = today.getDate() >= cycleDay
+            const cycleDay = budgetCfgRaw.cycleDay || 1;
+            const today = new Date();
+            const d = today.getDate() >= cycleDay
               ? new Date(today.getFullYear(), today.getMonth(), cycleDay)
               : new Date(today.getFullYear(), today.getMonth() - 1, cycleDay);
-            const pad       = n => String(n).padStart(2, '0');
-            const safeStart = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+            const pad = n => String(n).padStart(2, '0');
+            const safeStart = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
             localStorage.setItem('lt_budget_cfg', JSON.stringify({ ...budgetCfgRaw, cycleDay, lastCycleStart: safeStart }));
           }
           this.toast(this.t('settings_import_ok'), 'success');
           setTimeout(() => location.reload(), 800);
         };
         this._showConfirm({
-          title:        this.t('settings_import_title'),
-          message:      this.t('settings_import_confirm'),
+          title: this.t('settings_import_title'),
+          message: this.t('settings_import_confirm'),
           confirmLabel: this.t('settings_import_btn'),
           confirmDanger: false,
-          onConfirm:    _doImport,
+          onConfirm: _doImport,
         });
       } catch {
         this.toast(this.t('settings_import_err'), 'error');
@@ -5357,11 +5465,11 @@ const UI = {
 
   _updateFavicon() {
     const isWhite = (Store.getSettings().theme || 'dark') === 'white';
-    const bg     = isWhite ? '#F2F2F2' : '#0D0D0D';
+    const bg = isWhite ? '#F2F2F2' : '#0D0D0D';
     const stroke = isWhite ? '#111111' : (getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#DEDEDE');
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="${bg}"/><polyline points="3,20 7,20 10,10 13.5,25 17,13 20.5,22 24,16 29,16" fill="none" stroke="${stroke}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     const blob = new Blob([svg], { type: 'image/svg+xml' });
-    const url  = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(blob);
     let link = document.querySelector('link[rel="icon"]');
     if (!link) { link = document.createElement('link'); link.rel = 'icon'; link.type = 'image/svg+xml'; document.head.appendChild(link); }
     const old = link.href;
@@ -5378,17 +5486,17 @@ const UI = {
   },
 
   _CURRENCIES: [
-    { sym: '$',   code: 'USD', name: 'US Dollar'     },
-    { sym: '€',   code: 'EUR', name: 'Euro'           },
-    { sym: '£',   code: 'GBP', name: 'British Pound'  },
-    { sym: '¥',   code: 'JPY', name: 'Japanese Yen'   },
-    { sym: '元',   code: 'CNY', name: 'Chinese Yuan'   },
-    { sym: '₹',   code: 'INR', name: 'Indian Rupee'   },
-    { sym: 'R$',  code: 'BRL', name: 'Brazilian Real' },
-    { sym: 'Mex$', code: 'MXN', name: 'Mexican Peso'   },
-    { sym: '₽',   code: 'RUB', name: 'Russian Ruble'  },
-    { sym: '฿',   code: 'THB', name: 'Thai Baht'      },
-    { sym: '₺',   code: 'TRY', name: 'Turkish Lira'   },
+    { sym: '$', code: 'USD', name: 'US Dollar' },
+    { sym: '€', code: 'EUR', name: 'Euro' },
+    { sym: '£', code: 'GBP', name: 'British Pound' },
+    { sym: '¥', code: 'JPY', name: 'Japanese Yen' },
+    { sym: '元', code: 'CNY', name: 'Chinese Yuan' },
+    { sym: '₹', code: 'INR', name: 'Indian Rupee' },
+    { sym: 'R$', code: 'BRL', name: 'Brazilian Real' },
+    { sym: 'Mex$', code: 'MXN', name: 'Mexican Peso' },
+    { sym: '₽', code: 'RUB', name: 'Russian Ruble' },
+    { sym: '฿', code: 'THB', name: 'Thai Baht' },
+    { sym: '₺', code: 'TRY', name: 'Turkish Lira' },
   ],
 
   _openCurrencyDropdown(btn) {
@@ -5397,7 +5505,7 @@ const UI = {
       btn._ddInst = new CustomDropdown({
         btn,
         items: this._CURRENCIES.map(c => ({ value: c.sym, label: c.name, badge: c.sym, badge2: c.code })),
-        onOpen:  (dd) => dd.setValue(Store.getSettings().currency),
+        onOpen: (dd) => dd.setValue(Store.getSettings().currency),
         onSelect: (sym) => this._setCurrency(sym),
         renderItem: (item) =>
           `<span style="font-family:var(--font-mono);font-size:0.8125rem;font-weight:700;color:var(--accent);flex-shrink:0;min-width:2.25rem">${item.badge}</span>` +
@@ -5422,16 +5530,16 @@ const UI = {
     // Lazy-init: btn her modal açılışında yeni element olabilir (settings modal rebuild)
     if (!btn._ddInst) {
       const langs = [
-        { code: 'en', flag: '🇬🇧', name: 'English'  },
-        { code: 'zh', flag: '🇨🇳', name: '中文'     },
-        { code: 'es', flag: '🇪🇸', name: 'Español'  },
+        { code: 'en', flag: '🇬🇧', name: 'English' },
+        { code: 'zh', flag: '🇨🇳', name: '中文' },
+        { code: 'es', flag: '🇪🇸', name: 'Español' },
         { code: 'fr', flag: '🇫🇷', name: 'Français' },
-        { code: 'tr', flag: '🇹🇷', name: 'Türkçe'  },
+        { code: 'tr', flag: '🇹🇷', name: 'Türkçe' },
       ];
       btn._ddInst = new CustomDropdown({
         btn,
         items: langs.map(l => ({ value: l.code, label: l.name, badge: l.code.toUpperCase(), _flag: l.flag })),
-        onOpen:  (dd) => dd.setValue(this.getLang()),
+        onOpen: (dd) => dd.setValue(this.getLang()),
         onSelect: (code) => this._setLang(code),
         renderItem: (item) =>
           `<span style="font-family:var(--font-mono);font-size:0.6875rem;font-weight:700;color:var(--accent);flex-shrink:0;min-width:1.625rem;letter-spacing:.04em">${item.badge}</span>` +
@@ -5473,7 +5581,7 @@ const UI = {
     menu._trigger = btn;
     menu.style.cssText = 'position:fixed;z-index:99999;background:var(--bg-surface);border:1px solid var(--border);border-radius:0.625rem;padding:4px;box-shadow:0 12px 36px rgba(0,0,0,.8);overflow-y:auto;max-height:300px;';
     menu.innerHTML = items.map(it => {
-      const bg      = it.active ? 'rgba(124,108,252,.12)' : 'transparent';
+      const bg = it.active ? 'rgba(124,108,252,.12)' : 'transparent';
       const hoverBg = it.active ? 'rgba(124,108,252,.18)' : 'rgba(255,255,255,.05)';
       return `<div data-val="${it.value}"
         style="display:flex;align-items:center;gap:0.5rem;padding:9px 10px;border-radius:0.4375rem;cursor:pointer;background:${bg}"
@@ -5491,7 +5599,7 @@ const UI = {
     menu.style.width = btn.offsetWidth + 'px';
     const mh = Math.min(menu.scrollHeight, 300);
     const spaceBelow = window.innerHeight - rect.bottom;
-    menu.style.top  = (spaceBelow >= mh + 8 ? rect.bottom + 4 : Math.max(8, rect.top - mh - 4)) + 'px';
+    menu.style.top = (spaceBelow >= mh + 8 ? rect.bottom + 4 : Math.max(8, rect.top - mh - 4)) + 'px';
     menu.style.left = Math.max(8, rect.left) + 'px';
     setTimeout(() => {
       document.addEventListener('click', function h(e) {
@@ -5505,14 +5613,14 @@ const UI = {
   // ── Page title helper ────────────────────────────────────
   pageTitle() {
     const navMap = {
-      'index.html':       'nav_dashboard',
-      'focusmode.html':   'nav_pomodoro',
-      'timelog.html':     'nav_time',
-      'habits.html':      'nav_habits',
-      'gym.html':         'nav_gym',
-      'plans.html':       'nav_plans',
-      'goals.html':       'nav_goals',
-      'budget.html':      'nav_budget',
+      'index.html': 'nav_dashboard',
+      'focusmode.html': 'nav_pomodoro',
+      'timelog.html': 'nav_time',
+      'habits.html': 'nav_habits',
+      'gym.html': 'nav_gym',
+      'plans.html': 'nav_plans',
+      'goals.html': 'nav_goals',
+      'budget.html': 'nav_budget',
       'investments.html': 'nav_investments',
     };
     const page = (location.pathname.endsWith('/') ? 'index.html' : location.pathname.split('/').pop()) || 'index.html';
@@ -5523,11 +5631,11 @@ const UI = {
   // ── HTML escaping ────────────────────────────────────────
   esc(str) {
     if (str == null) return '';
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   },
 
   // ── Date & number formatting ─────────────────────────────
-  today() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; },
+  today() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; },
 
   longDate() {
     const d = new Date();
@@ -5538,7 +5646,7 @@ const UI = {
     }
     // ZH: "2026年6月13日 周六"
     if (lang === 'zh') {
-      return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 ${this.DAYS_ZH[d.getDay()]}`;
+      return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日 ${this.DAYS_ZH[d.getDay()]}`;
     }
     // ES: "sábado, 13 de junio de 2026"
     if (lang === 'es') {
@@ -5556,13 +5664,13 @@ const UI = {
     if (!s) return '—';
     const d = new Date(s + 'T00:00:00');
     const lang = this.getLang();
-    const dd   = String(d.getDate()).padStart(2, '0');
-    const mm   = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
     const yyyy = d.getFullYear();
     // TR: 13.06.2026
     if (lang === 'tr') return `${dd}.${mm}.${yyyy}`;
     // ZH: 2026年6月13日
-    if (lang === 'zh') return `${yyyy}年${d.getMonth()+1}月${d.getDate()}日`;
+    if (lang === 'zh') return `${yyyy}年${d.getMonth() + 1}月${d.getDate()}日`;
     // ES: 13/06/2026
     if (lang === 'es') return `${dd}/${mm}/${yyyy}`;
     // FR: 13/06/2026
@@ -5583,7 +5691,7 @@ const UI = {
 
   fmtMinutes(m) {
     const totalSecs = Math.round(m * 60);
-    const h   = Math.floor(totalSecs / 3600);
+    const h = Math.floor(totalSecs / 3600);
     const min = Math.floor((totalSecs % 3600) / 60);
     const sec = totalSecs % 60;
     const hs = this.t('hours_suffix'), ms = this.t('mins_suffix'), ss = this.t('secs_suffix');
@@ -5658,9 +5766,9 @@ const UI = {
       return;
     }
     this._panelManagerModal = new CustomModal({
-      title:   this.t('panel_manager_title'),
-      icon:    'pie-chart',
-      width:   380,
+      title: this.t('panel_manager_title'),
+      icon: 'pie-chart',
+      width: 380,
       content: '<div id="lt-panel-list-cm"></div>',
       buttons: [],
     });
@@ -5736,6 +5844,22 @@ const UI = {
     });
 
     const logo = sidebar.querySelector('.sidebar-logo');
+
+    if (logo && !document.getElementById('lt-version-badge')) {
+      const logoText = logo.querySelector('.sidebar-logo-text');
+      if (logoText) {
+        const group = document.createElement('div');
+        group.className = 'sidebar-logo-group';
+        logo.insertBefore(group, logoText);
+        group.appendChild(logoText);
+        const badge = document.createElement('span');
+        badge.id = 'lt-version-badge';
+        badge.className = 'lt-version-badge';
+        badge.textContent = this.VERSION;
+        group.appendChild(badge);
+      }
+    }
+
     if (logo && !document.getElementById('sidebar-toggle-btn')) {
       const btn = document.createElement('button');
       btn.id = 'sidebar-toggle-btn';
@@ -5751,6 +5875,7 @@ const UI = {
     if (Store.get('lt_sidebar_collapsed')) {
       sidebar.classList.add('collapsed');
     }
+    document.documentElement.classList.remove('sb-collapsed');
 
     this.applyTranslations();
   },
@@ -5893,9 +6018,9 @@ const UI = {
   // ── Component helpers ────────────────────────────────────
   priorityBadge(p) {
     const map = {
-      high:   ['badge-red',    this.t('priority_high')],
+      high: ['badge-red', this.t('priority_high')],
       medium: ['badge-yellow', this.t('priority_medium')],
-      low:    ['badge-blue',   this.t('priority_low')],
+      low: ['badge-blue', this.t('priority_low')],
     };
     const [cls, lbl] = map[p] || ['badge-gray', p];
     return `<span class="badge ${cls}">${lbl}</span>`;
@@ -5904,15 +6029,15 @@ const UI = {
   catBadge(cat) {
     const _MAP = {
       // Turkish storage keys
-      'Çalışma':'pomo_cat_work','Öğrenme':'pomo_cat_learn','Egzersiz':'pomo_cat_exercise',
-      'Sosyal':'pomo_cat_social','Uyku':'pomo_cat_sleep','Diğer':'pomo_cat_other',
-      'Proje':'plans_cat_project','Eğitim':'plans_cat_education','Finans':'plans_cat_finance',
-      'Yatırım':'plans_cat_investment','Kişisel':'plans_cat_personal','Sağlık':'plans_cat_health',
+      'Çalışma': 'pomo_cat_work', 'Öğrenme': 'pomo_cat_learn', 'Egzersiz': 'pomo_cat_exercise',
+      'Sosyal': 'pomo_cat_social', 'Uyku': 'pomo_cat_sleep', 'Diğer': 'pomo_cat_other',
+      'Proje': 'plans_cat_project', 'Eğitim': 'plans_cat_education', 'Finans': 'plans_cat_finance',
+      'Yatırım': 'plans_cat_investment', 'Kişisel': 'plans_cat_personal', 'Sağlık': 'plans_cat_health',
       // English legacy keys (stored before value attrs were added)
-      'Work':'pomo_cat_work','Learning':'pomo_cat_learn','Exercise':'pomo_cat_exercise',
-      'Social':'pomo_cat_social','Sleep':'pomo_cat_sleep','Other':'pomo_cat_other',
-      'Project':'plans_cat_project','Education':'plans_cat_education','Finance':'plans_cat_finance',
-      'Investment':'plans_cat_investment','Personal':'plans_cat_personal','Health':'plans_cat_health',
+      'Work': 'pomo_cat_work', 'Learning': 'pomo_cat_learn', 'Exercise': 'pomo_cat_exercise',
+      'Social': 'pomo_cat_social', 'Sleep': 'pomo_cat_sleep', 'Other': 'pomo_cat_other',
+      'Project': 'plans_cat_project', 'Education': 'plans_cat_education', 'Finance': 'plans_cat_finance',
+      'Investment': 'plans_cat_investment', 'Personal': 'plans_cat_personal', 'Health': 'plans_cat_health',
     };
     const display = _MAP[cat] ? this.t(_MAP[cat]) : cat;
     return `<span class="badge badge-purple">${display}</span>`;
@@ -5971,9 +6096,9 @@ const UI = {
     const btnRect = btnEl.getBoundingClientRect();
     const w = panelRect ? Math.floor(panelRect.width) : Math.min(520, window.innerWidth - 32);
     const _sidebarEl = document.querySelector('.sidebar');
-    const _topbarEl  = document.querySelector('.topbar');
+    const _topbarEl = document.querySelector('.topbar');
     const minX = _sidebarEl ? _sidebarEl.offsetWidth + 4 : 8;
-    const minY = _topbarEl  ? _topbarEl.offsetHeight + 4 : 8;
+    const minY = _topbarEl ? _topbarEl.offsetHeight + 4 : 8;
     let left = panelRect ? panelRect.left : btnRect.left;
     if (left < minX) left = minX;
     if (left + w > window.innerWidth - 8) left = window.innerWidth - w - 8;
@@ -5991,20 +6116,20 @@ const UI = {
       let dragX = 0, dragY = 0;
       function _onMouseMove(e) {
         const sidebarEl = document.querySelector('.sidebar');
-        const topbarEl  = document.querySelector('.topbar');
+        const topbarEl = document.querySelector('.topbar');
         const minX = sidebarEl ? sidebarEl.offsetWidth + 4 : 4;
-        const minY = topbarEl  ? topbarEl.offsetHeight + 4 : 4;
-        const nx = Math.max(minX, Math.min(window.innerWidth  - overlay.offsetWidth  - 4, overlay.offsetLeft + e.clientX - dragX));
-        const ny = Math.max(minY, Math.min(window.innerHeight - overlay.offsetHeight - 4, overlay.offsetTop  + e.clientY - dragY));
+        const minY = topbarEl ? topbarEl.offsetHeight + 4 : 4;
+        const nx = Math.max(minX, Math.min(window.innerWidth - overlay.offsetWidth - 4, overlay.offsetLeft + e.clientX - dragX));
+        const ny = Math.max(minY, Math.min(window.innerHeight - overlay.offsetHeight - 4, overlay.offsetTop + e.clientY - dragY));
         overlay.style.left = nx + 'px';
-        overlay.style.top  = ny + 'px';
+        overlay.style.top = ny + 'px';
         dragX = e.clientX;
         dragY = e.clientY;
       }
       function _onMouseUp() {
         header.style.cursor = 'grab';
         document.removeEventListener('mousemove', _onMouseMove);
-        document.removeEventListener('mouseup',   _onMouseUp);
+        document.removeEventListener('mouseup', _onMouseUp);
       }
       header.addEventListener('mousedown', e => {
         if (e.target.closest('button')) return;
@@ -6013,7 +6138,7 @@ const UI = {
         dragY = e.clientY;
         header.style.cursor = 'grabbing';
         document.addEventListener('mousemove', _onMouseMove);
-        document.addEventListener('mouseup',   _onMouseUp);
+        document.addEventListener('mouseup', _onMouseUp);
       });
     }
   },
