@@ -93,7 +93,7 @@
 .gym-unit-slider { position:absolute; top:0.1875rem; left:0.1875rem; height:calc(100% - 0.375rem); width:calc((100% - 0.5rem) / 2); background:var(--accent); border-radius:0.375rem; box-shadow:0 1px 6px rgba(124,108,252,.35); transition:transform 0.24s cubic-bezier(.22,1,.36,1); pointer-events:none; }
 .gym-unit-slider.on-lb { transform:translateX(calc(100% + 0.125rem)); }
 .gym-unit-btn { position:relative; z-index:1; border:none; border-radius:0.375rem; padding:0.25rem 0.875rem; font-size:0.8125rem; font-weight:700; font-family:var(--font-mono); cursor:pointer; color:var(--text-muted); background:transparent; transition:color .2s; letter-spacing:.04em; }
-.gym-unit-btn.active { color:#fff; }
+.gym-unit-btn.active { color:var(--accent-contrast, #fff); }
 .gym-unit-btn:not(.active):hover { color:var(--text-primary); }
 
 /* ── gym-csel-sm: compact variant for inline exercise rows ── */
@@ -139,8 +139,8 @@
     </div>
     <nav class="sidebar-nav">
       <a href="index.html"       class="nav-link" data-tooltip="nav_dashboard" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="layout-dashboard"></svg><span class="nav-label" data-i18n="nav_dashboard">Dashboard</span></a>
-      <a href="pomodoro.html"    class="nav-link" data-tooltip="nav_pomodoro" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="timer"></svg><span class="nav-label" data-i18n="nav_pomodoro">Focus Mode</span></a>
-      <a href="time.html"        class="nav-link" data-tooltip="nav_time" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="clock"></svg><span class="nav-label" data-i18n="nav_time">Zaman Takibi</span></a>
+      <a href="focusmode.html"    class="nav-link" data-tooltip="nav_pomodoro" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="timer"></svg><span class="nav-label" data-i18n="nav_pomodoro">Focus Mode</span></a>
+      <a href="timelog.html"        class="nav-link" data-tooltip="nav_time" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="clock"></svg><span class="nav-label" data-i18n="nav_time">Zaman Takibi</span></a>
       <a href="habits.html"      class="nav-link" data-tooltip="nav_habits" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="check-square"></svg><span class="nav-label" data-i18n="nav_habits">Alışkanlıklar</span></a>
       <a href="gym.html"         class="nav-link active" data-tooltip="nav_gym" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="dumbbell"></svg><span class="nav-label" data-i18n="nav_gym">Spor</span></a>
       <a href="plans.html"       class="nav-link" data-tooltip="nav_plans" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="kanban"></svg><span class="nav-label" data-i18n="nav_plans">Planlar</span></a>
@@ -149,7 +149,7 @@
       <a href="investments.html" class="nav-link" data-tooltip="nav_investments" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="trending-up"></svg><span class="nav-label" data-i18n="nav_investments">Yatırım</span></a>
     </nav>
     <div id="focus-sidebar-widget" class="focus-sidebar-widget">
-      <a href="pomodoro.html" class="fw-link">
+      <a href="focusmode.html" class="fw-link">
         <div class="fw-dot-wrap"><span class="fw-dot"></span></div>
         <div class="fw-body">
           <span class="fw-label">POMODORO</span>

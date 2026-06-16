@@ -29,7 +29,7 @@
   transition:all var(--transition-fast);
 }
 .pomo-type-btn svg { width:1.25rem; height:1.25rem; }
-.pomo-type-btn:hover { border-color:var(--accent); color:var(--text-primary); background:rgba(124,108,252,0.12); }
+.pomo-type-btn:hover { border-color:var(--accent); color:var(--text-primary); background:color-mix(in srgb, var(--accent) 12%, transparent); box-shadow:0 0 10px var(--accent-glow); }
 .pomo-type-btn.active {
   border-color: var(--accent);
   color: var(--text-primary);
@@ -48,8 +48,9 @@
   font-family:var(--font-body); transition:all var(--transition-fast);
 }
 .pomo-todo-add-btn:hover {
-  border-color:var(--accent); color:var(--text-primary);
-  background:color-mix(in srgb, var(--accent) 12%, transparent);
+  border-color:rgba(255,255,255,0.3); color:var(--text-primary);
+  background:rgba(255,255,255,0.06);
+  box-shadow:0 0 10px rgba(255,255,255,0.15);
 }
 .pomo-todo-add-btn svg { width:0.875rem; height:0.875rem; color:inherit; }
 
@@ -59,7 +60,7 @@
   color:var(--text-secondary); background:transparent; border:1px solid color-mix(in srgb, var(--accent) 45%, transparent);
   cursor:pointer; transition:all var(--transition-fast); font-family:var(--font-body);
 }
-.pomo-mode-btn:hover  { border-color:var(--accent); color:var(--text-primary); background:rgba(124,108,252,0.12); }
+.pomo-mode-btn:hover  { border-color:var(--accent); color:var(--text-primary); background:color-mix(in srgb, var(--accent) 12%, transparent); box-shadow:0 0 10px var(--accent-glow); }
 .pomo-mode-btn.active { background:var(--bg-elevated); color:var(--text-primary); border-color:var(--accent); box-shadow:0 0 10px var(--accent-glow), inset 0 0 14px var(--accent-glow); }
 
 /* ── Ring ── */
@@ -172,17 +173,18 @@
 .hc-del:hover { background:rgba(248,113,113,.25); border-color:rgba(248,113,113,.6); }
 .completed-divider { padding:0.4375rem 1.25rem; font-size:0.6875rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); background:var(--bg-elevated); border-top:1px solid var(--border); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:0.375rem; }
 .hc-subtask { background:transparent !important; padding-top:0.4375rem !important; padding-bottom:0.4375rem !important; }
+.hc-subtask:hover { background:rgba(124,108,252,.08) !important; border-left:2px solid var(--accent); padding-left:calc(1.25rem - 2px) !important; }
 .hc-sub-add-row { cursor:default !important; background:transparent !important; border-top:1px dashed var(--border) !important; border-bottom:none !important; }
 .hc-sub-add-input { flex:1; background:transparent; border:none; outline:none; font-size:0.8125rem; color:var(--text-primary); padding:0; }
 .hc-sub-add-input::placeholder { color:var(--text-muted); }
-.hc-edit-btn { color:rgba(96,165,250,.6); background:transparent; border:1px solid transparent; }
+.hc-edit-btn { color:var(--text-muted); background:transparent; border:1px solid transparent; }
 /* ── Drag & Drop ── */
 .hc-row[draggable="true"] { cursor: grab; }
 .hc-row[draggable="true"] button, .hc-row[draggable="true"] .cbx { cursor: pointer; }
 .hc-row.hc-dragging { opacity:.35; cursor:grabbing; }
 .hc-row.hc-drag-over-top { box-shadow:inset 0 2px 0 0 var(--accent); }
 .hc-row.hc-drag-over-bot { box-shadow:inset 0 -2px 0 0 var(--accent); }
-.hc-edit-btn:hover { background:rgba(96,165,250,.12) !important; border-color:rgba(96,165,250,.4) !important; color:var(--blue) !important; }
+.hc-edit-btn:hover { background:rgba(255,255,255,0.06) !important; border-color:rgba(255,255,255,0.3) !important; color:var(--text-primary) !important; box-shadow:0 0 8px rgba(255,255,255,0.15) !important; }
 
 /* ── Focus subtask panel — absolute left, grows downward ── */
 #pomo-subtask-panel {
@@ -387,8 +389,8 @@ body.pomo-fullscreen .pomo-cd-colon { font-size:3.75rem !important; }
     </div>
     <nav class="sidebar-nav">
       <a href="index.html"       class="nav-link" data-tooltip="nav_dashboard" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="layout-dashboard"></svg><span class="nav-label">Dashboard</span></a>
-      <a href="pomodoro.html"    class="nav-link active" data-tooltip="nav_pomodoro" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="timer"></svg><span class="nav-label">Focus Mode</span></a>
-      <a href="time.html"        class="nav-link" data-tooltip="nav_time" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="clock"></svg><span class="nav-label">Zaman Takibi</span></a>
+      <a href="focusmode.html"    class="nav-link active" data-tooltip="nav_pomodoro" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="timer"></svg><span class="nav-label">Focus Mode</span></a>
+      <a href="timelog.html"        class="nav-link" data-tooltip="nav_time" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="clock"></svg><span class="nav-label">Zaman Takibi</span></a>
       <a href="habits.html"      class="nav-link" data-tooltip="nav_habits" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="check-square"></svg><span class="nav-label">Alışkanlıklar</span></a>
       <a href="gym.html"         class="nav-link" data-tooltip="nav_gym" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="dumbbell"></svg><span class="nav-label" data-i18n="nav_gym">Spor</span></a>
       <a href="plans.html"       class="nav-link" data-tooltip="nav_plans" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="kanban"></svg><span class="nav-label">Planlar</span></a>
@@ -398,7 +400,7 @@ body.pomo-fullscreen .pomo-cd-colon { font-size:3.75rem !important; }
     </nav>
     <!-- FOCUS WIDGET -->
     <div id="focus-sidebar-widget" class="focus-sidebar-widget">
-      <a href="pomodoro.html" class="fw-link">
+      <a href="focusmode.html" class="fw-link">
         <div class="fw-dot-wrap"><span class="fw-dot"></span></div>
         <div class="fw-body">
           <span class="fw-label">POMODORO</span>
@@ -666,7 +668,7 @@ body.pomo-fullscreen .pomo-cd-colon { font-size:3.75rem !important; }
 <script src="js/dropdown-core.js"></script>
 <script src="js/checkbox-core.js"></script>
 <script src="js/tooltip-core.js"></script>
-<script src="js/pomodoro.js"></script>
+<script src="js/focusmode.js"></script>
 <script src="js/focus-widget.js"></script>
 <script>lucide.createIcons(); PomodoroPage.init();</script>
 </body>

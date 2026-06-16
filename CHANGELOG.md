@@ -5,6 +5,35 @@ Format: **New** · **Fixed** · **Changed** · **Removed**
 
 ---
 
+## [v1.5] — 2026-06-16
+
+### New
+- **Investments: Trade System** — "Trade Assets" action button replaces the old "Add Asset" button and presents three options: Add New, Buy More, and Sell
+- **Sell Asset** — modal for partial or full position close; calculates realized P&L (FIFO cost basis); reduces quantity or removes the asset entirely when fully sold
+- **Buy More** — modal for adding to an existing position; updates the weighted average cost automatically
+- **Trade History panel** — filterable table on the Investments page showing all buy and sell transactions; date range filter uses the CDP range picker; displays realized P&L per sell trade
+- **Realized P&L row** — appears in the Returns panel when at least one sell trade exists; shows cumulative realized gain/loss
+- **Period return includes realized trades** — portfolio performance calculations now factor in closed positions within the selected time window
+- **Data migration on init** — `_migrateRealizedToTrades()` upgrades any existing `lt_inv_realized` records to the new `lt_inv_trades` schema; `_backfillAssetTrades()` synthesizes buy records for assets that were added before the trade log existed
+- **`--accent-contrast` CSS variable** — each theme declares the correct foreground color for text placed on an accent-colored background (e.g., active tab, primary button); prevents illegible same-color-on-color combos
+- **`--accent-alt` CSS variable** — secondary accent shade available in all 12 themes for gradient and secondary highlight use
+- **CustomModal left-aligned button** — `align: 'left'` on a button descriptor pushes it to the left of the footer row (used for "← Back" navigation inside investment modals)
+- **CDP range clear button always visible** — clear button is always rendered even when no date is selected (dimmed with `pointer-events:none`); eliminates the confusing "clear appears only after selection" UX
+
+### Fixed
+- **Modal backdrop accidental close** — both `CustomModal` and `UI.openModal()` now track which element received `mousedown`; dragging text from inside the modal onto the backdrop no longer dismisses it
+- **Period P&L baseline for new assets** — assets purchased within the selected period now use their buy price as the comparison baseline instead of falling back to stale or missing price history
+- **Asset icon color** — asset initials badge now uses `color-mix(in srgb, var(--accent) …)` for background/border instead of a per-asset hash color, keeping the table visually consistent across all themes
+
+### Changed
+- **Dark theme redesigned** — deeper blacks (`--bg-base: #080808`, `--bg-surface: #111111`), near-white/silver accent (`#DEDEDE`), stronger shadows; achieves a premium monochrome look distinct from the purple-accented default
+- **File renames** — `pomodoro.html` → `focusmode.html` and `js/pomodoro.js` → `js/focusmode.js`; `time.html` → `timelog.html` and `js/time.js` → `js/timelog.js`; all internal links updated across every HTML file
+- **Sidebar toggle button moved** — collapse/expand button relocated from the sidebar logo area to the sidebar footer for better ergonomics
+- **`btn_back` i18n key** — added in all five languages (TR / EN / ZH / ES / FR)
+- **`lt_inv_trades` storage key** — replaces the old `lt_inv_realized` format; schema: `[{ id, type, date, symbol, name, assetType, quantity, price, buyCurrency, costBasis?, realizedPnL? }]`
+
+---
+
 ## [v1.4] — 2026-06-15
 
 ### New

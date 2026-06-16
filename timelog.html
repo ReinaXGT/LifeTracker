@@ -35,8 +35,8 @@
     </div>
     <nav class="sidebar-nav">
       <a href="index.html"       class="nav-link" data-tooltip="nav_dashboard" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="layout-dashboard"></svg><span class="nav-label" data-i18n="nav_dashboard">Dashboard</span></a>
-      <a href="pomodoro.html"    class="nav-link" data-tooltip="nav_pomodoro" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="timer"></svg><span class="nav-label" data-i18n="nav_pomodoro">Focus Mode</span></a>
-      <a href="time.html"        class="nav-link active" data-tooltip="nav_time" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="clock"></svg><span class="nav-label" data-i18n="nav_time">Zaman Takibi</span></a>
+      <a href="focusmode.html"    class="nav-link" data-tooltip="nav_pomodoro" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="timer"></svg><span class="nav-label" data-i18n="nav_pomodoro">Focus Mode</span></a>
+      <a href="timelog.html"        class="nav-link active" data-tooltip="nav_time" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="clock"></svg><span class="nav-label" data-i18n="nav_time">Zaman Takibi</span></a>
       <a href="habits.html"      class="nav-link" data-tooltip="nav_habits" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="check-square"></svg><span class="nav-label" data-i18n="nav_habits">Alışkanlıklar</span></a>
       <a href="gym.html"         class="nav-link" data-tooltip="nav_gym" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="dumbbell"></svg><span class="nav-label" data-i18n="nav_gym">Spor</span></a>
       <a href="plans.html"       class="nav-link" data-tooltip="nav_plans" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="kanban"></svg><span class="nav-label" data-i18n="nav_plans">Planlar</span></a>
@@ -46,7 +46,7 @@
     </nav>
     <!-- FOCUS WIDGET -->
     <div id="focus-sidebar-widget" class="focus-sidebar-widget">
-      <a href="pomodoro.html" class="fw-link">
+      <a href="focusmode.html" class="fw-link">
         <div class="fw-dot-wrap"><span class="fw-dot"></span></div>
         <div class="fw-body">
           <span class="fw-label">POMODORO</span>
@@ -106,7 +106,7 @@
             <div style="width:1px;height:16px;background:var(--border);margin:0 2px;flex-shrink:0"></div>
             <button class="btn btn-ghost btn-sm time-filter-btn active" data-filter="all" data-i18n="time_filter_all">Tümü</button>
             <button class="btn btn-ghost btn-sm time-filter-btn" data-filter="manual" data-i18n="time_filter_manual">Manuel</button>
-            <button class="btn btn-ghost btn-sm time-filter-btn" data-filter="pomodoro" data-i18n="time_filter_auto" style="color:#7C6CFC">⏱ Otomatik</button>
+            <button class="btn btn-ghost btn-sm time-filter-btn" data-filter="pomodoro" data-i18n="time_filter_auto" style="color:var(--text-primary)">⏱ Otomatik</button>
           </div>
         </div>
         <div class="table-container">
@@ -131,7 +131,7 @@
 <script src="js/checkbox-core.js"></script>
 <script src="js/tooltip-core.js"></script>
 <script src="js/charts.js"></script>
-<script src="js/time.js"></script>
+<script src="js/timelog.js"></script>
 <script src="js/focus-widget.js"></script>
 <script>
   lucide.createIcons();

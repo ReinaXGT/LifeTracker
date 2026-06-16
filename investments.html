@@ -22,6 +22,18 @@
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
 @keyframes spin { to { transform: rotate(360deg); } }
+.acc-action-btn {
+  height:34px; display:flex; align-items:center; gap:6px; padding:0 14px;
+  background:transparent; border:1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius:var(--radius-sm); color:var(--text-secondary); cursor:pointer;
+  font-family:var(--font-body); font-size:0.8125rem; font-weight:500;
+  transition:background .15s, border-color .15s, color .15s, box-shadow .15s;
+}
+.acc-action-btn:hover {
+  background:rgba(255,255,255,0.06);
+  border-color:rgba(255,255,255,0.3); color:var(--text-primary);
+  box-shadow:0 0 10px rgba(255,255,255,0.15);
+}
 /* ── Investments page-specific ─────────────────────────── */
 .state-screen {
   display: flex;
@@ -65,7 +77,7 @@
 }
 .auth-tab.active {
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-contrast, #fff);
   box-shadow: 0 0 12px var(--accent-glow);
 }
 /* Paywall features */
@@ -127,6 +139,26 @@
 .inv-asset-row.inv-dragging { opacity: 0.35; cursor: grabbing; }
 .inv-asset-row.inv-drag-over-top { box-shadow: inset 0 2px 0 var(--accent); }
 .inv-asset-row.inv-drag-over-bot { box-shadow: inset 0 -2px 0 var(--accent); }
+/* ── Trade action option cards ── */
+.inv-trade-option {
+  display:flex; flex-direction:column; gap:0.3125rem;
+  padding:0.875rem 1.125rem; border-radius:0.625rem;
+  border:1px solid var(--border); background:var(--bg-elevated);
+  cursor:pointer; text-align:left; width:100%;
+  transition:border-color .15s, background .15s;
+  font-family:var(--font-body);
+}
+.inv-trade-option .opt-title { font-size:0.875rem; font-weight:600; }
+.inv-trade-option .opt-desc  { font-size:0.75rem; color:var(--text-muted); }
+.inv-trade-option.opt-new  { border-color:#22D3EE50; background:#22D3EE08; }
+.inv-trade-option.opt-new .opt-title  { color:#22D3EE; }
+.inv-trade-option.opt-new:hover  { border-color:#22D3EE; background:#22D3EE18; }
+.inv-trade-option.opt-buy  { border-color:#34D39950; background:#34D39908; }
+.inv-trade-option.opt-buy .opt-title  { color:#34D399; }
+.inv-trade-option.opt-buy:hover  { border-color:#34D399; background:#34D39920; }
+.inv-trade-option.opt-sell { border-color:#FB923C50; background:#FB923C08; }
+.inv-trade-option.opt-sell .opt-title { color:#FB923C; }
+.inv-trade-option.opt-sell:hover { border-color:#FB923C; background:#FB923C20; }
 </style>
 </head>
 <body>
@@ -138,8 +170,8 @@
     </div>
     <nav class="sidebar-nav">
       <a href="index.html"       class="nav-link" data-tooltip="nav_dashboard" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="layout-dashboard"></svg><span class="nav-label" data-i18n="nav_dashboard">Dashboard</span></a>
-      <a href="pomodoro.html"    class="nav-link" data-tooltip="nav_pomodoro" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="timer"></svg><span class="nav-label" data-i18n="nav_pomodoro">Focus Mode</span></a>
-      <a href="time.html"        class="nav-link" data-tooltip="nav_time" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="clock"></svg><span class="nav-label" data-i18n="nav_time">Zaman Takibi</span></a>
+      <a href="focusmode.html"    class="nav-link" data-tooltip="nav_pomodoro" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="timer"></svg><span class="nav-label" data-i18n="nav_pomodoro">Focus Mode</span></a>
+      <a href="timelog.html"        class="nav-link" data-tooltip="nav_time" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="clock"></svg><span class="nav-label" data-i18n="nav_time">Zaman Takibi</span></a>
       <a href="habits.html"      class="nav-link" data-tooltip="nav_habits" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="check-square"></svg><span class="nav-label" data-i18n="nav_habits">Alışkanlıklar</span></a>
       <a href="gym.html"         class="nav-link" data-tooltip="nav_gym" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="dumbbell"></svg><span class="nav-label" data-i18n="nav_gym">Spor</span></a>
       <a href="plans.html"       class="nav-link" data-tooltip="nav_plans" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="kanban"></svg><span class="nav-label" data-i18n="nav_plans">Planlar</span></a>
@@ -149,7 +181,7 @@
     </nav>
     <!-- FOCUS WIDGET -->
     <div id="focus-sidebar-widget" class="focus-sidebar-widget">
-      <a href="pomodoro.html" class="fw-link">
+      <a href="focusmode.html" class="fw-link">
         <div class="fw-dot-wrap"><span class="fw-dot"></span></div>
         <div class="fw-body">
           <span class="fw-label">POMODORO</span>
@@ -199,8 +231,9 @@
           <svg data-lucide="key-round"></svg>
         </button>
         <button class="btn btn-secondary" onclick="Investments.triggerImport()" style="display:flex;align-items:center;gap:6px;height:34px"><svg data-lucide="upload"></svg><span data-i18n="import_data_btn">Veri Aktar</span></button>
-        <button class="btn btn-primary" id="addAssetBtn" style="height:34px;padding:0 14px">
-          <svg data-lucide="plus"></svg><span data-i18n="inv_add_btn">Varlık Ekle</span>
+        <button id="tradeActionBtn" class="acc-action-btn" onclick="Investments.openTradeDropdown(this)">
+          <svg data-lucide="layers" style="width:15px;height:15px;flex-shrink:0"></svg>
+          <span data-i18n="inv_trade_action">Varlık Al/Sat</span>
         </button>
       </div>
     </header>
@@ -213,15 +246,15 @@
 
       <!-- Allocation chart + type summary -->
       <div class="content-grid grid-2" style="margin-bottom:1.25rem">
-        <div class="panel">
+        <div class="panel" style="display:flex;flex-direction:column">
           <div class="panel-header"><span class="panel-title" data-i18n="inv_dist_panel">Varlık Dağılımı</span></div>
-          <div class="panel-body">
-            <div style="display:flex;gap:1.75rem;align-items:center">
+          <div class="panel-body" style="flex:1;display:flex;align-items:center;justify-content:center">
+            <div style="display:inline-flex;gap:1.75rem;align-items:center">
               <div class="chart-doughnut">
                 <canvas id="allocChart"></canvas>
                 <div id="alloc-center" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;gap:0.125rem"></div>
               </div>
-              <div id="alloc-legend" class="chart-legend" style="flex-direction:column;gap:0.625rem;flex:1"></div>
+              <div id="alloc-legend" class="chart-legend" style="flex-direction:column;gap:0.5rem;width:200px"></div>
             </div>
           </div>
         </div>
@@ -259,6 +292,38 @@
               <th></th>
             </tr></thead>
             <tbody id="assetBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Trade history panel -->
+      <div class="panel" style="margin-top:1.25rem;overflow:visible">
+        <div class="panel-header" style="position:relative;z-index:2">
+          <span class="panel-title" data-i18n="inv_trade_history">İşlem Geçmişi</span>
+          <div style="position:relative;display:inline-flex;height:34px;flex-shrink:0">
+            <button type="button" id="tradeFilterDateBtn" onclick="Investments.toggleTradeFilter()"
+              style="display:flex;align-items:center;gap:6px;padding:0 10px;height:34px;
+                     background:var(--bg-elevated);border:1px solid var(--border);
+                     border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font-body);
+                     font-size:0.8125rem;color:var(--text-secondary)">
+              <svg data-lucide="calendar" style="width:14px;height:14px;flex-shrink:0"></svg>
+              <span id="tradeFilterDateLabel" data-i18n="inv_trade_filter_all">Tüm Tarihler</span>
+            </button>
+            <input type="hidden" id="tradeFilterFrom" value="">
+            <input type="hidden" id="tradeFilterTo" value="">
+          </div>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead><tr>
+              <th data-i18n="lbl_date">Tarih</th>
+              <th data-i18n="inv_col_trade_type">İşlem</th>
+              <th data-i18n="inv_col_asset">Varlık</th>
+              <th style="text-align:right" data-i18n="inv_col_qty">Adet</th>
+              <th style="text-align:right" data-i18n="inv_col_trade_price">Fiyat</th>
+              <th style="text-align:right" data-i18n="inv_pnl">K/Z</th>
+            </tr></thead>
+            <tbody id="tradesBody"></tbody>
           </table>
         </div>
       </div>

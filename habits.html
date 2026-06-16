@@ -65,7 +65,7 @@
 .hm-day-picker { display:flex; gap:0.5rem; }
 .hm-day-btn { width:2.625rem; height:2.625rem; border-radius:50%; border:2px solid var(--border); background:transparent; color:var(--text-muted); font-size:0.625rem; font-weight:700; cursor:pointer; transition:all var(--transition-fast); font-family:var(--font-mono); letter-spacing:0; }
 .hm-day-btn:hover { border-color:var(--accent); color:var(--text-primary); }
-.hm-day-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+.hm-day-btn.active { background:var(--accent); border-color:var(--accent); color:var(--accent-contrast, #fff); }
 
 /* ── Habit management list ──────────────────────── */
 .hm-mgr-row { display:flex; align-items:center; gap:0.75rem; padding:0.6875rem 1.25rem; border-bottom:1px solid var(--border); transition:background var(--transition-fast); }
@@ -150,8 +150,8 @@
     </div>
     <nav class="sidebar-nav">
       <a href="index.html"       class="nav-link" data-tooltip="nav_dashboard" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="layout-dashboard"></svg><span class="nav-label" data-i18n="nav_dashboard">Dashboard</span></a>
-      <a href="pomodoro.html"    class="nav-link" data-tooltip="nav_pomodoro" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="timer"></svg><span class="nav-label" data-i18n="nav_pomodoro">Focus Mode</span></a>
-      <a href="time.html"        class="nav-link" data-tooltip="nav_time" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="clock"></svg><span class="nav-label" data-i18n="nav_time">Zaman Takibi</span></a>
+      <a href="focusmode.html"    class="nav-link" data-tooltip="nav_pomodoro" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="timer"></svg><span class="nav-label" data-i18n="nav_pomodoro">Focus Mode</span></a>
+      <a href="timelog.html"        class="nav-link" data-tooltip="nav_time" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="clock"></svg><span class="nav-label" data-i18n="nav_time">Zaman Takibi</span></a>
       <a href="habits.html"      class="nav-link active" data-tooltip="nav_habits" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="check-square"></svg><span class="nav-label" data-i18n="nav_habits">Alışkanlıklar</span></a>
       <a href="gym.html"         class="nav-link" data-tooltip="nav_gym" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="dumbbell"></svg><span class="nav-label" data-i18n="nav_gym">Spor</span></a>
       <a href="plans.html"       class="nav-link" data-tooltip="nav_plans" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="kanban"></svg><span class="nav-label" data-i18n="nav_plans">Planlar</span></a>
@@ -161,7 +161,7 @@
     </nav>
     <!-- FOCUS WIDGET -->
     <div id="focus-sidebar-widget" class="focus-sidebar-widget">
-      <a href="pomodoro.html" class="fw-link">
+      <a href="focusmode.html" class="fw-link">
         <div class="fw-dot-wrap"><span class="fw-dot"></span></div>
         <div class="fw-body">
           <span class="fw-label">POMODORO</span>

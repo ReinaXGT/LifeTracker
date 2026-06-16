@@ -2,9 +2,14 @@ const Investments = (() => {
   let _currency = 'USD';
   let _addDateCdp  = null;
   let _editDateCdp = null;
+  let _sellDateCdp       = null;
+  let _buyDateCdp        = null;
+  let _tradeFilterCdp    = null;
   let _addAssetModal     = null;
   let _editAssetModal    = null;
   let _manualPriceModal  = null;
+  let _sellAssetModal    = null;
+  let _buyAssetModal     = null;
 
   const PRICE_TTL = 24 * 60 * 60 * 1000; // 24 hours — end-of-day
   const HIST_TTL  = 24 * 60 * 60 * 1000; // history cache same TTL
@@ -71,6 +76,41 @@ const Investments = (() => {
   const _setPrices  = p  => Store.set('inv_prices', p);
   const _getHistory = () => Store.get('inv_history') || {};
   const _setHistory = h  => Store.set('inv_history', h);
+  const _getTrades     = () => Store.get('inv_trades') || [];
+  const _addTrade      = t  => { const all = _getTrades(); all.push(t); Store.set('inv_trades', all); };
+  const _getSellTrades = () => _getTrades().filter(t => t.type === 'sell');
+
+  function _migrateRealizedToTrades() {
+    if (Store.get('inv_trades') !== null) return;
+    const old = Store.get('inv_realized') || [];
+    const migrated = old.map(t => ({
+      id: t.id || Store._id(), type: 'sell', date: t.date,
+      symbol: t.symbol, name: t.name, assetType: t.assetType,
+      quantity: t.quantity, price: t.sellPrice, buyCurrency: t.buyCurrency || null,
+      costBasis: t.costBasis, realizedPnL: t.realizedPnL,
+    }));
+    Store.set('inv_trades', migrated);
+  }
+
+  function _backfillAssetTrades() {
+    const assets = Store.getInvestments().assets || [];
+    if (!assets.length) return;
+    const trades     = _getTrades();
+    const buySymbols = new Set(trades.filter(t => t.type === 'buy').map(t => t.symbol));
+    let changed = false;
+    assets.forEach(a => {
+      if (buySymbols.has(a.symbol)) return;
+      trades.push({
+        id: Store._id(), type: 'buy',
+        date: a.purchaseDate || _today(),
+        symbol: a.symbol, name: a.name, assetType: a.assetType,
+        quantity: a.quantity, price: a.buyPrice,
+        buyCurrency: a.buyCurrency || null,
+      });
+      changed = true;
+    });
+    if (changed) Store.set('inv_trades', trades);
+  }
 
   // ── date utils ────────────────────────────────────────────
   function _dateAgo(days) {
@@ -128,8 +168,8 @@ const Investments = (() => {
             pastRaw = (foundDate && foundDate >= maxStaleDate) ? series[foundDate] : null;
             if (pastRaw == null) continue;
           } else {
-            // No history (manually priced): use buy price as baseline
-            pastRaw = buyRaw;
+            // No history (Commodity/Bond/Cash): no period baseline, skip asset
+            continue;
           }
         }
       }
@@ -139,6 +179,20 @@ const Investments = (() => {
       num += qty * (cur - past);
       den += qty * past;
     }
+    // Include realized trades in the period return
+    const realized = _getSellTrades();
+    for (const t of realized) {
+      if (period !== 'all') {
+        const periodStart = _dateAgo(period);
+        if (!t.date || t.date < periodStart) continue;
+      }
+      const rAsset = { symbol: t.symbol, buyCurrency: t.buyCurrency };
+      const costUSD = toUSD(t.costBasis, rAsset) * t.quantity;
+      const pnlUSD  = toUSD(t.price - t.costBasis, rAsset) * t.quantity;
+      num += pnlUSD;
+      den += costUSD;
+    }
+
     return den > 0 ? (num / den) * 100 : null;
   }
 
@@ -201,21 +255,34 @@ const Investments = (() => {
           ? Object.keys(series).sort().reverse().find(d => d <= targetDate) || null
           : null;
         if (series) {
-          // History series exists → validate staleness
-          const pastRaw = (foundDate && foundDate >= maxStaleDate) ? series[foundDate] : null;
-          if (pastRaw != null) {
-            const pastDisplay = _toDisplay(pastRaw, aCur);
+          // If asset was purchased within this period, use buy price as baseline
+          const purchaseDate = a.purchaseDate || null;
+          if (purchaseDate && purchaseDate > targetDate) {
+            const pastDisplay = _toDisplay(Number(a.buyPrice) || 0, aCur);
             const pastTotal   = qty * pastDisplay;
             periodPnL         = qty * (currentPrice - pastDisplay);
             periodPnLPercent  = pastTotal > 0 ? (periodPnL / pastTotal) * 100 : 0;
           } else {
-            // Series exists but data is stale/missing → show dash
-            periodNoHistory  = true;
-            periodPnL        = 0;
-            periodPnLPercent = 0;
+            // History series exists → validate staleness
+            const pastRaw = (foundDate && foundDate >= maxStaleDate) ? series[foundDate] : null;
+            if (pastRaw != null) {
+              const pastDisplay = _toDisplay(pastRaw, aCur);
+              const pastTotal   = qty * pastDisplay;
+              periodPnL         = qty * (currentPrice - pastDisplay);
+              periodPnLPercent  = pastTotal > 0 ? (periodPnL / pastTotal) * 100 : 0;
+            } else {
+              // Series exists but data is stale/missing → show dash
+              periodNoHistory  = true;
+              periodPnL        = 0;
+              periodPnLPercent = 0;
+            }
           }
+        } else {
+          // No series (Commodity/Bond/Cash) → no period baseline available; show dash
+          periodNoHistory  = true;
+          periodPnL        = 0;
+          periodPnLPercent = 0;
         }
-        // No series → manually priced asset; keep initialized totalPnL as fallback
       }
 
       return {
@@ -248,10 +315,20 @@ const Investments = (() => {
         ? Math.round(a.totalValue / totalValue * 100) : 0;
     });
 
+    const realizedTrades = _getSellTrades();
+    let totalRealizedPnL = 0, totalRealizedCostBasis = 0;
+    for (const t of realizedTrades) {
+      const aCur = _assetCur(t.symbol, t.buyCurrency);
+      totalRealizedPnL      += _toDisplay(t.price - t.costBasis, aCur) * t.quantity;
+      totalRealizedCostBasis += _toDisplay(t.costBasis, aCur) * t.quantity;
+    }
+
     return {
       baseCurrency: _currency,
       totalValue, totalInvested, totalPnL,
       totalPnLPercent: totalPnLPct,
+      realizedPnL: totalRealizedPnL,
+      realizedCostBasis: totalRealizedCostBasis,
       dailyPnL: 0, dailyPnLPercent: 0,
       assets: rawAssets,
     };
@@ -264,6 +341,7 @@ const Investments = (() => {
     _renderChart(p);
     _renderPerformance();
     _renderTable(p);
+    _renderTradeHistory();
     _updateToggle();
     _updateRateDisplay();
     _updateRefreshBtn();
@@ -271,15 +349,18 @@ const Investments = (() => {
 
   // ── render ────────────────────────────────────────────────
   function _renderKPIs(p) {
-    const pUp = p.totalPnL >= 0;
+    const combinedPnL  = p.totalPnL + p.realizedPnL;
+    const combinedCost = p.totalInvested + p.realizedCostBasis;
+    const combinedPct  = combinedCost > 0 ? (combinedPnL / combinedCost) * 100 : 0;
+    const cUp = combinedPnL >= 0;
     const lang = UI.getLang();
     const cards = [
       { label: UI.t('inv_kpi_portfolio_label'), value: _mask(p.totalValue), mono: true,
         icon: 'briefcase', iconColor: '#7C6CFC',
-        change: `${_fmtPct(p.totalPnLPercent)} ${UI.t('inv_kpi_total_return')}`, changeUp: pUp },
-      { label: UI.t('inv_pnl'), value: `${pUp ? '+' : ''}${_mask(p.totalPnL)}`, mono: true,
-        icon: pUp ? 'trending-up' : 'trending-down', iconColor: pUp ? '#34D399' : '#F87171',
-        change: `${_fmtPct(p.totalPnLPercent)} ${UI.t('inv_kpi_vs_invested')}`, changeUp: pUp },
+        change: `${_fmtPct(combinedPct)} ${UI.t('inv_kpi_total_return')}`, changeUp: cUp },
+      { label: UI.t('inv_pnl'), value: `${combinedPnL >= 0 ? '+' : ''}${_mask(combinedPnL)}`, mono: true,
+        icon: cUp ? 'trending-up' : 'trending-down', iconColor: cUp ? '#34D399' : '#F87171',
+        change: `${_fmtPct(combinedPct)} ${UI.t('inv_kpi_vs_invested')}`, changeUp: cUp },
       { label: UI.t('inv_total_cost'), value: _mask(p.totalInvested), mono: true,
         icon: 'circle-dollar-sign', iconColor: '#60A5FA',
         change: UI.t('inv_kpi_cost_basis'), changeUp: true },
@@ -319,12 +400,12 @@ const Investments = (() => {
     }
 
     legendEl.innerHTML = sorted.map((a, i) => `
-      <div class="legend-item" style="justify-content:space-between;width:100%;gap:0.375rem;min-width:0">
-        <div style="display:flex;align-items:center;gap:0.375rem;min-width:0;flex:1;overflow:hidden">
-          <div class="legend-dot" style="background:${colors[i]};flex-shrink:0"></div>
-          <span style="font-size:0.8125rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">${a.symbol}</span>
-          <span style="font-family:var(--font-mono);font-size:0.75rem;font-weight:700;color:${colors[i]};white-space:nowrap;flex-shrink:0">%${a.allocationPercent}</span>
-          <span style="font-size:0.6875rem;color:var(--text-muted);white-space:nowrap;flex-shrink:0">${_typeLabel(a.assetType)}</span>
+      <div class="legend-item" style="gap:0.375rem;min-width:0;width:100%">
+        <div class="legend-dot" style="background:${colors[i]};flex-shrink:0"></div>
+        <span style="font-size:0.8125rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1">${a.symbol}</span>
+        <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;white-space:nowrap">
+          <span style="font-family:var(--font-mono);font-size:0.75rem;font-weight:700;color:${colors[i]}">%${a.allocationPercent}</span>
+          <span style="font-size:0.6875rem;color:var(--text-muted)">${_typeLabel(a.assetType)}</span>
         </div>
       </div>`).join('');
   }
@@ -377,8 +458,8 @@ const Investments = (() => {
       return `<tr class="inv-asset-row" data-id="${a.id}">
         <td>
           <div style="display:flex;align-items:center;gap:0.625rem">
-            <div style="width:34px;height:34px;border-radius:0.5rem;background:${color}18;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid ${color}30">
-              <span style="font-family:var(--font-mono);font-size:0.6875rem;font-weight:700;color:${color}">${init}</span>
+            <div style="width:34px;height:34px;border-radius:0.5rem;background:color-mix(in srgb,var(--accent) 12%,transparent);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid color-mix(in srgb,var(--accent) 28%,transparent)">
+              <span style="font-family:var(--font-mono);font-size:0.6875rem;font-weight:700;color:var(--accent)">${init}</span>
             </div>
             <div>
               <div style="font-weight:600;font-size:0.875rem">${a.symbol}</div>
@@ -495,7 +576,7 @@ const Investments = (() => {
       { label: UI.t('inv_period_alltime'), days: 'all' },
     ];
 
-    el.innerHTML = periods.map((p, i) => {
+    const periodRows = periods.map((p, i) => {
       const ret    = _calcReturn(p.days);
       const last   = i === periods.length - 1;
       const border = last ? '' : 'border-bottom:1px solid var(--border)';
@@ -520,6 +601,27 @@ const Investments = (() => {
         </div>
       </div>`;
     }).join('');
+
+    const realizedTrades = _getSellTrades();
+    let realizedRow = '';
+    if (realizedTrades.length > 0) {
+      let totalRealizedDisp = 0;
+      for (const t of realizedTrades) {
+        const aCur = _assetCur(t.symbol, t.buyCurrency);
+        totalRealizedDisp += _toDisplay(t.price - t.costBasis, aCur) * t.quantity;
+      }
+      const rUp    = totalRealizedDisp >= 0;
+      const rColor = rUp ? 'var(--green)' : 'var(--red)';
+      realizedRow = `
+        <div style="border-top:1px solid var(--border);margin-top:4px;padding-top:4px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px">
+            <span style="font-size:0.75rem;font-weight:500;color:var(--text-muted)">${UI.t('inv_realized_pnl')}</span>
+            <span style="font-family:var(--font-mono);font-size:0.8125rem;font-weight:700;color:${rColor}">${totalRealizedDisp >= 0 ? '+' : ''}${_mask(totalRealizedDisp)}</span>
+          </div>
+        </div>`;
+    }
+
+    el.innerHTML = periodRows + realizedRow;
   }
 
   function _updateToggle() {
@@ -1058,6 +1160,7 @@ const Investments = (() => {
       content:      _invAssetFormHTML('add'),
       width:        520,
       buttons: [
+        { label: UI.t('btn_back'),   variant: 'ghost',     align: 'left', onClick: m => { m.close(); setTimeout(openTradeDropdown, 80); } },
         { label: UI.t('btn_cancel'), variant: 'secondary', onClick: m => m.close() },
         { label: UI.t('btn_add'),    variant: 'primary',   onClick: () => _save() },
       ],
@@ -1120,6 +1223,12 @@ const Investments = (() => {
       UI.toast(UI.t('inv_asset_added'), 'success');
     }
 
+    _addTrade({
+      id: Store._id(), type: 'buy', date, symbol,
+      name: f.addName.value.trim() || ticker,
+      assetType: type, quantity: qty, price: buy, buyCurrency: buyCurrency || null,
+    });
+
     _addAssetModal.close();
     _load();
 
@@ -1128,6 +1237,400 @@ const Investments = (() => {
       const newAsset = assets[assets.length - 1];
       if (newAsset && _canAutoPrice(newAsset.assetType, newAsset.buyCurrency)) _fetchOnePrice(newAsset);
     }
+  }
+
+  // ── sell asset ────────────────────────────────────────────
+  function _openSellAsset(id) {
+    const assets = Store.getInvestments().assets || [];
+    if (!id && !assets.length) { UI.toast(UI.t('inv_no_assets'), 'error'); return; }
+
+    const asset    = id ? assets.find(a => a.id === id) : null;
+    const aCur     = asset ? _assetCur(asset.symbol, asset.buyCurrency) : '';
+    const curPrice = asset ? _currentPrice(asset) : null;
+    const today    = _today();
+
+    const pickerSection = asset
+      ? `<div style="margin-bottom:14px;padding:10px 14px;background:var(--bg-elevated);border-radius:var(--radius-sm);display:flex;align-items:center;gap:10px">
+           <span style="font-size:0.9375rem;font-weight:700;font-family:var(--font-mono);color:var(--text-primary)">${asset.symbol}</span>
+           <span style="font-size:0.75rem;color:var(--text-secondary);flex:1">${asset.name}</span>
+           <span style="font-size:0.75rem;color:var(--text-muted)">${UI.t('inv_sell_max')}: <strong style="color:var(--text-primary);font-family:var(--font-mono)">${asset.quantity}</strong></span>
+         </div>`
+      : `<div class="form-group" style="margin-bottom:14px">
+           <label class="form-label">${UI.t('inv_select_asset')}</label>
+           <button type="button" id="sellPickerBtn" onclick="Investments.openSellPicker(this)"
+             style="width:100%;display:flex;align-items:center;gap:8px;padding:0 10px;height:38px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer">
+             <span class="dd-label" style="flex:1;font-size:13px;color:var(--text-muted);text-align:left">${UI.t('inv_select_asset')}</span>
+             <svg data-lucide="chevron-down" style="width:14px;height:14px;color:var(--text-muted);flex-shrink:0"></svg>
+           </button>
+           <input type="hidden" id="sellPickerVal" value="">
+         </div>`;
+
+    const content = `
+      ${pickerSection}
+      <div style="display:grid;gap:12px">
+        <div class="form-group">
+          <label class="form-label">${UI.t('inv_sell_qty')} <span id="sellMaxLabel" style="font-size:0.75rem;color:var(--text-muted)">${asset ? `(max ${asset.quantity})` : ''}</span></label>
+          <input type="number" id="sellQtyInput" class="form-control" min="0.0001" max="${asset ? asset.quantity : ''}" step="any" ${asset ? `value="${asset.quantity}"` : ''} style="font-family:var(--font-mono)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">${UI.t('inv_sell_price')} <span style="color:var(--text-muted);font-size:0.75rem" id="sellCurLabel">${aCur}</span></label>
+          <input type="number" id="sellPriceInput" class="form-control" min="0" step="any" value="${curPrice ? curPrice.toFixed(4) : ''}" style="font-family:var(--font-mono)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">${UI.t('inv_sell_date')}</label>
+          <button type="button" id="sellDateBtn" onclick="Investments.toggleSellDate()"
+            style="width:100%;display:flex;align-items:center;gap:6px;padding:0 10px;height:38px;box-sizing:border-box;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer">
+            <svg data-lucide="calendar" style="width:15px;height:15px;color:var(--text-secondary);flex-shrink:0"></svg>
+            <span id="sellDateLabel" style="flex:1;font-size:13px;color:var(--text-primary);text-align:left">${UI.formatDate(today)}</span>
+          </button>
+          <input type="hidden" id="sellDateInput" value="${today}">
+        </div>
+        <div id="sellPreview" style="padding:10px 14px;background:var(--bg-elevated);border-radius:var(--radius-sm);font-size:0.8125rem;display:none">
+          <span style="color:var(--text-secondary)">${UI.t('inv_sell_preview')}:</span>
+          <span id="sellPreviewVal" style="font-family:var(--font-mono);font-weight:700;margin-left:6px"></span>
+        </div>
+      </div>
+      <input type="hidden" id="sellAssetId" value="${id || ''}">
+    `;
+
+    _sellAssetModal = new CustomModal({
+      title:   UI.t('inv_sell_title'),
+      icon:    'trending-down',
+      content,
+      width:   460,
+      buttons: [
+        { label: UI.t('btn_back'),         variant: 'ghost',     align: 'left', onClick: m => { m.close(); setTimeout(openTradeDropdown, 80); } },
+        { label: UI.t('btn_cancel'),       variant: 'secondary', onClick: m => m.close() },
+        { label: UI.t('inv_sell_confirm'), variant: 'primary',   onClick: () => _saveSell() },
+      ],
+    });
+    _sellAssetModal.open();
+
+    _sellDateCdp = new CustomDatePicker({
+      btn: 'sellDateBtn', input: 'sellDateInput', align: 'left', clearable: false,
+      onSelect: date => { document.getElementById('sellDateLabel').textContent = UI.formatDate(date); },
+    });
+    _sellDateCdp.setValue(today);
+
+    const _refreshSellPreview = () => {
+      const assetNow = (Store.getInvestments().assets || []).find(a => a.id === document.getElementById('sellAssetId').value);
+      if (!assetNow) return;
+      const qty    = parseFloat(document.getElementById('sellQtyInput').value);
+      const price  = parseFloat(document.getElementById('sellPriceInput').value);
+      const cost   = Number(assetNow.buyPrice) || 0;
+      const curNow = _assetCur(assetNow.symbol, assetNow.buyCurrency);
+      const prevEl = document.getElementById('sellPreview');
+      const valEl  = document.getElementById('sellPreviewVal');
+      if (!isNaN(qty) && !isNaN(price) && qty > 0 && cost > 0) {
+        const pnlDisp = _toDisplay(price - cost, curNow) * qty;
+        valEl.textContent = `${pnlDisp >= 0 ? '+' : ''}${_mask(pnlDisp)}`;
+        valEl.style.color = pnlDisp >= 0 ? 'var(--green)' : 'var(--red)';
+        prevEl.style.display = '';
+      } else {
+        prevEl.style.display = 'none';
+      }
+    };
+    document.getElementById('sellQtyInput').addEventListener('input', _refreshSellPreview);
+    document.getElementById('sellPriceInput').addEventListener('input', _refreshSellPreview);
+    if (asset) _refreshSellPreview();
+  }
+
+  function openSellPicker(btn) {
+    if (!btn._ddInst) {
+      btn._ddInst = new CustomDropdown({
+        btn, items: [],
+        onOpen: (dd) => {
+          const cur = document.getElementById('sellPickerVal').value;
+          dd.setItems((Store.getInvestments().assets || []).map(a => ({
+            value: a.id, label: `${a.symbol} — ${a.name}`, badge: String(a.quantity), active: a.id === cur,
+          })));
+        },
+        onSelect: (val) => {
+          const a = (Store.getInvestments().assets || []).find(x => x.id === val);
+          if (!a) return;
+          document.getElementById('sellPickerVal').value = val;
+          document.getElementById('sellAssetId').value   = val;
+          btn.querySelector('.dd-label').textContent = `${a.symbol} — ${a.name}`;
+          const qi = document.getElementById('sellQtyInput');
+          const pi = document.getElementById('sellPriceInput');
+          if (qi) { qi.max = a.quantity; qi.placeholder = `max ${a.quantity}`; qi.value = a.quantity; }
+          const cp = _currentPrice(a);
+          if (pi && cp) pi.value = cp.toFixed(4);
+          const ml = document.getElementById('sellMaxLabel');
+          if (ml) ml.textContent = `(max ${a.quantity})`;
+          const cl = document.getElementById('sellCurLabel');
+          if (cl) cl.textContent = _assetCur(a.symbol, a.buyCurrency);
+        },
+      });
+    }
+    btn._ddInst.toggle();
+  }
+
+  function _saveSell() {
+    const assetId  = document.getElementById('sellAssetId').value;
+    const asset    = (Store.getInvestments().assets || []).find(a => a.id === assetId);
+    if (!asset) { UI.toast(UI.t('inv_select_asset'), 'error'); return; }
+
+    const qty       = parseFloat(document.getElementById('sellQtyInput').value);
+    const sellPrice = parseFloat(document.getElementById('sellPriceInput').value);
+    const date      = document.getElementById('sellDateInput').value || _today();
+
+    if (isNaN(qty) || qty <= 0 || qty > asset.quantity) {
+      UI.toast(UI.t('inv_sell_err_qty'), 'error'); return;
+    }
+    if (isNaN(sellPrice) || sellPrice <= 0) {
+      UI.toast(UI.t('inv_sell_err_price'), 'error'); return;
+    }
+
+    const costBasis = Number(asset.buyPrice) || 0;
+
+    _addTrade({
+      id: Store._id(), type: 'sell', date,
+      symbol: asset.symbol, name: asset.name, assetType: asset.assetType,
+      quantity: qty, price: sellPrice, buyCurrency: asset.buyCurrency || null,
+      costBasis, realizedPnL: (sellPrice - costBasis) * qty,
+    });
+
+    const remaining = Math.round((asset.quantity - qty) * 1e8) / 1e8;
+    if (remaining <= 0) {
+      Store.deleteAsset(asset.id);
+    } else {
+      Store.updateAsset(asset.id, { quantity: remaining });
+    }
+
+    _sellAssetModal.close();
+    UI.toast(UI.t('inv_sell_success'), 'success');
+    _load();
+  }
+
+  // ── buy more ──────────────────────────────────────────────
+  function _openBuyAsset(assetId) {
+    const assets = Store.getInvestments().assets || [];
+    if (!assetId && !assets.length) { UI.toast(UI.t('inv_no_assets'), 'error'); return; }
+
+    const asset  = assetId ? assets.find(a => a.id === assetId) : null;
+    const today  = _today();
+    const aCur   = asset ? _assetCur(asset.symbol, asset.buyCurrency) : '';
+
+    const pickerSection = asset
+      ? `<div style="margin-bottom:14px;padding:10px 14px;background:var(--bg-elevated);border-radius:var(--radius-sm);display:flex;align-items:center;gap:10px">
+           <span style="font-size:0.9375rem;font-weight:700;font-family:var(--font-mono);color:var(--text-primary)">${asset.symbol}</span>
+           <span style="font-size:0.75rem;color:var(--text-secondary);flex:1">${asset.name}</span>
+           <span style="font-size:0.75rem;color:var(--text-muted)">${UI.t('inv_avg_cost')}: <strong style="font-family:var(--font-mono);color:var(--text-primary)">${_mask(asset.buyPrice)}</strong></span>
+         </div>`
+      : `<div class="form-group" style="margin-bottom:14px">
+           <label class="form-label">${UI.t('inv_select_asset')}</label>
+           <button type="button" id="buyPickerBtn" onclick="Investments.openBuyPicker(this)"
+             style="width:100%;display:flex;align-items:center;gap:8px;padding:0 10px;height:38px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer">
+             <span class="dd-label" style="flex:1;font-size:13px;color:var(--text-muted);text-align:left">${UI.t('inv_select_asset')}</span>
+             <svg data-lucide="chevron-down" style="width:14px;height:14px;color:var(--text-muted);flex-shrink:0"></svg>
+           </button>
+           <input type="hidden" id="buyPickerVal" value="">
+         </div>`;
+
+    const content = `
+      ${pickerSection}
+      <div style="display:grid;gap:12px">
+        <div class="form-group">
+          <label class="form-label">${UI.t('inv_sell_qty')}</label>
+          <input type="number" id="buyQtyInput" class="form-control" min="0.000001" step="any" placeholder="0" style="font-family:var(--font-mono)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">${UI.t('inv_buy_price_label')} <span style="color:var(--text-muted);font-size:0.75rem" id="buyCurLabel">${aCur}</span></label>
+          <input type="number" id="buyPriceInput" class="form-control" min="0" step="any" placeholder="0.00" style="font-family:var(--font-mono)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">${UI.t('inv_buy_date_label')}</label>
+          <button type="button" id="buyDateBtn" onclick="Investments.toggleBuyDate()"
+            style="width:100%;display:flex;align-items:center;gap:6px;padding:0 10px;height:38px;box-sizing:border-box;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer">
+            <svg data-lucide="calendar" style="width:15px;height:15px;color:var(--text-secondary);flex-shrink:0"></svg>
+            <span id="buyDateLabel" style="flex:1;font-size:13px;color:var(--text-primary);text-align:left">${UI.formatDate(today)}</span>
+          </button>
+          <input type="hidden" id="buyDateInput" value="${today}">
+        </div>
+        <div id="buyPreview" style="padding:10px 14px;background:var(--bg-elevated);border-radius:var(--radius-sm);font-size:0.8125rem;display:none">
+          <span style="color:var(--text-secondary)">${UI.t('inv_buy_new_avg')}:</span>
+          <span id="buyPreviewVal" style="font-family:var(--font-mono);font-weight:700;margin-left:6px;color:var(--accent)"></span>
+        </div>
+      </div>
+      <input type="hidden" id="buyTargetId" value="${assetId || ''}">
+    `;
+
+    _buyAssetModal = new CustomModal({
+      title:   UI.t('inv_buy_title'),
+      icon:    'trending-up',
+      content,
+      width:   460,
+      buttons: [
+        { label: UI.t('btn_back'),        variant: 'ghost',     align: 'left', onClick: m => { m.close(); setTimeout(openTradeDropdown, 80); } },
+        { label: UI.t('btn_cancel'),      variant: 'secondary', onClick: m => m.close() },
+        { label: UI.t('inv_buy_confirm'), variant: 'primary',   onClick: () => _saveBuy() },
+      ],
+    });
+    _buyAssetModal.open();
+
+    _buyDateCdp = new CustomDatePicker({
+      btn: 'buyDateBtn', input: 'buyDateInput', align: 'left', clearable: false,
+      onSelect: date => { document.getElementById('buyDateLabel').textContent = UI.formatDate(date); },
+    });
+    _buyDateCdp.setValue(today);
+
+    const _refreshBuyPreview = () => {
+      const a = (Store.getInvestments().assets || []).find(x => x.id === document.getElementById('buyTargetId').value);
+      if (!a) return;
+      const qty   = parseFloat(document.getElementById('buyQtyInput').value);
+      const price = parseFloat(document.getElementById('buyPriceInput').value);
+      const prevEl = document.getElementById('buyPreview');
+      const valEl  = document.getElementById('buyPreviewVal');
+      if (!isNaN(qty) && qty > 0 && !isNaN(price) && price > 0) {
+        const newAvg = (Number(a.quantity) * Number(a.buyPrice) + qty * price) / (Number(a.quantity) + qty);
+        valEl.textContent = _mask(newAvg);
+        prevEl.style.display = '';
+      } else {
+        prevEl.style.display = 'none';
+      }
+    };
+    document.getElementById('buyQtyInput').addEventListener('input', _refreshBuyPreview);
+    document.getElementById('buyPriceInput').addEventListener('input', _refreshBuyPreview);
+    if (asset) _refreshBuyPreview();
+  }
+
+  function openBuyPicker(btn) {
+    if (!btn._ddInst) {
+      btn._ddInst = new CustomDropdown({
+        btn, items: [],
+        onOpen: (dd) => {
+          const cur = document.getElementById('buyPickerVal').value;
+          dd.setItems((Store.getInvestments().assets || []).map(a => ({
+            value: a.id, label: `${a.symbol} — ${a.name}`, badge: String(a.quantity), active: a.id === cur,
+          })));
+        },
+        onSelect: (val) => {
+          const a = (Store.getInvestments().assets || []).find(x => x.id === val);
+          if (!a) return;
+          document.getElementById('buyPickerVal').value  = val;
+          document.getElementById('buyTargetId').value   = val;
+          btn.querySelector('.dd-label').textContent = `${a.symbol} — ${a.name}`;
+          const cl = document.getElementById('buyCurLabel');
+          if (cl) cl.textContent = _assetCur(a.symbol, a.buyCurrency);
+          document.getElementById('buyPreview').style.display = 'none';
+        },
+      });
+    }
+    btn._ddInst.toggle();
+  }
+
+  function _saveBuy() {
+    const targetId = document.getElementById('buyTargetId').value;
+    const asset    = (Store.getInvestments().assets || []).find(a => a.id === targetId);
+    if (!asset) { UI.toast(UI.t('inv_select_asset'), 'error'); return; }
+
+    const qty   = parseFloat(document.getElementById('buyQtyInput').value);
+    const price = parseFloat(document.getElementById('buyPriceInput').value);
+    const date  = document.getElementById('buyDateInput').value || _today();
+
+    if (isNaN(qty) || qty <= 0)    { UI.toast(UI.t('inv_sell_err_qty'),   'error'); return; }
+    if (isNaN(price) || price <= 0) { UI.toast(UI.t('inv_sell_err_price'), 'error'); return; }
+
+    const totalQty = Number(asset.quantity) + qty;
+    const newAvg   = (Number(asset.quantity) * Number(asset.buyPrice) + qty * price) / totalQty;
+
+    Store.updateAsset(asset.id, {
+      quantity: totalQty,
+      buyPrice: Math.round(newAvg * 10000) / 10000,
+    });
+
+    _addTrade({
+      id: Store._id(), type: 'buy', date,
+      symbol: asset.symbol, name: asset.name, assetType: asset.assetType,
+      quantity: qty, price, buyCurrency: asset.buyCurrency || null,
+    });
+
+    _buyAssetModal.close();
+    UI.toast(UI.t('inv_buy_success'), 'success');
+    _load();
+  }
+
+  // ── trade action panel (topbar) ──────────────────────────
+  let _tradeActionModal = null;
+  function openTradeDropdown() {
+    _tradeActionModal = new CustomModal({
+      title:   UI.t('inv_trade_action'),
+      icon:    'layers',
+      width:   420,
+      buttons: [],
+      content: `<div style="display:flex;flex-direction:column;gap:0.625rem">
+        <button class="inv-trade-option opt-new" onclick="Investments._tradeActionPick('add')">
+          <span class="opt-title">${UI.t('inv_add_btn')}</span>
+          <span class="opt-desc">${UI.t('inv_trade_opt_new_desc')}</span>
+        </button>
+        <button class="inv-trade-option opt-buy" onclick="Investments._tradeActionPick('buy')">
+          <span class="opt-title">${UI.t('inv_buy_title')}</span>
+          <span class="opt-desc">${UI.t('inv_trade_opt_buy_desc')}</span>
+        </button>
+        <button class="inv-trade-option opt-sell" onclick="Investments._tradeActionPick('sell')">
+          <span class="opt-title">${UI.t('inv_sell_title')}</span>
+          <span class="opt-desc">${UI.t('inv_trade_opt_sell_desc')}</span>
+        </button>
+      </div>`,
+    });
+    _tradeActionModal.open();
+  }
+
+  function _tradeActionPick(action) {
+    _tradeActionModal?.close();
+    if (action === 'add')  { setTimeout(() => _openAddAsset(),        80); }
+    if (action === 'buy')  { setTimeout(() => _openBuyAsset(null),    80); }
+    if (action === 'sell') { setTimeout(() => _openSellAsset(null),   80); }
+  }
+
+  // ── trade history ─────────────────────────────────────────
+  function _renderTradeHistory() {
+    const tbody = document.getElementById('tradesBody');
+    if (!tbody) return;
+
+    const dfFrom = document.getElementById('tradeFilterFrom')?.value || '';
+    const dfTo   = document.getElementById('tradeFilterTo')?.value   || '';
+
+    let trades = _getTrades().slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    if (dfFrom) trades = trades.filter(t => (t.date || '') >= dfFrom);
+    if (dfTo)   trades = trades.filter(t => (t.date || '') <= dfTo);
+
+    if (!trades.length) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">${UI.t('inv_no_trades')}</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = trades.map(t => {
+      const isBuy   = t.type === 'buy';
+      const color   = isBuy ? 'var(--green)' : 'var(--red)';
+      const typeLabel = UI.t(isBuy ? 'inv_trade_type_buy' : 'inv_trade_type_sell');
+      const aCur    = _assetCur(t.symbol, t.buyCurrency);
+      const priceDisp = _toDisplay(t.price || 0, aCur);
+      const totalDisp = priceDisp * t.quantity;
+
+      let pnlCell = '<td></td>';
+      if (!isBuy && t.realizedPnL != null) {
+        const pnlDisp = _toDisplay((t.price - t.costBasis), aCur) * t.quantity;
+        pnlCell = `<td class="mono" style="text-align:right;font-weight:600;color:${pnlDisp >= 0 ? 'var(--green)' : 'var(--red)'}">
+          ${pnlDisp >= 0 ? '+' : ''}${_mask(pnlDisp)}
+        </td>`;
+      }
+
+      return `<tr>
+        <td style="color:var(--text-secondary);font-size:0.8125rem;white-space:nowrap">${UI.formatDate(t.date || '')}</td>
+        <td><span style="font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:${color};background:${color}18;border:1px solid ${color}35;padding:2px 7px;border-radius:4px">${typeLabel}</span></td>
+        <td>
+          <div style="display:flex;align-items:baseline;gap:0.5rem">
+            <span style="font-weight:600;font-family:var(--font-mono);font-size:0.875rem;display:inline-block;min-width:3.75rem">${t.symbol}</span>
+            <span style="font-size:0.75rem;color:var(--text-muted)">${t.name || ''}</span>
+          </div>
+        </td>
+        <td class="mono" style="text-align:right">${UI.isPrivate() ? '••••' : t.quantity}</td>
+        <td class="mono" style="text-align:right;color:var(--text-secondary)">${_mask(priceDisp)}</td>
+        ${pnlCell}
+      </tr>`;
+    }).join('');
   }
 
   // ── edit asset ────────────────────────────────────────────
@@ -1358,6 +1861,8 @@ const Investments = (() => {
 
   function init() {
     _migrateLegacySymbols();
+    _migrateRealizedToTrades();
+    _backfillAssetTrades();
     UI.initTopbar();
     UI.initEsc();
     const _s = Store.getSettings();
@@ -1366,6 +1871,25 @@ const Investments = (() => {
 
     document.getElementById('addAssetBtn')
       ?.addEventListener('click', () => _openAddAsset());
+
+    _tradeFilterCdp = new CustomDatePicker({
+      btn: 'tradeFilterDateBtn', input: 'tradeFilterFrom', inputTo: 'tradeFilterTo',
+      align: 'right', clearable: true, range: true,
+      onSelect: (from, to) => {
+        const labelEl = document.getElementById('tradeFilterDateLabel');
+        if (labelEl) {
+          if (from && to)   labelEl.textContent = `${UI.formatDate(from)} – ${UI.formatDate(to)}`;
+          else if (from)    labelEl.textContent = `${UI.formatDate(from)} –`;
+          else              labelEl.textContent = UI.t('inv_trade_filter_all');
+        }
+        _renderTradeHistory();
+      },
+      onClear: () => {
+        const labelEl = document.getElementById('tradeFilterDateLabel');
+        if (labelEl) labelEl.textContent = UI.t('inv_trade_filter_all');
+        _renderTradeHistory();
+      },
+    });
 
     const rateEl = document.getElementById('exchangeRateInput');
     if (rateEl) rateEl.addEventListener('change', () => setExchangeRate(rateEl.value));
@@ -1467,5 +1991,5 @@ const Investments = (() => {
     reader.readAsText(file);
   }
 
-  return { init, setDisplayCurrency, getUserCurrencyCode, setExchangeRate, editManualPrice, saveManualPrice: _saveManualPrice, openAddAsset: _openAddAsset, editAsset, deleteAsset, refreshPrices: _manualRefresh, togglePnlPeriodMenu: _togglePnlPeriodMenu, setPnlPeriod: _setPnlPeriodFn, fetchAllRates: _fetchAllRatesPublic, openInvDropdown, toggleInvDatePicker: _toggleInvDatePicker, triggerImport: _triggerInvImport, importData: _importInvData };
+  return { init, setDisplayCurrency, getUserCurrencyCode, setExchangeRate, editManualPrice, saveManualPrice: _saveManualPrice, openAddAsset: _openAddAsset, editAsset, deleteAsset, sellAsset: _openSellAsset, buyAsset: _openBuyAsset, toggleSellDate: () => _sellDateCdp?.toggle(), toggleBuyDate: () => _buyDateCdp?.toggle(), openSellPicker, openBuyPicker, openTradeDropdown, _tradeActionPick, toggleTradeFilter: () => _tradeFilterCdp?.toggle(), refreshPrices: _manualRefresh, togglePnlPeriodMenu: _togglePnlPeriodMenu, setPnlPeriod: _setPnlPeriodFn, fetchAllRates: _fetchAllRatesPublic, openInvDropdown, toggleInvDatePicker: _toggleInvDatePicker, triggerImport: _triggerInvImport, importData: _importInvData };
 })();

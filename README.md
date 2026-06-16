@@ -61,8 +61,8 @@
 | Module | Page | Description |
 |--------|------|-------------|
 | **Dashboard** | `index.html` | At-a-glance summary of all modules with draggable panels and period selector |
-| **Focus Mode** | `pomodoro.html` | Pomodoro / Flow / Countdown timer with to-do list, flag splits, fullscreen, and Web Worker |
-| **Time Tracking** | `time.html` | Daily time log with category & project tracking and 30-day charts |
+| **Focus Mode** | `focusmode.html` | Pomodoro / Flow / Countdown timer with to-do list, flag splits, fullscreen, and Web Worker |
+| **Time Tracking** | `timelog.html` | Daily time log with category & project tracking and 30-day charts |
 | **Habits** | `habits.html` | Daily and scheduled habit tracking with streaks, 30-day heatmap, and weekly donuts |
 | **Gym** | `gym.html` | Workout tracker with 1RM calc, templates, body measurements, and progress charts |
 | **Plans** | `plans.html` | Kanban board (To-Do / In Progress / Done) with multi-line sub-tasks |
@@ -133,7 +133,9 @@ Most productivity apps require an account, phone number, or monthly subscription
 - Asset types: Stock, ETF, Crypto, Commodity, Bond, Cash
 - Live price feeds via **Alpha Vantage API** (24-hour cache)
 - Exchange rate via **Exchange Rates API** (2-hour cache)
-- P&L by period: total, daily, weekly, monthly
+- **Trade system** — Buy More and Sell actions with weighted average cost updates and realized P&L tracking
+- **Trade history** — filterable log of all buy/sell transactions with per-trade P&L column
+- P&L by period: total, daily, weekly, monthly (includes realized trades)
 - USD / local currency display toggle
 
 ---
@@ -196,8 +198,8 @@ All other modules work **100% offline** with no API keys.
 ```
 LifeTracker/
 ├── index.html              ← Dashboard
-├── pomodoro.html
-├── time.html
+├── focusmode.html
+├── timelog.html
 ├── habits.html
 ├── gym.html
 ├── plans.html

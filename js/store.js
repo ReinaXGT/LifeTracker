@@ -148,7 +148,7 @@
   deleteGymTemplate(id)     { const g=this.getGymTemplates(); g.templates=g.templates.filter(t=>t.id!==id); return this.setGymTemplates(g); },
 
   // ── Settings ────────────────────────────────────────────
-  getSettings()  { return this.get('settings') || { currency:'$', theme:'arctic', weekStart:1, uiScale:0.75 }; },
+  getSettings()  { return this.get('settings') || { currency:'$', theme:'dark', weekStart:1, uiScale:0.75 }; },
   setSettings(d) { return this.set('settings', d); },
 
   // ── Seed data ───────────────────────────────────────────

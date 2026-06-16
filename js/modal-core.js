@@ -141,7 +141,8 @@ class CustomModal {
                 : btn.variant === 'danger'    ? 'btn btn-danger'
                 : btn.variant === 'ghost'     ? 'btn btn-ghost'
                 : 'btn btn-secondary';
-      return `<button type="button" class="${cls}" data-cm-btn="${i}">${btn.label}</button>`;
+      const style = btn.align === 'left' ? ' style="margin-right:auto"' : '';
+      return `<button type="button" class="${cls}"${style} data-cm-btn="${i}">${btn.label}</button>`;
     }).join('');
 
     const panelOverflow = this._overflowBody === 'visible' ? 'overflow:visible;' : '';
@@ -168,7 +169,9 @@ class CustomModal {
       .addEventListener('click', () => this.close());
 
     if (this._closeOnBackdrop) {
-      overlay.addEventListener('click', (e) => { if (e.target === overlay) this.close(); });
+      let _mdOnOverlay = false;
+      overlay.addEventListener('mousedown', (e) => { _mdOnOverlay = e.target === overlay; });
+      overlay.addEventListener('click', (e) => { if (e.target === overlay && _mdOnOverlay) this.close(); });
     }
 
     this._buttons.forEach((btn, i) => {

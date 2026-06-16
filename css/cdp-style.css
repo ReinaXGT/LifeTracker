@@ -126,7 +126,7 @@
 }
 .cdp-sel {
   background: var(--accent) !important;
-  color: #fff !important;
+  color: var(--accent-contrast, #fff) !important;
   font-weight: 600;
 }
 .cdp-sel:hover    { background: var(--accent) !important; }
@@ -134,7 +134,7 @@
 /* ── Aralık seçimi ────────────────────────────────────────────────────────── */
 .cdp-range-start, .cdp-range-end {
   background: var(--accent) !important;
-  color: #fff !important;
+  color: var(--accent-contrast, #fff) !important;
   font-weight: 600;
 }
 .cdp-range-start:hover, .cdp-range-end:hover { background: var(--accent) !important; }

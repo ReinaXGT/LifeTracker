@@ -57,7 +57,7 @@ body {
   box-shadow: 0 0 20px var(--accent-glow);
 }
 
-.sidebar-logo-icon svg { width: 17px; height: 17px; color: #fff; }
+.sidebar-logo-icon svg { width: 17px; height: 17px; color: var(--accent-contrast, #fff); }
 
 .sidebar-logo-text {
   font-family: var(--font-display);
@@ -77,14 +77,14 @@ body {
   background: none;
   border: none;
   cursor: pointer;
-  width: 26px; height: 26px;
+  width: 34px; height: 34px;
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
   transition: background var(--transition-fast), color var(--transition-fast);
-  margin-left: auto;
+  align-self: center;
 }
 .sidebar-toggle-btn:hover { background: var(--bg-elevated); color: var(--text-primary); }
 .sidebar-toggle-btn svg { width: 15px; height: 15px; }
@@ -378,8 +378,8 @@ body {
 }
 
 .sidebar.collapsed .sidebar-toggle-btn {
-  margin-left: 0;
   order: -1;
+  align-self: center;
 }
 
 .sidebar.collapsed .nav-label {

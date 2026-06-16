@@ -159,12 +159,12 @@ class CustomDatePicker {
         cells += `<button class="${cls}" data-d="${ds}">${d}</button>`;
       }
 
-      // Temizle butonu
+      // Temizle butonu — clearable ise her zaman göster; range'de ilk tarih seçildiğinde de aktif
       const hasSel = this._range
-        ? (this._input?.value || this._inputTo?.value)
+        ? (this._input?.value || this._inputTo?.value || this._rangeStart)
         : this._input?.value;
-      const clearHtml = this._clearable && hasSel
-        ? `<div class="cdp-foot"><button class="cdp-clear">${this._clearLabel}</button></div>`
+      const clearHtml = this._clearable
+        ? `<div class="cdp-foot"><button class="cdp-clear" style="${hasSel ? '' : 'opacity:.45;pointer-events:none'}">${this._clearLabel}</button></div>`
         : '';
 
       // Aralık ipucu: ilk tarih seçildi, ikinci bekleniyor

@@ -321,6 +321,37 @@ const UI = {
       inv_asset_deleted: 'Varlık silindi',
       inv_confirm_delete: 'Bu varlığı silmek istediğinizden emin misiniz?',
       inv_just_now: 'az önce',
+      inv_sell: 'Sat',
+      inv_sell_title: 'Varlık Sat',
+      inv_sell_qty: 'Satış Miktarı',
+      inv_sell_price: 'Satış Fiyatı',
+      inv_sell_date: 'Satış Tarihi',
+      inv_sell_preview: 'Tahmini K/Z',
+      inv_sell_confirm: 'Sat',
+      inv_sell_success: 'Varlık satıldı',
+      inv_sell_err_qty: 'Geçersiz miktar',
+      inv_sell_err_price: 'Geçersiz fiyat',
+      inv_sell_max: 'mevcut',
+      inv_realized_pnl: 'Gerçekleşmiş K/Z',
+      inv_buy: 'Al',
+      inv_buy_title: 'Alım Yap',
+      inv_buy_confirm: 'Al',
+      inv_buy_success: 'Alım kaydedildi',
+      inv_buy_new_avg: 'Yeni Ort. Maliyet',
+      inv_avg_cost: 'Ort. Maliyet',
+      inv_select_asset: 'Varlık Seçin',
+      inv_no_assets: 'Portföyde varlık yok',
+      inv_trade_history: 'İşlem Geçmişi',
+      inv_col_trade_type: 'İşlem',
+      inv_col_trade_price: 'Fiyat',
+      inv_trade_type_buy: 'Alım',
+      inv_trade_type_sell: 'Satım',
+      inv_no_trades: 'Henüz işlem yok',
+      inv_trade_action: 'Varlık Al/Sat',
+      inv_trade_filter_all: 'Tüm Tarihler',
+      inv_trade_opt_new_desc: 'Portföyde olmayan yeni bir varlık ekle',
+      inv_trade_opt_buy_desc: 'Mevcut varlıktan daha fazla al, ortalama maliyet güncellenir',
+      inv_trade_opt_sell_desc: 'Mevcut varlığının bir kısmını veya tamamını sat',
       inv_mins_ago: '{0} dk önce',
       inv_hours_ago: '{0} sa önce',
       inv_days_ago: '{0} g önce',
@@ -486,6 +517,7 @@ const UI = {
 
       // Common buttons & labels
       btn_cancel: 'İptal',
+      btn_back: '← Geri',
       btn_add: 'Ekle',
       btn_save: 'Kaydet',
       btn_edit: 'Düzenle',
@@ -1231,6 +1263,37 @@ const UI = {
       inv_asset_deleted: 'Asset deleted',
       inv_confirm_delete: 'Are you sure you want to delete this asset?',
       inv_just_now: 'just now',
+      inv_sell: 'Sell',
+      inv_sell_title: 'Sell Asset',
+      inv_sell_qty: 'Quantity to Sell',
+      inv_sell_price: 'Sell Price',
+      inv_sell_date: 'Sell Date',
+      inv_sell_preview: 'Est. P/L',
+      inv_sell_confirm: 'Sell',
+      inv_sell_success: 'Asset sold',
+      inv_sell_err_qty: 'Invalid quantity',
+      inv_sell_err_price: 'Invalid price',
+      inv_sell_max: 'available',
+      inv_realized_pnl: 'Realized P/L',
+      inv_buy: 'Buy',
+      inv_buy_title: 'Buy More',
+      inv_buy_confirm: 'Buy',
+      inv_buy_success: 'Purchase recorded',
+      inv_buy_new_avg: 'New Avg. Cost',
+      inv_avg_cost: 'Avg. Cost',
+      inv_select_asset: 'Select Asset',
+      inv_no_assets: 'No assets in portfolio',
+      inv_trade_history: 'Trade History',
+      inv_col_trade_type: 'Type',
+      inv_col_trade_price: 'Price',
+      inv_trade_type_buy: 'Buy',
+      inv_trade_type_sell: 'Sell',
+      inv_no_trades: 'No trades yet',
+      inv_trade_action: 'Trade Assets',
+      inv_trade_filter_all: 'All Dates',
+      inv_trade_opt_new_desc: 'Add a new asset not yet in your portfolio',
+      inv_trade_opt_buy_desc: 'Buy more of an existing asset, average cost updates',
+      inv_trade_opt_sell_desc: 'Sell part or all of an existing asset',
       inv_mins_ago: '{0} min ago',
       inv_hours_ago: '{0} hr ago',
       inv_days_ago: '{0} d ago',
@@ -1396,6 +1459,7 @@ const UI = {
 
       // Common buttons & labels
       btn_cancel: 'Cancel',
+      btn_back: '← Back',
       btn_add: 'Add',
       btn_save: 'Save',
       btn_edit: 'Edit',
@@ -2134,6 +2198,37 @@ const UI = {
       inv_asset_deleted: '资产已删除',
       inv_confirm_delete: '确定要删除此资产吗？',
       inv_just_now: '刚刚',
+      inv_sell: '卖出',
+      inv_sell_title: '卖出资产',
+      inv_sell_qty: '卖出数量',
+      inv_sell_price: '卖出价格',
+      inv_sell_date: '卖出日期',
+      inv_sell_preview: '预计盈亏',
+      inv_sell_confirm: '卖出',
+      inv_sell_success: '资产已卖出',
+      inv_sell_err_qty: '数量无效',
+      inv_sell_err_price: '价格无效',
+      inv_sell_max: '可用',
+      inv_realized_pnl: '已实现盈亏',
+      inv_buy: '买入',
+      inv_buy_title: '买入更多',
+      inv_buy_confirm: '买入',
+      inv_buy_success: '买入已记录',
+      inv_buy_new_avg: '新平均成本',
+      inv_avg_cost: '平均成本',
+      inv_select_asset: '选择资产',
+      inv_no_assets: '投资组合中没有资产',
+      inv_trade_history: '交易历史',
+      inv_col_trade_type: '类型',
+      inv_col_trade_price: '价格',
+      inv_trade_type_buy: '买入',
+      inv_trade_type_sell: '卖出',
+      inv_no_trades: '暂无交易记录',
+      inv_trade_action: '买卖资产',
+      inv_trade_filter_all: '所有日期',
+      inv_trade_opt_new_desc: '添加投资组合中尚未存在的新资产',
+      inv_trade_opt_buy_desc: '买入更多现有资产，平均成本自动更新',
+      inv_trade_opt_sell_desc: '卖出现有资产的部分或全部',
       inv_mins_ago: '{0} 分钟前',
       inv_hours_ago: '{0} 小时前',
       inv_days_ago: '{0} 天前',
@@ -2299,6 +2394,7 @@ const UI = {
 
       // Common buttons & labels
       btn_cancel: '取消',
+      btn_back: '← 返回',
       btn_add: '添加',
       btn_save: '保存',
       btn_edit: '编辑',
@@ -3037,6 +3133,37 @@ const UI = {
       inv_asset_deleted: 'Activo eliminado',
       inv_confirm_delete: '¿Seguro que quieres eliminar este activo?',
       inv_just_now: 'ahora mismo',
+      inv_sell: 'Vender',
+      inv_sell_title: 'Vender activo',
+      inv_sell_qty: 'Cantidad a vender',
+      inv_sell_price: 'Precio de venta',
+      inv_sell_date: 'Fecha de venta',
+      inv_sell_preview: 'P/G estimado',
+      inv_sell_confirm: 'Vender',
+      inv_sell_success: 'Activo vendido',
+      inv_sell_err_qty: 'Cantidad inválida',
+      inv_sell_err_price: 'Precio inválido',
+      inv_sell_max: 'disponible',
+      inv_realized_pnl: 'G/P realizado',
+      inv_buy: 'Comprar',
+      inv_buy_title: 'Comprar más',
+      inv_buy_confirm: 'Comprar',
+      inv_buy_success: 'Compra registrada',
+      inv_buy_new_avg: 'Nuevo coste medio',
+      inv_avg_cost: 'Coste medio',
+      inv_select_asset: 'Seleccionar activo',
+      inv_no_assets: 'No hay activos en cartera',
+      inv_trade_history: 'Historial de operaciones',
+      inv_col_trade_type: 'Tipo',
+      inv_col_trade_price: 'Precio',
+      inv_trade_type_buy: 'Compra',
+      inv_trade_type_sell: 'Venta',
+      inv_no_trades: 'Sin operaciones aún',
+      inv_trade_action: 'Operar Activos',
+      inv_trade_filter_all: 'Todas las fechas',
+      inv_trade_opt_new_desc: 'Añadir un nuevo activo que no está en tu cartera',
+      inv_trade_opt_buy_desc: 'Comprar más de un activo existente, se actualiza el coste medio',
+      inv_trade_opt_sell_desc: 'Vender parte o todo de un activo existente',
       inv_mins_ago: 'hace {0} min',
       inv_hours_ago: 'hace {0} h',
       inv_days_ago: 'hace {0} d',
@@ -3202,6 +3329,7 @@ const UI = {
 
       // Common buttons & labels
       btn_cancel: 'Cancelar',
+      btn_back: '← Volver',
       btn_add: 'Añadir',
       btn_save: 'Guardar',
       btn_edit: 'Editar',
@@ -3940,6 +4068,37 @@ const UI = {
       inv_asset_deleted: 'Actif supprimé',
       inv_confirm_delete: 'Êtes-vous sûr de vouloir supprimer cet actif ?',
       inv_just_now: "à l'instant",
+      inv_sell: 'Vendre',
+      inv_sell_title: 'Vendre un actif',
+      inv_sell_qty: 'Quantité à vendre',
+      inv_sell_price: 'Prix de vente',
+      inv_sell_date: 'Date de vente',
+      inv_sell_preview: 'P/G estimé',
+      inv_sell_confirm: 'Vendre',
+      inv_sell_success: 'Actif vendu',
+      inv_sell_err_qty: 'Quantité invalide',
+      inv_sell_err_price: 'Prix invalide',
+      inv_sell_max: 'disponible',
+      inv_realized_pnl: 'G/P réalisé',
+      inv_buy: 'Acheter',
+      inv_buy_title: 'Acheter plus',
+      inv_buy_confirm: 'Acheter',
+      inv_buy_success: 'Achat enregistré',
+      inv_buy_new_avg: 'Nouveau coût moy.',
+      inv_avg_cost: 'Coût moyen',
+      inv_select_asset: 'Sélectionner un actif',
+      inv_no_assets: 'Aucun actif dans le portefeuille',
+      inv_trade_history: 'Historique des opérations',
+      inv_col_trade_type: 'Type',
+      inv_col_trade_price: 'Prix',
+      inv_trade_type_buy: 'Achat',
+      inv_trade_type_sell: 'Vente',
+      inv_no_trades: 'Aucune opération pour l\'instant',
+      inv_trade_action: 'Opérations',
+      inv_trade_filter_all: 'Toutes les dates',
+      inv_trade_opt_new_desc: 'Ajouter un nouvel actif absent de votre portefeuille',
+      inv_trade_opt_buy_desc: 'Acheter davantage d\'un actif existant, le coût moyen se met à jour',
+      inv_trade_opt_sell_desc: 'Vendre une partie ou la totalité d\'un actif existant',
       inv_mins_ago: 'il y a {0} min',
       inv_hours_ago: 'il y a {0} h',
       inv_days_ago: 'il y a {0} j',
@@ -4105,6 +4264,7 @@ const UI = {
 
       // Common buttons & labels
       btn_cancel: 'Annuler',
+      btn_back: '← Retour',
       btn_add: 'Ajouter',
       btn_save: 'Enregistrer',
       btn_edit: 'Modifier',
@@ -4558,8 +4718,8 @@ const UI = {
     // Nav links
     const navMap = {
       'index.html':       'nav_dashboard',
-      'pomodoro.html':    'nav_pomodoro',
-      'time.html':        'nav_time',
+      'focusmode.html':   'nav_pomodoro',
+      'timelog.html':     'nav_time',
       'habits.html':      'nav_habits',
       'gym.html':         'nav_gym',
       'plans.html':       'nav_plans',
@@ -4681,7 +4841,7 @@ const UI = {
       const close = () => { overlay.remove(); };
       overlay.querySelector('#lt-help-close').addEventListener('click', close);
       overlay.querySelector('#lt-help-close2').addEventListener('click', close);
-      overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+      overlay.addEventListener('click', e => { if (e.target === overlay) { e.stopPropagation(); close(); } });
     };
 
     overlay._setPage = (i) => { activePage = i; render(); };
@@ -4874,7 +5034,7 @@ const UI = {
     const lang = this.getLang();
     const currentTheme = Store.getSettings().theme || 'dark';
     const themes = [
-      { id: 'dark',     accent: '#7C6CFC', bg: '#1A1A22' },
+      { id: 'dark',     accent: '#111111', bg: '#1A1A22' },
       { id: 'midnight', accent: '#4D9EFF', bg: '#15192E' },
       { id: 'ocean',    accent: '#00CBA9', bg: '#122224' },
       { id: 'forest',   accent: '#4ADE80', bg: '#142218' },
@@ -4897,16 +5057,19 @@ const UI = {
     const isLightTheme = currentTheme === 'white';
     const swatches = themes.map(th => {
       const active = th.id === currentTheme;
+      const isDark = th.id === 'dark';
       const inactiveLabelColor = isLightTheme ? '#55556A' : 'rgba(255,255,255,0.65)';
-      const labelColor = active ? (isLightTheme ? '#1E1E2E' : th.accent) : inactiveLabelColor;
-      const borderColor = active ? (th.id === 'white' ? '#CBD5E1' : th.accent) : 'transparent';
-      const dotExtra = active && th.id !== 'white' ? `box-shadow:0 0 10px ${th.accent}88;` : '';
-      const hoverBorder = th.id === 'white' ? '#CBD5E1' : th.accent + 'AA';
+      const labelColor = active ? (isLightTheme ? '#1E1E2E' : isDark ? '#FFFFFF' : th.accent) : inactiveLabelColor;
+      const activeBorderColor = th.id === 'white' ? '#CBD5E1' : isDark ? 'rgba(220,220,220,0.6)' : th.accent;
+      const borderColor = active ? activeBorderColor : 'transparent';
+      const dotExtra = active && !isLightTheme ? (isDark ? 'box-shadow:0 0 10px rgba(255,255,255,0.4);' : `box-shadow:0 0 10px ${th.accent}88;`) : '';
+      const dotBorder = th.id === 'white' ? 'rgba(0,0,0,0.15)' : isDark ? 'rgba(220,220,220,0.7)' : 'rgba(0,0,0,0.45)';
+      const hoverBorder = th.id === 'white' ? '#CBD5E1' : isDark ? 'rgba(220,220,220,0.5)' : th.accent + 'AA';
       return `<button onclick="UI._setTheme('${th.id}')" data-tooltip="${this.t('settings_theme_' + th.id)}"
         onmouseenter="this.style.borderColor='${hoverBorder}'"
         onmouseleave="this.style.borderColor='${borderColor}'"
         style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;padding:0.4rem 0.25rem;border-radius:var(--radius-sm);border:2px solid ${borderColor};background:${currentBg};cursor:pointer;transition:border-color var(--transition);min-width:0;">
-        <span style="width:1.5rem;height:1.5rem;border-radius:50%;background:${th.id==='white'?'#FFFFFF':th.accent};display:block;flex-shrink:0;border:2px solid rgba(0,0,0,0.45);box-sizing:border-box;${dotExtra}"></span>
+        <span style="width:1.5rem;height:1.5rem;border-radius:50%;background:${th.id==='white'?'#FFFFFF':th.accent};display:block;flex-shrink:0;border:2px solid ${dotBorder};box-sizing:border-box;${dotExtra}"></span>
         <span style="font-size:0.625rem;color:${labelColor};font-family:var(--font-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:3.5rem;text-align:center;">${this.t('settings_theme_' + th.id)}</span>
       </button>`;
     }).join('');
@@ -5328,8 +5491,8 @@ const UI = {
   pageTitle() {
     const navMap = {
       'index.html':       'nav_dashboard',
-      'pomodoro.html':    'nav_pomodoro',
-      'time.html':        'nav_time',
+      'focusmode.html':   'nav_pomodoro',
+      'timelog.html':     'nav_time',
       'habits.html':      'nav_habits',
       'gym.html':         'nav_gym',
       'plans.html':       'nav_plans',
@@ -5509,7 +5672,7 @@ const UI = {
         </div>
         <button onclick="UI.togglePanelVisibility('${p.id}')"
           style="min-width:3.75rem;height:1.75rem;border-radius:14px;border:none;cursor:pointer;font-size:0.75rem;font-weight:600;font-family:var(--font-body);transition:all .15s;
-            background:${on ? 'var(--accent)' : 'var(--bg-elevated)'};color:${on ? '#fff' : 'var(--text-muted)'};
+            background:${on ? 'var(--accent)' : 'var(--bg-elevated)'};color:${on ? 'var(--accent-contrast, #fff)' : 'var(--text-muted)'};
             border:1px solid ${on ? 'var(--accent)' : 'var(--border)'}">
           ${on ? this.t('panel_on') : this.t('panel_off')}
         </button>
@@ -5557,15 +5720,16 @@ const UI = {
       });
     });
 
-    const logo = sidebar.querySelector('.sidebar-logo');
-    if (logo && !document.getElementById('sidebar-toggle-btn')) {
+    const footer = sidebar.querySelector('.sidebar-footer');
+    if (footer && !document.getElementById('sidebar-toggle-btn')) {
       const btn = document.createElement('button');
       btn.id = 'sidebar-toggle-btn';
       btn.className = 'sidebar-toggle-btn';
       btn.dataset.tooltip = this.t('sidebar_toggle');
-      btn.innerHTML = '<svg data-lucide="menu"></svg>';
+      btn.dataset.tooltipPos = 'right';
+      btn.innerHTML = '<svg data-lucide="panel-left-close"></svg>';
       btn.addEventListener('click', () => UI.toggleSidebar());
-      logo.appendChild(btn);
+      footer.appendChild(btn);
       lucide.createIcons({ nodes: [btn] });
     }
 
@@ -5693,7 +5857,9 @@ const UI = {
     if (!o) return;
     o.classList.add('open');
     const close = () => o.classList.remove('open');
-    o.addEventListener('click', e => { if (e.target === o) close(); }, { once: true });
+    let _mdOnOverlay = false;
+    o.addEventListener('mousedown', e => { _mdOnOverlay = e.target === o; }, { once: true });
+    o.addEventListener('click', e => { if (e.target === o && _mdOnOverlay) close(); }, { once: true });
   },
   closeModal(id) { document.getElementById(id)?.classList.remove('open'); },
 

@@ -3,13 +3,13 @@
 //
 //  • Sidebar widget : Ayarlar'ın üstünde canlı süre + Focus Mode linki
 //  • Topbar widget  : Dashboard başlığının sağında mod + süre + kontrol butonları
-//                     (sadece pomodoro.html dışındaki sayfalarda gösterilir)
+//                     (sadece focusmode.html dışındaki sayfalarda gösterilir)
 //  • KPI motoru     : Akış Süresi / Bugün Tamamlanan / Günlük Seri hesaplaması
 //                     PomodoroPage ve diğer sayfalar için merkezi hesaplama kaynağı
 //                     [data-focus-kpi] elementlere otomatik render eder
 //
 // Strateji:
-//   pomodoro.html → PomodoroPage'den doğrudan okur / metotlarını çağırır (0 gecikme)
+//   focusmode.html → PomodoroPage'den doğrudan okur / metotlarını çağırır (0 gecikme)
 //   Diğer sayfalar→ lt_pomo_state'ten okur, savedAt farkını hesaplayarak sanal süre döndürür;
 //                   kontrol butonları lt_pomo_state'i doğrudan günceller
 // ─────────────────────────────────────────────────────────────────────────────
@@ -234,7 +234,7 @@ const FocusWidget = (() => {
         <button class="ftw-btn ftw-btn-stop" id="ftw-stop" data-tooltip="" onclick="FocusWidget.stop()">
           <svg data-lucide="square" style="width:0.875rem;height:0.875rem"></svg>
         </button>
-        <a class="ftw-btn ftw-btn-open" href="pomodoro.html" data-tooltip="">
+        <a class="ftw-btn ftw-btn-open" href="focusmode.html" data-tooltip="">
           <svg data-lucide="external-link" style="width:0.8125rem;height:0.8125rem"></svg>
         </a>
       </div>`;

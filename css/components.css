@@ -94,7 +94,7 @@
 .btn svg { width: 1rem; height: 1rem; flex-shrink: 0; }
 .privacy-toggle-btn svg { width: 16px !important; height: 16px !important; }
 
-.btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-primary { background: var(--accent); color: var(--accent-contrast, #fff); border-color: var(--accent); }
 .btn-primary:hover { filter: brightness(1.12); box-shadow: 0 0 16px var(--accent-glow); }
 
 .btn-secondary { background: var(--bg-elevated); color: var(--text-primary); border-color: var(--border); }

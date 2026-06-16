@@ -2078,7 +2078,6 @@
              ondragover="PomodoroPage._subDragOver('${t.id}','${s.id}',event)"
              ondragend="PomodoroPage._subDragEnd('${t.id}')"
              ondrop="PomodoroPage._subDrop('${t.id}','${s.id}',event)">
-          <div style="width:2rem;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text-muted);cursor:grab;font-size:0.9375rem;opacity:0.5">⠿</div>
           ${CheckboxCore.html({ done: s.done, type: 'square', color: 'var(--accent)', onclick: `event.stopPropagation();PomodoroPage.toggleSubtask('${t.id}','${s.id}')` })}
           <span style="font-size:0.8125rem;color:var(--text-secondary);flex:1;${s.done ? 'text-decoration:line-through;color:var(--text-muted)' : ''}">${s.text}</span>
           <button class="hc-del hc-edit-btn" data-tooltip="${UI.t('btn_edit')}"
@@ -2093,7 +2092,7 @@
       ).join('');
       const addRow = `
         <div class="hc-row hc-subtask hc-sub-add-row" onclick="event.stopPropagation()">
-          <div style="width:2rem;flex-shrink:0"></div>
+          ${CheckboxCore.html({ done: false, type: 'square', color: 'var(--accent)', extraStyle: 'cursor:default;opacity:0.3;pointer-events:none;flex-shrink:0' })}
           <input type="text" class="hc-sub-add-input" placeholder="${UI.t('pomo_add_sub_ph')}"
             onkeydown="PomodoroPage._subAddKeydown('${t.id}',this,event)">
           <button class="hc-del hc-edit-btn" data-tooltip="${UI.t('btn_add')}"
@@ -2110,7 +2109,7 @@
       const isOpen = !!this._openTodos[t.id];
       const catColor = CAT_COLORS[t.category] || '#8888AA';
       const catBadge = t.category
-        ? `<span style="font-size:0.625rem;font-weight:700;padding:2px 7px;border-radius:0.25rem;background:${catColor}22;color:${catColor};flex-shrink:0;white-space:nowrap">${_catLabel(t.category)}</span>`
+        ? `<span style="font-size:0.625rem;font-weight:700;padding:2px 7px;border-radius:0.25rem;background:${catColor}22;color:var(--text-primary);flex-shrink:0;white-space:nowrap">${_catLabel(t.category)}</span>`
         : '';
 
       let timeBadge = '';

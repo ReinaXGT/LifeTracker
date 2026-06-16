@@ -535,7 +535,7 @@ const TimePage = {
     }
     const ms = UI.t('mins_suffix'), hs = UI.t('hours_suffix');
     Charts.line('thirtyDayChart', labels, [
-      { label: UI.t('time_duration_label'), data, pointColors: ptColors, pointRadius: ptRadius }
+      { label: UI.t('time_duration_label'), data, color: _cv('--accent'), pointColors: ptColors, pointRadius: ptRadius }
     ], {
       solidFill: true,
       yFmt: v => { const m = Math.round(v); return m < 60 ? (m ? m + ms : '0') : parseFloat((m/60).toFixed(1)) + hs; },
@@ -557,12 +557,12 @@ const TimePage = {
       labels.push(dayLabels[(d.getDay()+6)%7]);
       data.push(mins);
       const isToday = ds === todayStr;
-      ptColors.push(isToday ? _cv('--green') : _cv('--chart-3'));
+      ptColors.push(isToday ? _cv('--green') : _cv('--accent-alt'));
       ptRadius.push(isToday ? 5 : 3);
     }
     const ms = UI.t('mins_suffix'), hs = UI.t('hours_suffix');
     Charts.line('dailyBarChart', labels, [
-      { label: UI.t('time_duration_label'), data, color: _cv('--chart-3'), pointColors: ptColors, pointRadius: ptRadius }
+      { label: UI.t('time_duration_label'), data, color: _cv('--accent-alt'), pointColors: ptColors, pointRadius: ptRadius }
     ], {
       solidFill: true,
       yFmt: v => { const m = Math.round(v); return m < 60 ? (m ? m + ms : '0') : parseFloat((m/60).toFixed(1)) + hs; },
@@ -668,7 +668,7 @@ const TimePage = {
         <div style="display:flex;align-items:center;gap:14px;padding:0.5625rem 0;border-top:1px solid var(--border)">
           <span style="font-size:0.6875rem;color:var(--text-muted);font-family:var(--font-mono);min-width:6.5rem">${w.start} ${MONTHS_SHORT[mon]} — ${w.end} ${MONTHS_SHORT[mon]}</span>
           <div style="flex:1;height:0.3125rem;border-radius:0.1875rem;background:var(--bg-elevated);overflow:hidden">
-            <div style="height:100%;width:${pct}%;background:${w.mins > 0 ? '#7C6CFC' : 'transparent'};border-radius:0.1875rem"></div>
+            <div style="height:100%;width:${pct}%;background:${w.mins > 0 ? 'var(--accent)' : 'transparent'};border-radius:0.1875rem"></div>
           </div>
           <span style="font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:${w.mins > 0 ? 'var(--text-primary)' : 'var(--text-muted)'};min-width:3.75rem;text-align:right">${UI.fmtMinutesHM(w.mins)}</span>
         </div>`;
