@@ -12,6 +12,8 @@ const Investments = (() => {
   let _tradeFilterCdp    = null;
   let _addAssetModal     = null;
   let _editAssetModal    = null;
+  let _editTradeModal    = null;
+  let _editTradeDateCdp  = null;
   let _manualPriceModal  = null;
   let _sellAssetModal    = null;
   let _buyAssetModal     = null;
@@ -167,7 +169,7 @@ const Investments = (() => {
 
     const prices  = _getPrices();
     const history = _getHistory();
-    const toUSD   = (p, asset) => { const c = _assetCur(asset.symbol, asset.buyCurrency); return c === 'USD' ? p : p / _getUSDRate(c); };
+    const toUSD   = (p, a) => { const c = _assetCur(a.symbol, a.buyCurrency); return c === 'USD' ? p : p / _getUSDRate(c); };
 
     let num = 0, den = 0;
     for (const a of assets) {
@@ -175,50 +177,62 @@ const Investments = (() => {
       const buyRaw = Number(a.buyPrice) || 0;
       if (!qty || !buyRaw) continue;
 
-      // Güncel fiyat: cache varsa kullan, yoksa alış fiyatı (0 getiri)
-      const curRaw = prices[a.symbol]?.price || buyRaw;
-      let   pastRaw;
+      const series = history[a.symbol]?.series;
+      let curRaw, pastRaw;
 
       if (period === 'all') {
-        // Tüm zamanlar: alış fiyatından bu yana
+        // Tüm zamanlar: alış fiyatından bu yana — history gerekmez
+        curRaw  = prices[a.symbol]?.price || buyRaw;
         pastRaw = buyRaw;
+      } else if (period === 1) {
+        // Günlük: son kapanış vs bir önceki kapanış (close-to-close)
+        // API'den gelen fiyat = dünkü kapanış, dolayısıyla her ikisi de aynı olmamak için
+        // history'deki son iki kapanışı karşılaştırıyoruz.
+        if (series) {
+          const sorted = Object.keys(series).sort().reverse();
+          if (sorted.length < 2 || sorted[0] < _dateAgo(10)) continue; // yetersiz/bayat veri
+          curRaw  = series[sorted[0]]; // son kapanış
+          pastRaw = series[sorted[1]]; // bir önceki kapanış
+        } else {
+          // History yok: alış fiyatına göre getiri (Commodity/Bond/Cash)
+          curRaw  = prices[a.symbol]?.price || buyRaw;
+          pastRaw = buyRaw;
+        }
       } else {
+        // Haftalık / Aylık / 3 Aylık
+        curRaw = prices[a.symbol]?.price || buyRaw;
         const periodStart  = _dateAgo(period);
         const purchaseDate = a.purchaseDate || null;
 
         if (purchaseDate && purchaseDate > periodStart) {
-          // Asset bought within this period → use buy price as baseline
+          // Periyot içinde alınmış: alış fiyatı baz
           pastRaw = buyRaw;
-        } else {
-          const series       = history[a.symbol]?.series;
+        } else if (series) {
           const maxStaleDate = _dateAgo(period + 10);
-          const foundDate    = series
-            ? Object.keys(series).sort().reverse().find(d => d <= periodStart) || null
-            : null;
-          if (series) {
-            // Has history: use only if fresh; skip asset if stale
-            pastRaw = (foundDate && foundDate >= maxStaleDate) ? series[foundDate] : null;
-            if (pastRaw == null) continue;
-          } else {
-            // No history (Commodity/Bond/Cash): no period baseline, skip asset
-            continue;
-          }
+          const foundDate    = Object.keys(series).sort().reverse().find(d => d <= periodStart);
+          // History varsa kullan; bayatsa alış fiyatına düş (varlığı atlamak yerine)
+          pastRaw = (foundDate && foundDate >= maxStaleDate) ? series[foundDate] : buyRaw;
+        } else {
+          // History yok: alış fiyatı fallback (varlığı atlamak paydayı küçültüyor)
+          pastRaw = buyRaw;
         }
       }
 
+      if (!curRaw || !pastRaw) continue;
       const cur  = toUSD(curRaw,  a);
       const past = toUSD(pastRaw, a);
       num += qty * (cur - past);
       den += qty * past;
     }
-    // Include realized trades in the period return
+
+    // Gerçekleşmiş K/Z: periyot içinde gerçekleşen satışlar o dönemin getirisine dahil edilir.
     const realized = _getSellTrades();
     for (const t of realized) {
       if (period !== 'all') {
         const periodStart = _dateAgo(period);
         if (!t.date || t.date < periodStart) continue;
       }
-      const rAsset = { symbol: t.symbol, buyCurrency: t.buyCurrency };
+      const rAsset  = { symbol: t.symbol, buyCurrency: t.buyCurrency };
       const costUSD = toUSD(t.costBasis, rAsset) * t.quantity;
       const pnlUSD  = toUSD(t.price - t.costBasis, rAsset) * t.quantity;
       num += pnlUSD;
@@ -277,43 +291,53 @@ const Investments = (() => {
 
       let periodPnL = totalPnL, periodPnLPercent = totalPnLPct, periodNoHistory = false;
       if (_pnlPeriod !== 'total') {
-        const def        = _PNL_PERIODS.find(p => p.key === _pnlPeriod);
-        const series     = _getHistory()[a.symbol]?.series;
-        const targetDate = _dateAgo(def.days);
-        // Accept history only if the found data point is within (days+10) days of today
-        // to avoid stale/migrated history data producing wildly wrong P&L figures
-        const maxStaleDate = _dateAgo(def.days + 10);
-        const foundDate  = series
-          ? Object.keys(series).sort().reverse().find(d => d <= targetDate) || null
-          : null;
-        if (series) {
-          // If asset was purchased within this period, use buy price as baseline
-          const purchaseDate = a.purchaseDate || null;
-          if (purchaseDate && purchaseDate > targetDate) {
-            const pastDisplay = _toDisplay(Number(a.buyPrice) || 0, aCur);
-            const pastTotal   = qty * pastDisplay;
-            periodPnL         = qty * (currentPrice - pastDisplay);
-            periodPnLPercent  = pastTotal > 0 ? (periodPnL / pastTotal) * 100 : 0;
+        const def    = _PNL_PERIODS.find(p => p.key === _pnlPeriod);
+        const series = _getHistory()[a.symbol]?.series;
+
+        if (def.key === 'daily') {
+          // Günlük: son kapanış vs bir önceki kapanış (close-to-close)
+          if (series) {
+            const sorted = Object.keys(series).sort().reverse();
+            if (sorted.length >= 2 && sorted[0] >= _dateAgo(10)) {
+              const latestClose = _toDisplay(series[sorted[0]], aCur);
+              const prevClose   = _toDisplay(series[sorted[1]], aCur);
+              const pastTotal   = qty * prevClose;
+              periodPnL         = qty * (latestClose - prevClose);
+              periodPnLPercent  = pastTotal > 0 ? (periodPnL / pastTotal) * 100 : 0;
+            } else {
+              periodNoHistory = true; periodPnL = 0; periodPnLPercent = 0;
+            }
           } else {
-            // History series exists → validate staleness
-            const pastRaw = (foundDate && foundDate >= maxStaleDate) ? series[foundDate] : null;
-            if (pastRaw != null) {
-              const pastDisplay = _toDisplay(pastRaw, aCur);
+            periodNoHistory = true; periodPnL = 0; periodPnLPercent = 0;
+          }
+        } else {
+          // Haftalık / Aylık / 3 Aylık
+          const targetDate   = _dateAgo(def.days);
+          const maxStaleDate = _dateAgo(def.days + 10);
+          const foundDate    = series
+            ? Object.keys(series).sort().reverse().find(d => d <= targetDate) || null
+            : null;
+          if (series) {
+            const purchaseDate = a.purchaseDate || null;
+            if (purchaseDate && purchaseDate > targetDate) {
+              const pastDisplay = _toDisplay(Number(a.buyPrice) || 0, aCur);
               const pastTotal   = qty * pastDisplay;
               periodPnL         = qty * (currentPrice - pastDisplay);
               periodPnLPercent  = pastTotal > 0 ? (periodPnL / pastTotal) * 100 : 0;
             } else {
-              // Series exists but data is stale/missing → show dash
-              periodNoHistory  = true;
-              periodPnL        = 0;
-              periodPnLPercent = 0;
+              const pastRaw = (foundDate && foundDate >= maxStaleDate) ? series[foundDate] : null;
+              if (pastRaw != null) {
+                const pastDisplay = _toDisplay(pastRaw, aCur);
+                const pastTotal   = qty * pastDisplay;
+                periodPnL         = qty * (currentPrice - pastDisplay);
+                periodPnLPercent  = pastTotal > 0 ? (periodPnL / pastTotal) * 100 : 0;
+              } else {
+                periodNoHistory = true; periodPnL = 0; periodPnLPercent = 0;
+              }
             }
+          } else {
+            periodNoHistory = true; periodPnL = 0; periodPnLPercent = 0;
           }
-        } else {
-          // No series (Commodity/Bond/Cash) → no period baseline available; show dash
-          periodNoHistory  = true;
-          periodPnL        = 0;
-          periodPnLPercent = 0;
         }
       }
 
@@ -344,7 +368,7 @@ const Investments = (() => {
 
     rawAssets.forEach(a => {
       a.allocationPercent = totalValue > 0
-        ? Math.round(a.totalValue / totalValue * 100) : 0;
+        ? Math.round(a.totalValue / totalValue * 1000) / 10 : 0;
     });
 
     const realizedTrades = _getSellTrades();
@@ -376,6 +400,7 @@ const Investments = (() => {
     _renderTradeHistory();
     _updateToggle();
     _updateRateDisplay();
+    _applyViewTopbar(_currentView);
     _updateRefreshBtn();
   }
 
@@ -435,7 +460,7 @@ const Investments = (() => {
       <div class="legend-item" style="gap:0.375rem;min-width:0;width:100%;justify-content:flex-start">
         <div class="legend-dot" style="background:${colors[i]};flex-shrink:0"></div>
         <span style="font-size:0.8125rem;font-weight:600;white-space:nowrap">${a.symbol}</span>
-        <span style="white-space:nowrap;font-size:0.75rem"><span style="font-family:var(--font-mono);font-weight:700;color:${colors[i]}">%${a.allocationPercent}</span> <span style="color:var(--text-muted)">${_typeLabel(a.assetType)}</span></span>
+        <span style="white-space:nowrap;font-size:0.75rem"><span style="font-family:var(--font-mono);font-weight:700;color:${colors[i]}">%${a.allocationPercent.toFixed(1)}</span> <span style="color:var(--text-muted)">${_typeLabel(a.assetType)}</span></span>
       </div>`).join('');
   }
 
@@ -473,7 +498,7 @@ const Investments = (() => {
       const pUp      = a.totalPnL >= 0;
       const init     = (a.symbol || '?').slice(0, 2).toUpperCase();
       const cached   = prices[a.symbol];
-      const priceAge = `<div style="display:flex;align-items:center;justify-content:flex-end;gap:0.3125rem;margin-top:0.1875rem">
+      const priceAge = `<div style="display:flex;align-items:center;justify-content:center;gap:0.3125rem;margin-top:0.1875rem">
         ${cached ? `<span style="font-size:0.625rem;color:var(--text-muted);opacity:.7">${_relativeTime(cached.fetchedAt)}</span><span style="font-size:0.625rem;color:var(--text-muted);opacity:.35">·</span>` : ''}
         <button onclick="Investments.editManualPrice('${a.symbol}')"
           style="background:none;border:none;cursor:pointer;padding:2px 4px;color:var(--text-muted);display:flex;align-items:center;gap:2px;border-radius:0.25rem;transition:color .15s,background .15s"
@@ -496,22 +521,22 @@ const Investments = (() => {
             </div>
           </div>
         </td>
-        <td><span class="badge" style="background:${color}15;color:${color};border:1px solid ${color}30">${_typeLabel(a.assetType)}</span></td>
-        <td class="mono" style="text-align:right">${UI.isPrivate() ? '••••' : a.quantity}</td>
-        <td class="mono" style="text-align:right;color:var(--text-secondary)">${_mask(a.avgCost)}</td>
-        <td style="text-align:right;vertical-align:middle">
+        <td style="text-align:center;vertical-align:middle"><span style="font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:${color};background:${color}18;border:1px solid ${color}35;padding:2px 7px;border-radius:4px">${_typeLabel(a.assetType)}</span></td>
+        <td class="mono" style="text-align:center">${UI.isPrivate() ? '••••' : a.quantity}</td>
+        <td class="mono" style="text-align:center;color:var(--text-secondary)">${_mask(a.avgCost)}</td>
+        <td style="text-align:center;vertical-align:middle">
           <span class="mono" style="font-weight:600">${_mask(a.currentPrice)}</span>
           ${priceAge}
         </td>
-        <td class="mono" style="text-align:right;font-weight:700">${_mask(a.totalValue)}</td>
-        <td style="text-align:right">
+        <td class="mono" style="text-align:center;font-weight:700">${_mask(a.totalValue)}</td>
+        <td style="text-align:center;vertical-align:middle">
           ${a.periodNoHistory
             ? `<span style="color:var(--text-muted);font-size:0.8125rem">—</span>`
             : `<span style="font-family:var(--font-mono);font-weight:600;color:${a.periodPnL >= 0 ? 'var(--green)' : 'var(--red)'}">${a.periodPnL >= 0 ? '+' : ''}${_mask(a.periodPnL)}</span>
                <div style="font-size:0.6875rem;font-weight:400;opacity:.8;color:${a.periodPnL >= 0 ? 'var(--green)' : 'var(--red)'}">${_fmtPct(a.periodPnLPercent)}</div>`
           }
         </td>
-        <td class="mono" style="text-align:right;color:var(--accent);font-weight:600">%${a.allocationPercent}</td>
+        <td class="mono" style="text-align:center;color:var(--accent);font-weight:600">%${a.allocationPercent.toFixed(1)}</td>
         <td style="padding:0.5rem 0.75rem;text-align:center">
           <div style="display:flex;gap:0.375rem;justify-content:center">
             <button class="btn btn-icon" onclick="Investments.editAsset('${a.id}')" data-tooltip="${UI.t('btn_edit')}"
@@ -658,9 +683,6 @@ const Investments = (() => {
     const s        = Store.getSettings();
     const userSym  = s.currency || '₺';
 
-    const toggleSection = document.getElementById('currencyToggleSection');
-    if (toggleSection) toggleSection.style.display = userCode === 'USD' ? 'none' : '';
-
     const userBtn = document.getElementById('toggleUSER');
     const usdBtn  = document.getElementById('toggleUSD');
     if (userBtn) {
@@ -677,9 +699,6 @@ const Investments = (() => {
     const rate    = s.exchangeRate || 1;
     const userSym = s.currency || '₺';
     const userCode = _getCurrencyCode();
-
-    const section = document.getElementById('exchangeRateSection');
-    if (section) section.style.display = userCode === 'USD' ? 'none' : '';
 
     const el = document.getElementById('exchangeRateInput');
     if (el) { el.value = Math.floor(rate * 10) / 10; el.style.width = (String(el.value).length + 0.3) + 'ch'; }
@@ -1461,7 +1480,7 @@ const Investments = (() => {
       ${pickerSection}
       <div style="display:grid;gap:12px">
         <div class="form-group">
-          <label class="form-label">${UI.t('inv_sell_qty')}</label>
+          <label class="form-label">${UI.t('inv_buy_qty')}</label>
           <input type="number" id="buyQtyInput" class="form-control" min="0.000001" step="any" placeholder="0" style="font-family:var(--font-mono)">
         </div>
         <div class="form-group">
@@ -1631,7 +1650,7 @@ const Investments = (() => {
     );
 
     if (!trades.length) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">${UI.t('inv_no_trades')}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted)">${UI.t('inv_no_trades')}</td></tr>`;
       return;
     }
 
@@ -1641,7 +1660,6 @@ const Investments = (() => {
       const typeLabel = UI.t(isBuy ? 'inv_trade_type_buy' : 'inv_trade_type_sell');
       const aCur    = _assetCur(t.symbol, t.buyCurrency);
       const priceDisp = _toDisplay(t.price || 0, aCur);
-      const totalDisp = priceDisp * t.quantity;
 
       let pnlCell = '<td></td>';
       if (!isBuy && t.realizedPnL != null) {
@@ -1651,9 +1669,11 @@ const Investments = (() => {
         </td>`;
       }
 
-      return `<tr>
+      const trId = 'tr-' + t.id;
+
+      return `<tr id="${trId}">
         <td style="color:var(--text-secondary);font-size:0.8125rem;white-space:nowrap">${UI.formatDate(t.date || '')}</td>
-        <td><span style="font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:${color};background:${color}18;border:1px solid ${color}35;padding:2px 7px;border-radius:4px">${typeLabel}</span></td>
+        <td style="text-align:center;vertical-align:middle"><span style="font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:${color};background:${color}18;border:1px solid ${color}35;padding:2px 7px;border-radius:4px">${typeLabel}</span></td>
         <td>
           <div style="display:flex;align-items:baseline;gap:0.5rem">
             <span style="font-weight:600;font-family:var(--font-mono);font-size:0.875rem;display:inline-block;min-width:3.75rem">${t.symbol}</span>
@@ -1663,8 +1683,144 @@ const Investments = (() => {
         <td class="mono" style="text-align:center">${UI.isPrivate() ? '••••' : t.quantity}</td>
         <td class="mono" style="text-align:center;color:var(--text-secondary)">${_mask(priceDisp)}</td>
         ${pnlCell}
+        <td style="white-space:nowrap;vertical-align:middle">
+          <div style="display:inline-flex;gap:0.375rem;align-items:center">
+            <button class="trade-act-btn trade-act-edit" onclick="Investments.editTrade('${t.id}')" data-tooltip="${UI.t('inv_edit_trade')}">
+              <svg data-lucide="pencil" style="width:0.8125rem;height:0.8125rem;pointer-events:none"></svg>
+            </button>
+            <button class="trade-act-btn trade-act-del" onclick="Investments.deleteTrade('${t.id}')" data-tooltip="${UI.t('inv_delete_trade')}">
+              <svg data-lucide="trash-2" style="width:0.8125rem;height:0.8125rem;pointer-events:none"></svg>
+            </button>
+          </div>
+        </td>
       </tr>`;
     }).join('');
+    lucide.createIcons({ nodes: [tbody] });
+  }
+
+  // ── trade edit / delete ───────────────────────────────────
+  function _updateTrade(id, updates) {
+    const all = _getTrades().map(t => t.id === id ? Object.assign({}, t, updates) : t);
+    Store.set('inv_trades', all);
+  }
+
+  function _editTrade(id) {
+    const trade = _getTrades().find(t => t.id === id);
+    if (!trade) return;
+    const isBuy = trade.type === 'buy';
+
+    _editTradeModal = new CustomModal({
+      title:        UI.t('inv_edit_trade'),
+      icon:         'pencil',
+      width:        440,
+      overflowBody: 'visible',
+      content: `<form id="editTradeForm" onsubmit="return false" style="display:flex;flex-direction:column;gap:14px">
+        <input type="hidden" id="editTradeId" value="${trade.id}">
+        <div class="form-group">
+          <label class="form-label">${UI.t('lbl_date')}</label>
+          <button type="button" id="editTradeDateBtn" onclick="Investments.toggleEditTradeDate()"
+            style="width:100%;display:flex;align-items:center;gap:6px;padding:0 10px;height:38px;
+                   box-sizing:border-box;background:var(--bg-elevated);border:1px solid var(--border);
+                   border-radius:var(--radius-sm);cursor:pointer">
+            <svg data-lucide="calendar" style="width:15px;height:15px;color:var(--text-secondary);flex-shrink:0"></svg>
+            <span id="editTradeDateLabel" style="flex:1;font-size:13px;color:var(--text-primary);text-align:left">${UI.formatDate(trade.date || _today())}</span>
+          </button>
+          <input type="hidden" id="editTradeDateInput" value="${trade.date || _today()}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">${UI.t('inv_col_trade_type')}</label>
+          <div style="display:flex;gap:8px">
+            <button type="button" id="editTradeTypeBuy" onclick="Investments.setEditTradeType('buy')"
+              style="flex:1;height:36px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;font-weight:600;
+                     border:1px solid ${isBuy ? 'var(--green)' : 'var(--border)'};
+                     background:${isBuy ? 'rgba(52,211,153,.15)' : 'var(--bg-elevated)'};
+                     color:${isBuy ? 'var(--green)' : 'var(--text-secondary)'}">
+              ${UI.t('inv_trade_type_buy')}
+            </button>
+            <button type="button" id="editTradeTypeSell" onclick="Investments.setEditTradeType('sell')"
+              style="flex:1;height:36px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;font-weight:600;
+                     border:1px solid ${!isBuy ? 'var(--red)' : 'var(--border)'};
+                     background:${!isBuy ? 'rgba(248,113,113,.15)' : 'var(--bg-elevated)'};
+                     color:${!isBuy ? 'var(--red)' : 'var(--text-secondary)'}">
+              ${UI.t('inv_trade_type_sell')}
+            </button>
+          </div>
+          <input type="hidden" id="editTradeTypeInput" value="${trade.type}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">${UI.t('inv_col_qty')}</label>
+          <input class="form-control" type="number" id="editTradeQty"
+            min="0.000001" step="any" value="${trade.quantity}" style="height:38px">
+        </div>
+        <div class="form-group">
+          <label class="form-label">${UI.t('inv_col_trade_price')}</label>
+          <input class="form-control" type="number" id="editTradePriceInput"
+            min="0" step="any" value="${trade.price}" style="height:38px">
+        </div>
+      </form>`,
+      buttons: [
+        { label: UI.t('btn_cancel'), variant: 'secondary', onClick: m => m.close() },
+        { label: UI.t('btn_save'),   variant: 'primary',   onClick: () => _saveEditTrade() },
+      ],
+    });
+    _editTradeModal.open();
+
+    _editTradeDateCdp = new CustomDatePicker({
+      btn: 'editTradeDateBtn', input: 'editTradeDateInput', align: 'left',
+      onSelect: date => { document.getElementById('editTradeDateLabel').textContent = UI.formatDate(date); },
+    });
+
+    lucide.createIcons({ nodes: [document.getElementById('editTradeForm')] });
+  }
+
+  function _saveEditTrade() {
+    const id    = document.getElementById('editTradeId').value;
+    const date  = document.getElementById('editTradeDateInput').value;
+    const type  = document.getElementById('editTradeTypeInput').value;
+    const qty   = parseFloat(document.getElementById('editTradeQty').value);
+    const price = parseFloat(document.getElementById('editTradePriceInput').value);
+
+    if (!date)                  { UI.toast(UI.t('inv_invalid_date') || '—', 'error'); return; }
+    if (isNaN(qty)  || qty <= 0) { UI.toast(UI.t('inv_invalid_qty'),  'error'); return; }
+    if (isNaN(price) || price < 0) { UI.toast(UI.t('inv_invalid_buy'), 'error'); return; }
+
+    _updateTrade(id, { date, type, quantity: qty, price });
+    _editTradeModal.close();
+    UI.toast(UI.t('inv_trade_updated'), 'success');
+    _renderTradeHistory();
+    _renderTradeHistModal();
+  }
+
+  function _setEditTradeType(type) {
+    document.getElementById('editTradeTypeInput').value = type;
+    const isBuy = type === 'buy';
+    const buyBtn  = document.getElementById('editTradeTypeBuy');
+    const sellBtn = document.getElementById('editTradeTypeSell');
+    buyBtn.style.borderColor = isBuy ? 'var(--green)' : 'var(--border)';
+    buyBtn.style.background  = isBuy ? 'rgba(52,211,153,.15)' : 'var(--bg-elevated)';
+    buyBtn.style.color       = isBuy ? 'var(--green)' : 'var(--text-secondary)';
+    sellBtn.style.borderColor = !isBuy ? 'var(--red)' : 'var(--border)';
+    sellBtn.style.background  = !isBuy ? 'rgba(248,113,113,.15)' : 'var(--bg-elevated)';
+    sellBtn.style.color       = !isBuy ? 'var(--red)' : 'var(--text-secondary)';
+  }
+
+  function _deleteTrade(id) {
+    const trade = _getTrades().find(t => t.id === id);
+    if (!trade) return;
+    const typeLabel = UI.t(trade.type === 'buy' ? 'inv_trade_type_buy' : 'inv_trade_type_sell');
+    DeleteManager.confirm({
+      module:       'inv_trade',
+      title:        UI.t('inv_delete_trade'),
+      message:      `${typeLabel} — ${trade.symbol} × ${trade.quantity}`,
+      confirmLabel: UI.t('btn_delete'),
+      onConfirm: () => {
+        const all = _getTrades().filter(t => t.id !== id);
+        Store.set('inv_trades', all);
+        UI.toast(UI.t('inv_trade_deleted'), 'info');
+        _renderTradeHistory();
+        _renderTradeHistModal();
+      },
+    });
   }
 
   // ── edit asset ────────────────────────────────────────────
@@ -2035,7 +2191,7 @@ const Investments = (() => {
     _tradeHistModal  = new CustomModal({
       title:   UI.t('inv_history_btn'),
       icon:    'history',
-      width:   820,
+      width:   900,
       content: '<div id="inv-hist-inner" style="min-height:7.5rem"></div>',
       buttons: [{ label: UI.t('btn_cancel'), variant: 'secondary', onClick: m => m.close() }],
     });
@@ -2086,11 +2242,12 @@ const Investments = (() => {
         <table class="data-table" style="width:100%">
           <thead><tr>
             <th data-i18n="lbl_date">Tarih</th>
-            <th data-i18n="inv_col_trade_type">İşlem</th>
+            <th style="text-align:center" data-i18n="inv_col_trade_type">İşlem</th>
             <th data-i18n="inv_col_asset">Varlık / Sembol</th>
             <th style="text-align:center" data-i18n="inv_col_qty">Adet</th>
             <th style="text-align:center" data-i18n="inv_col_trade_price">Fiyat</th>
             <th style="text-align:center" data-i18n="inv_pnl">K/Z</th>
+            <th style="width:5rem"></th>
           </tr></thead>
           <tbody>${monthTrades.map(t => {
             const isBuy  = t.type === 'buy';
@@ -2105,7 +2262,7 @@ const Investments = (() => {
             }
             return `<tr>
               <td style="color:var(--text-secondary);font-size:0.8125rem">${UI.formatDate(t.date || '')}</td>
-              <td><span style="font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:${color};background:${color}18;border:1px solid ${color}35;padding:2px 7px;border-radius:4px">${typeLabel}</span></td>
+              <td style="text-align:center;vertical-align:middle"><span style="font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:${color};background:${color}18;border:1px solid ${color}35;padding:2px 7px;border-radius:4px">${typeLabel}</span></td>
               <td><div style="display:flex;align-items:baseline;gap:0.5rem">
                 <span style="font-weight:600;font-family:var(--font-mono);font-size:0.875rem">${t.symbol}</span>
                 <span style="font-size:0.75rem;color:var(--text-muted)">${t.name || ''}</span>
@@ -2113,6 +2270,16 @@ const Investments = (() => {
               <td class="mono" style="text-align:center">${UI.isPrivate() ? '••••' : t.quantity}</td>
               <td class="mono" style="text-align:center;color:var(--text-secondary)">${_mask(price)}</td>
               ${pnlCell}
+              <td style="text-align:center;vertical-align:middle;white-space:nowrap">
+                <div style="display:inline-flex;gap:0.375rem;align-items:center">
+                  <button class="trade-act-btn trade-act-edit" onclick="Investments.editTrade('${t.id}')" data-tooltip="${UI.t('inv_edit_trade')}">
+                    <svg data-lucide="pencil" style="width:0.8125rem;height:0.8125rem;pointer-events:none"></svg>
+                  </button>
+                  <button class="trade-act-btn trade-act-del" onclick="Investments.deleteTrade('${t.id}')" data-tooltip="${UI.t('inv_delete_trade')}">
+                    <svg data-lucide="trash-2" style="width:0.8125rem;height:0.8125rem;pointer-events:none"></svg>
+                  </button>
+                </div>
+              </td>
             </tr>`;
           }).join('')}</tbody>
         </table>
@@ -2167,14 +2334,26 @@ const Investments = (() => {
     lucide.createIcons({ nodes: [document.getElementById('view-trades')] });
   }
 
+  // Topbar item registry — single source of truth for all topbar element visibility.
+  // views: which tab(s) show this item. display: value to set when visible ('' or 'flex').
+  // extraHide(): optional extra condition that hides regardless of view.
+  const _topbarDef = [
+    { id: 'exchangeRateSection',       views: ['portfolio'],           display: 'flex', extraHide: () => _getCurrencyCode() === 'USD' },
+    { id: 'privacy-toggle-btn-trades', views: ['trades'],              display: ''                                                    },
+    { id: 'currencyToggleSection',     views: ['portfolio', 'trades'], display: 'flex', extraHide: () => _getCurrencyCode() === 'USD' },
+    { id: 'apiKeyBtn',                 views: ['portfolio'],           display: ''                                                    },
+    { id: 'privacy-toggle-btn',        views: ['portfolio'],           display: ''                                                    },
+    { id: 'inv-tb-import',             views: ['portfolio', 'trades'], display: 'flex'                                                },
+    { id: 'tradeHistBtn',              views: ['trades'],              display: 'flex'                                                },
+    { id: 'tradeActionBtn',            views: ['portfolio', 'trades'], display: ''                                                    },
+  ];
+
   function _applyViewTopbar(v) {
-    const isTrades = v === 'trades';
-    const exchangeEl  = document.getElementById('exchangeRateSection');
-    const apiKeyEl    = document.getElementById('apiKeyBtn');
-    const histBtn     = document.getElementById('tradeHistBtn');
-    if (exchangeEl) exchangeEl.style.display = isTrades ? 'none' : '';
-    if (apiKeyEl)   apiKeyEl.style.display   = isTrades ? 'none' : '';
-    if (histBtn)    histBtn.style.display     = isTrades ? 'flex' : 'none';
+    _topbarDef.forEach(({ id, views, display = '', extraHide }) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.style.display = views.includes(v) && !(extraHide && extraHide()) ? display : 'none';
+    });
   }
 
   function setView(v) {
@@ -2192,5 +2371,5 @@ const Investments = (() => {
     }
   }
 
-  return { init, setView, tradeCycleNav, openTradeHistModal: _openTradeHistModal, tradeHistNavTo: _tradeHistNavTo, setDisplayCurrency, getUserCurrencyCode, setExchangeRate, editManualPrice, saveManualPrice: _saveManualPrice, openAddAsset: _openAddAsset, editAsset, deleteAsset, sellAsset: _openSellAsset, buyAsset: _openBuyAsset, toggleSellDate: () => _sellDateCdp?.toggle(), toggleBuyDate: () => _buyDateCdp?.toggle(), openSellPicker, openBuyPicker, openTradeDropdown, _tradeActionPick, toggleTradeFilter: () => _tradeFilterCdp?.toggle(), onTradeSearch: _renderTradeHistory, refreshPrices: _manualRefresh, togglePnlPeriodMenu: _togglePnlPeriodMenu, setPnlPeriod: _setPnlPeriodFn, fetchAllRates: _fetchAllRatesPublic, openInvDropdown, toggleInvDatePicker: _toggleInvDatePicker, triggerImport: _triggerInvImport, importData: _importInvData };
+  return { init, setView, tradeCycleNav, openTradeHistModal: _openTradeHistModal, tradeHistNavTo: _tradeHistNavTo, setDisplayCurrency, getUserCurrencyCode, setExchangeRate, editManualPrice, saveManualPrice: _saveManualPrice, openAddAsset: _openAddAsset, editAsset, deleteAsset, sellAsset: _openSellAsset, buyAsset: _openBuyAsset, toggleSellDate: () => _sellDateCdp?.toggle(), toggleBuyDate: () => _buyDateCdp?.toggle(), openSellPicker, openBuyPicker, openTradeDropdown, _tradeActionPick, toggleTradeFilter: () => _tradeFilterCdp?.toggle(), onTradeSearch: _renderTradeHistory, refreshPrices: _manualRefresh, togglePnlPeriodMenu: _togglePnlPeriodMenu, setPnlPeriod: _setPnlPeriodFn, fetchAllRates: _fetchAllRatesPublic, openInvDropdown, toggleInvDatePicker: _toggleInvDatePicker, triggerImport: _triggerInvImport, importData: _importInvData, editTrade: _editTrade, deleteTrade: _deleteTrade, setEditTradeType: _setEditTradeType, toggleEditTradeDate: () => _editTradeDateCdp?.toggle() };
 })();

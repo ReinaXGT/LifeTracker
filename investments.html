@@ -161,6 +161,33 @@
 .inv-trade-option.opt-sell { border-color:#FB923C50; background:#FB923C08; }
 .inv-trade-option.opt-sell .opt-title { color:#FB923C; }
 .inv-trade-option.opt-sell:hover { border-color:#FB923C; background:#FB923C20; }
+/* ── Trade row action buttons ───────────────────────────── */
+.trade-act-btn {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:1.75rem; height:1.75rem; border-radius:var(--radius-sm);
+  cursor:pointer; flex-shrink:0;
+  transition:background .15s, border-color .15s, color .15s;
+}
+.trade-act-edit {
+  border:1px solid var(--border); background:var(--bg-elevated); color:var(--text-secondary);
+}
+.trade-act-edit:hover {
+  border-color:var(--accent);
+  background:color-mix(in srgb, var(--accent) 12%, transparent);
+  color:var(--accent);
+}
+.trade-act-del {
+  border:1px solid color-mix(in srgb, var(--red) 50%, transparent);
+  background:color-mix(in srgb, var(--red) 6%, transparent);
+  color:var(--red);
+}
+.trade-act-del:hover {
+  border-color:var(--red);
+  background:color-mix(in srgb, var(--red) 18%, transparent);
+  color:var(--red);
+}
+#tradesBody td { vertical-align:middle; }
+#tradesBody td:last-child { text-align:right; padding-right:1.5rem; }
 .bview-bar {
   display: flex;
   gap: 0;
@@ -219,7 +246,14 @@
         <span class="fw-icon"><svg data-lucide="chevron-right"></svg></span>
       </a>
     </div>
-    <div class="sidebar-footer"><button class="btn btn-icon btn-secondary privacy-toggle-btn" onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n style="width:34px;height:34px;min-width:34px;padding:0;flex-shrink:0"><svg data-lucide="eye"></svg></button><a href="#" class="nav-link" onclick="UI._openHelp();return false;" data-tooltip="sidebar_help" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="help-circle"></svg><span class="nav-label" data-i18n="sidebar_help">Yardım</span></a><a href="#" class="nav-link" onclick="UI.openSettings();return false;" data-tooltip="sidebar_settings" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="settings"></svg><span class="nav-label" data-i18n="sidebar_settings">Ayarlar</span></a></div>
+    <div class="sidebar-footer">
+      <button class="btn btn-icon privacy-toggle-btn sidebar-priv-solo" onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="eye"></svg></button>
+      <a href="#" class="nav-link" onclick="UI._openHelp();return false;" data-tooltip="sidebar_help" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="help-circle"></svg><span class="nav-label" data-i18n="sidebar_help">Yardım</span></a>
+      <div class="settings-privacy-row">
+        <a href="#" class="nav-link" onclick="UI.openSettings();return false;" data-tooltip="sidebar_settings" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="settings"></svg><span class="nav-label" data-i18n="sidebar_settings">Ayarlar</span></a>
+        <button class="btn btn-icon privacy-toggle-btn sidebar-priv-inline" onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n data-tooltip-pos="right" style="width:34px;height:34px;min-width:34px;padding:0;flex-shrink:0"><svg data-lucide="eye"></svg></button>
+      </div>
+    </div>
   </aside>
 
   <div class="main-content">
@@ -239,9 +273,10 @@
           <span id="rateCurrencySymbol" style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--accent);margin-left:2px;line-height:1;align-self:center">₺</span>
           <span id="rateUpdateInfo" style="font-size:11px;color:var(--text-muted);white-space:nowrap;margin-left:7px;padding-left:7px;border-left:1px solid var(--border);line-height:1;align-self:center"></span>
         </div>
-        <button class="btn btn-icon btn-secondary privacy-toggle-btn" id="privacy-toggle-btn"
+        <!-- Privacy toggle — trades view position (before currency toggle) -->
+        <button class="btn btn-icon btn-secondary privacy-toggle-btn" id="privacy-toggle-btn-trades"
                 onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n
-                style="color:var(--text-secondary);width:34px;height:34px">
+                style="display:none;color:var(--text-secondary);width:34px;height:34px">
           <svg data-lucide="eye"></svg>
         </button>
         <!-- Currency toggle -->
@@ -258,7 +293,12 @@
                 style="color:var(--text-secondary);width:34px;height:34px">
           <svg data-lucide="key-round"></svg>
         </button>
-        <button class="btn btn-secondary" onclick="Investments.triggerImport()" style="display:flex;align-items:center;gap:6px;height:34px"><svg data-lucide="upload"></svg><span data-i18n="import_data_btn">Veri Aktar</span></button>
+        <button class="btn btn-icon btn-secondary privacy-toggle-btn" id="privacy-toggle-btn"
+                onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n
+                style="color:var(--text-secondary);width:34px;height:34px">
+          <svg data-lucide="eye"></svg>
+        </button>
+        <button id="inv-tb-import" class="btn btn-secondary" onclick="Investments.triggerImport()" style="display:flex;align-items:center;gap:6px;height:34px"><svg data-lucide="upload"></svg><span data-i18n="import_data_btn">Veri Aktar</span></button>
         <button id="tradeHistBtn" class="btn btn-secondary" onclick="Investments.openTradeHistModal()" style="display:none;align-items:center;gap:6px;height:34px"><svg data-lucide="history"></svg><span data-i18n="inv_history_btn">Geçmiş</span></button>
         <button id="tradeActionBtn" class="acc-action-btn" onclick="Investments.openTradeDropdown(this)">
           <svg data-lucide="layers" style="width:15px;height:15px;flex-shrink:0"></svg>
@@ -322,13 +362,13 @@
             <table class="data-table">
               <thead><tr>
                 <th data-i18n="inv_col_asset">Varlık / Sembol</th>
-                <th data-i18n="inv_col_type">Tür</th>
-                <th style="text-align:right" data-i18n="inv_col_qty">Adet</th>
-                <th style="text-align:right" data-i18n="inv_col_cost">Ort. Maliyet</th>
-                <th style="text-align:right" data-i18n="inv_col_price">Güncel Fiyat</th>
-                <th style="text-align:right" data-i18n="inv_col_value">Toplam Değer</th>
-                <th style="text-align:right;cursor:pointer;user-select:none;white-space:nowrap" id="pnl-col-th" data-i18n="inv_col_pnl" data-tooltip="inv_pnl_toggle_title" data-tooltip-i18n>Toplam K/Z</th>
-                <th style="text-align:right" data-i18n="inv_col_pct">Dağılım %</th>
+                <th style="text-align:center" data-i18n="inv_col_type">Tür</th>
+                <th style="text-align:center" data-i18n="inv_col_qty">Adet</th>
+                <th style="text-align:center" data-i18n="inv_col_cost">Ort. Maliyet</th>
+                <th style="text-align:center" data-i18n="inv_col_price">Güncel Fiyat</th>
+                <th style="text-align:center" data-i18n="inv_col_value">Toplam Değer</th>
+                <th style="text-align:center;cursor:pointer;user-select:none;white-space:nowrap" id="pnl-col-th" data-i18n="inv_col_pnl" data-tooltip="inv_pnl_toggle_title" data-tooltip-i18n>Toplam K/Z</th>
+                <th style="text-align:center" data-i18n="inv_col_pct">Dağılım %</th>
                 <th></th>
               </tr></thead>
               <tbody id="assetBody"></tbody>
@@ -368,11 +408,12 @@
             <table class="data-table">
               <thead><tr>
                 <th data-i18n="lbl_date">Tarih</th>
-                <th data-i18n="inv_col_trade_type">İşlem</th>
+                <th style="text-align:center" data-i18n="inv_col_trade_type">İşlem</th>
                 <th data-i18n="inv_col_asset">Varlık</th>
                 <th style="text-align:center" data-i18n="inv_col_qty">Adet</th>
                 <th style="text-align:center" data-i18n="inv_col_trade_price">Fiyat</th>
                 <th style="text-align:center" data-i18n="inv_pnl">K/Z</th>
+                <th style="text-align:right;padding-right:1.5rem"></th>
               </tr></thead>
               <tbody id="tradesBody"></tbody>
             </table>

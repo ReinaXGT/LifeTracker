@@ -45,7 +45,32 @@
   getTime()        { return this.get('time') || { logs:[] }; },
   setTime(d)       { return this.set('time', d); },
   addTimeLog(log)  { const t=this.getTime(); t.logs.unshift({...log,id:this._id()}); const _r=this.setTime(t); document.dispatchEvent(new CustomEvent('lt:pomo-kpi-change')); return _r; },
-  updateTimeLog(id, updates){ const t=this.getTime(); t.logs=t.logs.map(l=>l.id===id?{...l,...updates}:l); return this.setTime(t); },
+  updateTimeLog(id, updates){
+    const t = this.getTime();
+    const old = t.logs.find(l => l.id === id);
+    t.logs = t.logs.map(l => l.id === id ? {...l, ...updates} : l);
+    const _r = this.setTime(t);
+    // Eşleşen pomo session'ı da güncelle (tarih veya süre değişmişse)
+    if (old && old.source === 'pomodoro' && (updates.date || updates.duration)) {
+      const p = this.getPomo();
+      const dur = s => Math.abs((s.duration || 0) - (old.duration || 0)) <= 1 && s.mode !== 'short' && s.mode !== 'long';
+      let idx = p.sessions.findIndex(s => s.date === old.date && dur(s));
+      if (idx < 0) {
+        // Gece yarısı geçen seans: time log başlanan güne, pomo session bitirilen güne yazılmış olabilir
+        const next = new Date(old.date + 'T00:00:00');
+        next.setDate(next.getDate() + 1);
+        const nd = `${next.getFullYear()}-${String(next.getMonth()+1).padStart(2,'0')}-${String(next.getDate()).padStart(2,'0')}`;
+        idx = p.sessions.findIndex(s => s.date === nd && dur(s));
+      }
+      if (idx >= 0) {
+        if (updates.date)     p.sessions[idx].date     = updates.date;
+        if (updates.duration) p.sessions[idx].duration = updates.duration;
+        this.setPomo(p);
+      }
+    }
+    document.dispatchEvent(new CustomEvent('lt:pomo-kpi-change'));
+    return _r;
+  },
   deleteTimeLog(id){ const t=this.getTime(); t.logs=t.logs.filter(l=>l.id!==id); const _r=this.setTime(t); document.dispatchEvent(new CustomEvent('lt:pomo-kpi-change')); return _r; },
 
   // ── Task Progress (Single Source of Truth) ──────────────

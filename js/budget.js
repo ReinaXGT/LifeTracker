@@ -77,7 +77,12 @@
       this._dailyFilterFrom = _savedDf.from || '';
       this._dailyFilterTo   = _savedDf.to   || '';
     }
-    this.render();
+    const _savedBudgetUi = Store.get('budget_ui');
+    if (_savedBudgetUi?.activeView && _savedBudgetUi.activeView !== 'overview') {
+      this.setView(_savedBudgetUi.activeView);
+    } else {
+      this.render();
+    }
     document.addEventListener('lt:privacy-change',  () => this.render());
     document.addEventListener('lt:panel-change',    () => { this._registerPanels(); this.renderOverview(); });
     document.addEventListener('lt:language-change', () => {
@@ -110,6 +115,7 @@
   setView(v) {
     if (this._editMode && v !== 'overview') this._editMode = false;
     this.activeView = v;
+    Store.set('budget_ui', { activeView: v });
     document.querySelectorAll('.bvtab').forEach(t => t.classList.remove('active'));
     document.getElementById('tab-' + v).classList.add('active');
     ['overview', 'categories', 'transactions'].forEach(name => {
@@ -1727,7 +1733,7 @@
         responsive:          true,
         maintainAspectRatio: false,
         animation:           false,
-        interaction:         { mode: 'index', intersect: false },
+        interaction:         { mode: 'nearest', intersect: false },
         scales: {
           x: { grid:{ display:false }, border:{ display:false }, ticks:{ color:textSec, font:{ size:11 }, maxRotation:0, autoSkip:true, autoSkipPadding:12 } },
           y: { stacked: true, grid:{ color:border }, border:{ display:false }, ticks:{ color:textSec, font:{ size:11 }, callback: fmt }, beginAtZero:true }
@@ -1738,6 +1744,8 @@
             mode:      'index',
             intersect: false,
             position:  'nearest',
+            bodyColor:  '#e8e8e8',
+            footerColor: '#ffffff',
             callbacks: {
               label: c => {
                 const raw = c.raw ?? 0;

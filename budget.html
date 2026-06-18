@@ -114,7 +114,14 @@
         <span class="fw-icon"><svg data-lucide="chevron-right"></svg></span>
       </a>
     </div>
-    <div class="sidebar-footer"><button class="btn btn-icon btn-secondary privacy-toggle-btn" onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n style="width:34px;height:34px;min-width:34px;padding:0;flex-shrink:0"><svg data-lucide="eye"></svg></button><a href="#" class="nav-link" onclick="UI._openHelp();return false;" data-tooltip="sidebar_help" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="help-circle"></svg><span class="nav-label" data-i18n="sidebar_help">Yardım</span></a><a href="#" class="nav-link" onclick="UI.openSettings();return false;" data-tooltip="sidebar_settings" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="settings"></svg><span class="nav-label" data-i18n="sidebar_settings">Ayarlar</span></a></div>
+    <div class="sidebar-footer">
+      <button class="btn btn-icon privacy-toggle-btn sidebar-priv-solo" onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="eye"></svg></button>
+      <a href="#" class="nav-link" onclick="UI._openHelp();return false;" data-tooltip="sidebar_help" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="help-circle"></svg><span class="nav-label" data-i18n="sidebar_help">Yardım</span></a>
+      <div class="settings-privacy-row">
+        <a href="#" class="nav-link" onclick="UI.openSettings();return false;" data-tooltip="sidebar_settings" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="settings"></svg><span class="nav-label" data-i18n="sidebar_settings">Ayarlar</span></a>
+        <button class="btn btn-icon privacy-toggle-btn sidebar-priv-inline" onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n data-tooltip-pos="right" style="width:34px;height:34px;min-width:34px;padding:0;flex-shrink:0"><svg data-lucide="eye"></svg></button>
+      </div>
+    </div>
   </aside>
 
   <div class="main-content">

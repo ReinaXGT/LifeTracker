@@ -2,6 +2,7 @@
   --bg-base:        #080808;
   --bg-surface:     #111111;
   --bg-elevated:    #1C1C1C;
+  --bg-toast:       #222222;
   --border:         #2E2E2E;
 
   --text-primary:   #F2F2F2;
@@ -49,6 +50,7 @@
   --bg-base:        #0F1122;
   --bg-surface:     #15192E;
   --bg-elevated:    #1C2540;
+  --bg-toast:       #1E1E24;
   --border:         #1E2D50;
   --text-primary:   #E8EEFF;
   --text-secondary: #9AAAD8;
@@ -73,6 +75,7 @@
   --bg-base:        #0D1718;
   --bg-surface:     #122224;
   --bg-elevated:    #1A2E30;
+  --bg-toast:       #1C1E1E;
   --border:         #1A3538;
   --text-primary:   #E0F8F8;
   --text-secondary: #9CCECE;
@@ -97,6 +100,7 @@
   --bg-base:        #0E1610;
   --bg-surface:     #142218;
   --bg-elevated:    #1B2E20;
+  --bg-toast:       #1A1C1A;
   --border:         #1C3522;
   --text-primary:   #E0F5E0;
   --text-secondary: #9DCEA6;
@@ -121,6 +125,7 @@
   --bg-base:        #18120D;
   --bg-surface:     #241810;
   --bg-elevated:    #302014;
+  --bg-toast:       #201C18;
   --border:         #3A2215;
   --text-primary:   #FFF0E0;
   --text-secondary: #D8C096;
@@ -145,6 +150,7 @@
   --bg-base:        #181018;
   --bg-surface:     #221724;
   --bg-elevated:    #2E2030;
+  --bg-toast:       #1E1C1E;
   --border:         #3A1E40;
   --text-primary:   #FFE8FF;
   --text-secondary: #D8A4D8;
@@ -169,6 +175,7 @@
   --bg-base:        #141108;
   --bg-surface:     #1E1608;
   --bg-elevated:    #291E08;
+  --bg-toast:       #1C1A14;
   --border:         #332200;
   --text-primary:   #FFFDE0;
   --text-secondary: #D8C28A;
@@ -193,6 +200,7 @@
   --bg-base:        #170B0B;
   --bg-surface:     #240E0E;
   --bg-elevated:    #301414;
+  --bg-toast:       #1E1616;
   --border:         #3D1212;
   --text-primary:   #FFE8E8;
   --text-secondary: #D89898;
@@ -217,6 +225,7 @@
   --bg-base:        #100D18;
   --bg-surface:     #181224;
   --bg-elevated:    #221A30;
+  --bg-toast:       #1A1A1E;
   --border:         #281C40;
   --text-primary:   #F0E8FF;
   --text-secondary: #BC9EE6;
@@ -241,6 +250,7 @@
   --bg-base:        #0A1418;
   --bg-surface:     #0D1C28;
   --bg-elevated:    #122636;
+  --bg-toast:       #141C1E;
   --border:         #0F2E40;
   --text-primary:   #E0F8FF;
   --text-secondary: #96D6E8;
@@ -265,6 +275,7 @@
   --bg-base:        #0C120C;
   --bg-surface:     #101A10;
   --bg-elevated:    #142414;
+  --bg-toast:       #161816;
   --border:         #142814;
   --text-primary:   #EEFFEE;
   --text-secondary: #AADAA4;
@@ -289,6 +300,7 @@
   --bg-base:        #F1F5F9;
   --bg-surface:     #FFFFFF;
   --bg-elevated:    #E8EDF5;
+  --bg-toast:       #FFFFFF;
   --border:         #CBD5E1;
 
   --text-primary:   #0F172A;

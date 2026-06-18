@@ -33,6 +33,7 @@
 }
 .cm-overlay.cm-closing {
   animation: cm-fade-out 110ms ease forwards;
+  pointer-events: none;
 }
 .cm-overlay.cm-closing .cm-panel {
   animation: cm-slide-out 110ms cubic-bezier(.22, 1, .36, 1) forwards;

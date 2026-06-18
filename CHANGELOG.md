@@ -5,6 +5,63 @@ Format: **New** · **Fixed** · **Changed** · **Removed**
 
 ---
 
+## [v1.9] — 2026-06-18
+
+### New
+- **Trade Edit & Delete** — Trade history rows now have per-row edit and delete action buttons, available in both the Trades tab and the full history modal. Edit modal supports date, type (buy/sell toggle), quantity, and price; changes save immediately without recalculating portfolio cost basis.
+- **Dual Investment Pie Charts** — Dashboard investment panel now shows two doughnuts side by side: "By Symbol" (top 7 holdings with "+N more" overflow label) and "By Type" (asset class breakdown). Both display 1-decimal allocation percentages.
+- **Privacy Button Sidebar Redesign** — Privacy toggle moved from standalone position to inline next to the Settings button when sidebar is expanded; collapses to a solo icon above Help when sidebar is collapsed. Auto-hides when both Budget and Investments modules are hidden. Applied across all 9 pages.
+- **Timer Type Persistence** — Pomodoro mode selection (Pomodoro / Flow / Countdown) now survives page reloads by saving to `lt_pomo_cfg.timerType`, independent of the 8-hour `lt_pomo_state` TTL.
+- **Midnight-Crossing Session Split** — Flow laps and auto-logged sessions that cross midnight are now split into two separate time log entries — one per calendar day — ensuring accurate daily totals.
+- **Filter & Tab Persistence** — Time Log active filter (today/week/month/all) and Budget active tab (overview/categories/transactions) are saved to localStorage and restored on page reload.
+
+### Fixed
+- **Daily P&L Calculation** — Daily period return now uses close-to-close comparison (last two history data points) instead of comparing current price to buy price, fixing wildly incorrect figures for long-held assets.
+- **KPI Source Unified** — Focus Widget KPI (flow minutes, yesterday comparison, streak) now reads from time logs with `source='pomodoro'` instead of pomo session records, so date edits in Time Log instantly reflect in KPI without requiring a full recalculation.
+- **Module Toggle on Dashboard** — Hiding a module while already on Dashboard no longer incorrectly redirected to `index.html`; settings panel now auto-reopens on the Modules tab after module-triggered redirects from other pages.
+- **Timer Face HH:MM:SS** — Timer display and browser tab title now show `HH:MM:SS` format whenever elapsed/remaining time exceeds 60 minutes, for all timer modes (was previously countdown-only).
+- **Toast Theme Backgrounds** — Toast notifications now use explicit per-theme background colors instead of `var(--bg-elevated)`, which was semi-transparent in several themes. Info toast icon and border color switched from blue to accent.
+- **Focus Widget Module Awareness** — Sidebar and topbar Pomodoro widgets now hide immediately when the Pomodoro module is toggled off in Settings, and reappear when re-enabled, without a page reload.
+- **Seed Badge Layout** — Demo data warning badge no longer overflows or gets clipped in narrow topbar configurations; changed from `position:absolute` to flex-flow with `margin-auto` centering.
+- **Modal Close Clickthrough** — `.cm-closing` overlay now has `pointer-events:none` during the 110ms close animation, preventing accidental clicks on buttons underneath.
+- **Store.updateTimeLog Pomo Sync** — When a Pomodoro-sourced time log is edited (date or duration), the matching pomo session record is also updated, including a midnight edge case where the session date differs from the log date.
+
+### Changed
+- **Investment Table Alignment** — All numeric and type columns in both the portfolio and trades tables are now center-aligned for visual consistency (was right-aligned and inconsistent).
+- **Allocation Percentage Precision** — Asset allocation now displays one decimal place (`%12.3` instead of `%12`) in the portfolio table, legend, and dashboard pie charts.
+- **Budget Chart Tooltip** — Stacked bar chart interaction mode changed from `index` to `nearest`; tooltip `bodyColor` and `footerColor` now explicitly set to ensure readable contrast across all themes.
+
+---
+
+## [v1.8] — 2026-06-17
+
+### New
+- **Module Visibility** — New "Modules" tab in Settings lets users hide any of the 8 side modules (Pomodoro, Time, Habits, Gym, Plans, Goals, Budget, Investments); data is preserved, only removed from the sidebar and dashboard. Hidden modules' dashboard panels and KPI cards hide automatically.
+- **Investment Tabs** — Investments page now has two tabs: "Portfolio" (existing asset table) and "Trade History" (filterable transaction log). Tab state persists with the topbar switching between views.
+- **Trade History Modal** — Full chronological trade log accessible from a "History" button; supports month-by-month navigation and search by symbol or name; shows realized P&L per sell row.
+
+### Fixed
+- **Trade Quantity Backfill** — One-time migration (`_fixBackfilledQty`) corrects quantity values in backfilled buy records that were written with incorrect amounts in earlier versions.
+- **Tooltip Z-index in `<th>`** — Tooltip-core now handles tables correctly; `<th>` tooltips no longer get clipped by `overflow:hidden` on parent elements.
+
+### Changed
+- **Dashboard panel hiding** — Dashboard panels now hide automatically when their corresponding module is disabled, keeping the overview clean without manual panel toggling.
+
+---
+
+## [v1.7] — 2026-06-17
+
+### New
+- **Version badge** — A small version label (e.g., `v1.7`) appears below the "LifeTracker" logo text in the sidebar; collapses and fades when the sidebar is collapsed.
+- **Help modal expansion** — Every module now has a full description and feature list in the Help modal, available in all five languages (TR / EN / ZH / ES / FR).
+
+### Fixed
+- **Sidebar FOUC** — An `html.sb-collapsed` class is applied via inline script before any CSS paints when the sidebar was previously collapsed, preventing the momentary full-width flash on page load. All collapsed-sidebar styles are duplicated under `html.sb-collapsed` selectors so they apply before JS runs.
+
+> **LTS designation** — v1.7 was designated LTS because it delivered the first stable FOUC-free sidebar experience across all 9 pages, forming a solid baseline for subsequent feature additions.
+
+---
+
 ## [v1.6] — 2026-06-16
 
 ### New

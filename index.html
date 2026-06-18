@@ -83,9 +83,12 @@
       </a>
     </div>
     <div class="sidebar-footer">
-      <button class="btn btn-icon btn-secondary privacy-toggle-btn" onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n style="width:34px;height:34px;min-width:34px;padding:0;flex-shrink:0"><svg data-lucide="eye"></svg></button>
+      <button class="btn btn-icon privacy-toggle-btn sidebar-priv-solo" onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="eye"></svg></button>
       <a href="#" class="nav-link" onclick="UI._openHelp();return false;" data-tooltip="sidebar_help" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="help-circle"></svg><span class="nav-label" data-i18n="sidebar_help">Yardım</span></a>
-      <a href="#" class="nav-link" onclick="UI.openSettings();return false;" data-tooltip="sidebar_settings" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="settings"></svg><span class="nav-label" data-i18n="sidebar_settings">Ayarlar</span></a>
+      <div class="settings-privacy-row">
+        <a href="#" class="nav-link" onclick="UI.openSettings();return false;" data-tooltip="sidebar_settings" data-tooltip-i18n data-tooltip-pos="right"><svg data-lucide="settings"></svg><span class="nav-label" data-i18n="sidebar_settings">Ayarlar</span></a>
+        <button class="btn btn-icon privacy-toggle-btn sidebar-priv-inline" onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n data-tooltip-pos="right" style="width:34px;height:34px;min-width:34px;padding:0;flex-shrink:0"><svg data-lucide="eye"></svg></button>
+      </div>
     </div>
   </aside>
 
@@ -169,9 +172,25 @@
               <a href="investments.html" class="btn btn-ghost btn-sm" data-i18n="btn_details">Detaylar →</a>
             </div>
             <div class="panel-body">
-              <div style="display:flex;align-items:center;gap:1.75rem">
-                <div class="chart-doughnut"><canvas id="investmentPieChart"></canvas></div>
-                <div class="chart-legend" id="investment-legend" style="flex-direction:column;gap:0.625rem"></div>
+              <div style="display:flex;gap:1.5rem;align-items:flex-start">
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:0.6875rem;font-weight:600;letter-spacing:.05em;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.625rem" data-i18n="inv_by_symbol">Semboller</div>
+                  <div style="display:flex;align-items:center;gap:1rem">
+                    <div class="chart-doughnut" style="flex-shrink:0">
+                      <canvas id="investmentPieChart"></canvas>
+                      <div id="inv-dash-center" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;gap:0.125rem"></div>
+                    </div>
+                    <div class="chart-legend" id="investment-legend-symbol" style="flex-direction:column;gap:0.5rem;flex:1;min-width:0"></div>
+                  </div>
+                </div>
+                <div style="width:1px;background:var(--border);align-self:stretch;flex-shrink:0"></div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:0.6875rem;font-weight:600;letter-spacing:.05em;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.625rem" data-i18n="inv_by_type">Varlık Türü</div>
+                  <div style="display:flex;align-items:center;gap:1rem">
+                    <div class="chart-doughnut" style="flex-shrink:0"><canvas id="investmentTypeChart"></canvas></div>
+                    <div class="chart-legend" id="investment-legend-type" style="flex-direction:column;gap:0.5rem;flex:1;min-width:0"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

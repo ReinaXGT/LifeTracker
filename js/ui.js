@@ -1,5 +1,5 @@
 const UI = {
-  VERSION: 'v1.8',
+  VERSION: 'v1.9',
 
   MONTHS_SHORT: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
   MONTHS_LONG: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'],
@@ -95,6 +95,7 @@ const UI = {
       privacy_hide: 'Değerleri gizle',
       sidebar_settings: 'Ayarlar',
       sidebar_help: 'Yardım',
+      sidebar_privacy: 'Gizlilik',
       sidebar_toggle: 'Menüyü Daralt / Genişlet',
       priority_high: 'Yüksek',
       priority_medium: 'Orta',
@@ -132,6 +133,7 @@ const UI = {
       dash_tomorrow: 'Yarın',
       dash_no_assets: 'Portföyde varlık yok',
       dash_no_sessions: 'Henüz oturum yok',
+      dash_n_more: '+{0} daha',
       dash_today_sessions: 'Bugün Pomodoro',
       dash_week_total: 'Bu Hafta',
       dash_focused: 'odaklandı',
@@ -333,6 +335,7 @@ const UI = {
       inv_sell: 'Sat',
       inv_sell_title: 'Varlık Sat',
       inv_sell_qty: 'Satış Miktarı',
+      inv_buy_qty: 'Alım Miktarı',
       inv_sell_price: 'Satış Fiyatı',
       inv_sell_date: 'Satış Tarihi',
       inv_sell_preview: 'Tahmini K/Z',
@@ -356,6 +359,11 @@ const UI = {
       inv_trade_type_buy: 'Alım',
       inv_trade_type_sell: 'Satım',
       inv_no_trades: 'Henüz işlem yok',
+      inv_edit_trade: 'İşlemi Düzenle',
+      inv_delete_trade: 'İşlemi Sil',
+      inv_trade_deleted: 'İşlem silindi',
+      inv_trade_updated: 'İşlem güncellendi',
+      inv_col_actions: 'İşlemler',
       inv_trade_action: 'Varlık Al/Sat',
       inv_trade_filter_all: 'Tarih',
       inv_tab_portfolio: 'Portföy',
@@ -805,6 +813,8 @@ const UI = {
       time_daily_total_sub: 'Günlük toplam süre',
       inv_no_assets_legend: 'Portföyde varlık yok',
       inv_no_assets_table: 'Portföyünüzde henüz varlık yok — "Varlık Ekle" ile başlayın',
+      inv_by_symbol: 'Semboller',
+      inv_by_type: 'Varlık Türü',
       inv_updating: 'Fiyatlar güncelleniyor…',
       inv_refresh_in: '{0} dakika sonra güncellenebilir',
       inv_refresh_title: 'Fiyatları güncelle (API)',
@@ -1044,6 +1054,7 @@ const UI = {
       privacy_hide: 'Hide values',
       sidebar_settings: 'Settings',
       sidebar_help: 'Help',
+      sidebar_privacy: 'Privacy',
       sidebar_toggle: 'Collapse / Expand Menu',
       priority_high: 'High',
       priority_medium: 'Medium',
@@ -1081,6 +1092,7 @@ const UI = {
       dash_tomorrow: 'Tomorrow',
       dash_no_assets: 'No assets in portfolio',
       dash_no_sessions: 'No sessions yet',
+      dash_n_more: '+{0} more',
       dash_today_sessions: "Today's Pomodoros",
       dash_week_total: 'This Week',
       dash_focused: 'focused',
@@ -1286,6 +1298,7 @@ const UI = {
       inv_sell: 'Sell',
       inv_sell_title: 'Sell Asset',
       inv_sell_qty: 'Quantity to Sell',
+      inv_buy_qty: 'Quantity to Buy',
       inv_sell_price: 'Sell Price',
       inv_sell_date: 'Sell Date',
       inv_sell_preview: 'Est. P/L',
@@ -1309,6 +1322,11 @@ const UI = {
       inv_trade_type_buy: 'Buy',
       inv_trade_type_sell: 'Sell',
       inv_no_trades: 'No trades yet',
+      inv_edit_trade: 'Edit Trade',
+      inv_delete_trade: 'Delete Trade',
+      inv_trade_deleted: 'Trade deleted',
+      inv_trade_updated: 'Trade updated',
+      inv_col_actions: 'Actions',
       inv_trade_action: 'Trade Assets',
       inv_trade_filter_all: 'Date',
       inv_tab_portfolio: 'Portfolio',
@@ -1751,6 +1769,8 @@ const UI = {
       time_daily_total_sub: 'Daily total time',
       inv_no_assets_legend: 'No assets in portfolio',
       inv_no_assets_table: 'No assets yet — click "Add Asset" to get started',
+      inv_by_symbol: 'By Symbol',
+      inv_by_type: 'By Type',
       inv_updating: 'Updating prices…',
       inv_refresh_in: 'Available in {0} min',
       inv_refresh_title: 'Update Prices (API)',
@@ -1990,6 +2010,7 @@ const UI = {
       privacy_hide: '隐藏数值',
       sidebar_settings: '设置',
       sidebar_help: '帮助',
+      sidebar_privacy: '隐私',
       sidebar_toggle: '收起 / 展开菜单',
       priority_high: '高',
       priority_medium: '中',
@@ -2027,6 +2048,7 @@ const UI = {
       dash_tomorrow: '明天',
       dash_no_assets: '投资组合中没有资产',
       dash_no_sessions: '暂无会话',
+      dash_n_more: '+{0} 更多',
       dash_today_sessions: '今日番茄钟',
       dash_week_total: '本周',
       dash_focused: '已专注',
@@ -2232,6 +2254,7 @@ const UI = {
       inv_sell: '卖出',
       inv_sell_title: '卖出资产',
       inv_sell_qty: '卖出数量',
+      inv_buy_qty: '买入数量',
       inv_sell_price: '卖出价格',
       inv_sell_date: '卖出日期',
       inv_sell_preview: '预计盈亏',
@@ -2255,6 +2278,11 @@ const UI = {
       inv_trade_type_buy: '买入',
       inv_trade_type_sell: '卖出',
       inv_no_trades: '暂无交易记录',
+      inv_edit_trade: '编辑交易',
+      inv_delete_trade: '删除交易',
+      inv_trade_deleted: '交易已删除',
+      inv_trade_updated: '交易已更新',
+      inv_col_actions: '操作',
       inv_trade_action: '买卖资产',
       inv_trade_filter_all: '日期',
       inv_tab_portfolio: '投资组合',
@@ -2697,6 +2725,8 @@ const UI = {
       time_daily_total_sub: '每日总时长',
       inv_no_assets_legend: '投资组合中没有资产',
       inv_no_assets_table: '暂无资产 — 点击"添加资产"开始',
+      inv_by_symbol: '按代码',
+      inv_by_type: '按类型',
       inv_updating: '价格更新中…',
       inv_refresh_in: '{0} 分钟后可更新',
       inv_refresh_title: '更新价格（API）',
@@ -2936,6 +2966,7 @@ const UI = {
       privacy_hide: 'Ocultar valores',
       sidebar_settings: 'Configuración',
       sidebar_help: 'Ayuda',
+      sidebar_privacy: 'Privacidad',
       sidebar_toggle: 'Contraer / Expandir menú',
       priority_high: 'Alta',
       priority_medium: 'Media',
@@ -2973,6 +3004,7 @@ const UI = {
       dash_tomorrow: 'Mañana',
       dash_no_assets: 'Sin activos en el portafolio',
       dash_no_sessions: 'Sin sesiones aún',
+      dash_n_more: '+{0} más',
       dash_today_sessions: 'Pomodoros de hoy',
       dash_week_total: 'Esta semana',
       dash_focused: 'enfocado',
@@ -3178,6 +3210,7 @@ const UI = {
       inv_sell: 'Vender',
       inv_sell_title: 'Vender activo',
       inv_sell_qty: 'Cantidad a vender',
+      inv_buy_qty: 'Cantidad a comprar',
       inv_sell_price: 'Precio de venta',
       inv_sell_date: 'Fecha de venta',
       inv_sell_preview: 'P/G estimado',
@@ -3201,6 +3234,11 @@ const UI = {
       inv_trade_type_buy: 'Compra',
       inv_trade_type_sell: 'Venta',
       inv_no_trades: 'Sin operaciones aún',
+      inv_edit_trade: 'Editar operación',
+      inv_delete_trade: 'Eliminar operación',
+      inv_trade_deleted: 'Operación eliminada',
+      inv_trade_updated: 'Operación actualizada',
+      inv_col_actions: 'Acciones',
       inv_trade_action: 'Operar Activos',
       inv_trade_filter_all: 'Fecha',
       inv_tab_portfolio: 'Portafolio',
@@ -3643,6 +3681,8 @@ const UI = {
       time_daily_total_sub: 'Tiempo total diario',
       inv_no_assets_legend: 'Sin activos en el portafolio',
       inv_no_assets_table: 'Aún no hay activos — haz clic en "Añadir activo" para empezar',
+      inv_by_symbol: 'Por símbolo',
+      inv_by_type: 'Por tipo',
       inv_updating: 'Actualizando precios…',
       inv_refresh_in: 'Disponible en {0} min',
       inv_refresh_title: 'Actualizar precios (API)',
@@ -3882,6 +3922,7 @@ const UI = {
       privacy_hide: 'Masquer les valeurs',
       sidebar_settings: 'Paramètres',
       sidebar_help: 'Aide',
+      sidebar_privacy: 'Confidentialité',
       sidebar_toggle: 'Réduire / Développer le menu',
       priority_high: 'Haute',
       priority_medium: 'Moyenne',
@@ -3919,6 +3960,7 @@ const UI = {
       dash_tomorrow: 'Demain',
       dash_no_assets: 'Aucun actif dans le portefeuille',
       dash_no_sessions: "Aucune session pour l'instant",
+      dash_n_more: '+{0} de plus',
       dash_today_sessions: "Pomodoros aujourd'hui",
       dash_week_total: 'Cette semaine',
       dash_focused: 'concentré',
@@ -4124,6 +4166,7 @@ const UI = {
       inv_sell: 'Vendre',
       inv_sell_title: 'Vendre un actif',
       inv_sell_qty: 'Quantité à vendre',
+      inv_buy_qty: 'Quantité à acheter',
       inv_sell_price: 'Prix de vente',
       inv_sell_date: 'Date de vente',
       inv_sell_preview: 'P/G estimé',
@@ -4147,6 +4190,11 @@ const UI = {
       inv_trade_type_buy: 'Achat',
       inv_trade_type_sell: 'Vente',
       inv_no_trades: 'Aucune opération pour l\'instant',
+      inv_edit_trade: 'Modifier l\'opération',
+      inv_delete_trade: 'Supprimer l\'opération',
+      inv_trade_deleted: 'Opération supprimée',
+      inv_trade_updated: 'Opération mise à jour',
+      inv_col_actions: 'Actions',
       inv_trade_action: 'Opérations',
       inv_trade_filter_all: 'Date',
       inv_tab_portfolio: 'Portefeuille',
@@ -4589,6 +4637,8 @@ const UI = {
       time_daily_total_sub: 'Temps total quotidien',
       inv_no_assets_legend: 'Aucun actif dans le portefeuille',
       inv_no_assets_table: "Aucun actif pour l'instant — cliquez sur \"Ajouter un actif\" pour commencer",
+      inv_by_symbol: 'Par symbole',
+      inv_by_type: 'Par type',
       inv_updating: 'Mise à jour des prix…',
       inv_refresh_in: 'Disponible dans {0} min',
       inv_refresh_title: 'Mettre à jour les prix (API)',
@@ -5199,6 +5249,10 @@ const UI = {
       const link = document.querySelector(`.sidebar-nav a[href="${page}"]`);
       if (link) link.style.display = hidden[key] ? 'none' : '';
     });
+    const hidePrivacy = !!(hidden['budget'] && hidden['investments']);
+    document.querySelectorAll('.privacy-toggle-btn').forEach(btn => {
+      btn.style.display = hidePrivacy ? 'none' : '';
+    });
   },
 
   _toggleModule(key) {
@@ -5215,16 +5269,20 @@ const UI = {
     };
     const page = MAP[key];
     const onPage = page && window.location.href.includes('/' + page);
+    const onDashboard = !Object.values(MAP).some(p => window.location.href.includes('/' + p));
     this._setModuleHidden(key, willHide);
     this.applyHiddenModules();
     this._renderSettingsModal();
     document.dispatchEvent(new CustomEvent('lt:modules-change'));
-    if (willHide && onPage) window.location.href = 'index.html';
+    if (willHide && !onDashboard) {
+      sessionStorage.setItem('lt_settings_reopen', 'panels');
+      window.location.href = 'index.html';
+    }
   },
 
   openSettings(tab) {
     if (tab) this._settingsActiveTab = tab;
-    else if (!this._settingsActiveTab) this._settingsActiveTab = 'ui';
+    else this._settingsActiveTab = 'ui';
     if (this._settingsModal && this._settingsModal._overlay && this._settingsModal._overlay.isConnected) {
       this._renderSettingsModal();
       return;
@@ -5388,24 +5446,36 @@ const UI = {
     </div>`;
     const panelsTabHTML = (() => {
       const modules = [
-        { key: 'focusmode',   icon: 'timer',        labelKey: 'nav_pomodoro'    },
-        { key: 'timelog',     icon: 'clock',         labelKey: 'nav_time'        },
-        { key: 'habits',      icon: 'check-square',  labelKey: 'nav_habits'      },
-        { key: 'gym',         icon: 'dumbbell',      labelKey: 'nav_gym'         },
-        { key: 'plans',       icon: 'kanban',        labelKey: 'nav_plans'       },
-        { key: 'goals',       icon: 'star',          labelKey: 'nav_goals'       },
-        { key: 'budget',      icon: 'wallet',        labelKey: 'nav_budget'      },
-        { key: 'investments', icon: 'trending-up',   labelKey: 'nav_investments' },
+        { key: 'focusmode', icon: 'timer', labelKey: 'nav_pomodoro' },
+        { key: 'timelog', icon: 'clock', labelKey: 'nav_time' },
+        { key: 'habits', icon: 'check-square', labelKey: 'nav_habits' },
+        { key: 'gym', icon: 'dumbbell', labelKey: 'nav_gym' },
+        { key: 'plans', icon: 'kanban', labelKey: 'nav_plans' },
+        { key: 'goals', icon: 'star', labelKey: 'nav_goals' },
+        { key: 'budget', icon: 'wallet', labelKey: 'nav_budget' },
+        { key: 'investments', icon: 'trending-up', labelKey: 'nav_investments' },
       ];
       const rows = modules.map(m => {
         const hidden = this.isModuleHidden(m.key);
+        const on = !hidden;
         return `<div style="display:flex;align-items:center;gap:0.75rem;padding:0.5625rem 0;border-bottom:1px solid var(--border)">
-          <svg data-lucide="${m.icon}" style="width:1rem;height:1rem;color:${hidden ? 'var(--text-muted)' : 'var(--accent)'};flex-shrink:0"></svg>
-          <span style="flex:1;font-size:0.8125rem;color:${hidden ? 'var(--text-muted)' : 'var(--text-primary)'}">${this.t(m.labelKey)}</span>
+          <svg data-lucide="${m.icon}" style="width:1rem;height:1rem;color:${on ? 'var(--accent)' : 'var(--text-muted)'};flex-shrink:0;transition:color 0.2s"></svg>
+          <span style="flex:1;font-size:0.8125rem;color:${on ? 'var(--text-primary)' : 'var(--text-muted)'};transition:color 0.2s">${this.t(m.labelKey)}</span>
           <button onclick="UI._toggleModule('${m.key}')"
-            style="display:flex;align-items:center;gap:0.3125rem;padding:0.25rem 0.625rem;border-radius:var(--radius-sm);border:1px solid ${hidden ? 'var(--border)' : 'var(--accent)'};background:${hidden ? 'var(--bg-elevated)' : 'rgba(124,108,252,0.12)'};cursor:pointer;font-size:0.75rem;font-weight:600;color:${hidden ? 'var(--text-muted)' : 'var(--accent)'};transition:all var(--transition)">
-            <svg data-lucide="${hidden ? 'eye-off' : 'eye'}" style="width:0.75rem;height:0.75rem;flex-shrink:0"></svg>
-            ${hidden ? this.t('btn_show') : this.t('btn_hide')}
+            role="switch" aria-checked="${on}"
+            style="position:relative;width:3.25rem;height:1.5rem;border-radius:0.75rem;border:none;padding:0;cursor:pointer;flex-shrink:0;
+                   background:${on ? 'var(--green)' : 'var(--red)'};transition:background 0.2s">
+            <span style="position:absolute;top:50%;transform:translateY(-50%);
+                         ${on ? 'left:0.25rem' : 'right:0.25rem'};
+                         font-size:0.5625rem;font-weight:700;letter-spacing:.04em;
+                         color:${on ? 'rgba(0,60,30,0.85)' : 'rgba(100,0,0,0.8)'};user-select:none;line-height:1">
+              ${on ? 'ON' : 'OFF'}
+            </span>
+            <span style="position:absolute;top:50%;transform:translateY(-50%);
+                         left:${on ? '1.9375rem' : '0.125rem'};
+                         width:1.125rem;height:1.125rem;border-radius:50%;
+                         background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.35);
+                         transition:left 0.2s"></span>
           </button>
         </div>`;
       }).join('');
@@ -5974,8 +6044,13 @@ const UI = {
   _syncPrivacyBtns() {
     const hidden = this.isPrivate();
     document.querySelectorAll('.privacy-toggle-btn').forEach(btn => {
-      btn.innerHTML = hidden ? '<svg data-lucide="eye-off"></svg>' : '<svg data-lucide="eye"></svg>';
       btn.dataset.tooltip = hidden ? this.t('privacy_show') : this.t('privacy_hide');
+      const svgEl = btn.querySelector('svg');
+      if (svgEl) {
+        svgEl.setAttribute('data-lucide', hidden ? 'eye-off' : 'eye');
+      } else {
+        btn.innerHTML = `<svg data-lucide="${hidden ? 'eye-off' : 'eye'}"></svg>`;
+      }
       lucide.createIcons({ nodes: [btn] });
     });
   },
@@ -6108,7 +6183,7 @@ const UI = {
   _hasSeedData() {
     if (!Store.get('seed_active')) return false;
     // Auto-clear seed_active if user has deleted all seeded modules' data.
-    const keys = ['gym_seeded','time_seeded','habits_seeded','plans_seeded','inv_seeded','goals_seeded','budget_seeded','pomo_seeded'];
+    const keys = ['gym_seeded', 'time_seeded', 'habits_seeded', 'plans_seeded', 'inv_seeded', 'goals_seeded', 'budget_seeded', 'pomo_seeded'];
     if (!keys.some(k => !!Store.get(k))) {
       Store.set('seed_active', null);
       return false;
@@ -6135,8 +6210,11 @@ const UI = {
 
     badge.addEventListener('click', () => UI.openSettings());
 
-    // Absolutely centered in topbar — unaffected by topbar-right content changes.
-    header.appendChild(badge);
+    // Insert as flex child before topbar-right so it stays centered
+    // between the title and the right-side buttons without overlapping the focus widget.
+    const right = header.querySelector('.topbar-right');
+    if (right) header.insertBefore(badge, right);
+    else header.appendChild(badge);
 
     lucide.createIcons({ nodes: [badge] });
   },
@@ -6147,6 +6225,11 @@ const UI = {
     const el = document.getElementById('topbar-date');
     if (el) el.textContent = this.longDate();
     this.initSidebar();
+    const _reopenTab = sessionStorage.getItem('lt_settings_reopen');
+    if (_reopenTab) {
+      sessionStorage.removeItem('lt_settings_reopen');
+      setTimeout(() => this.openSettings(_reopenTab), 350);
+    }
     this._initMobileMenu();
     const savedTheme = Store.getSettings().theme || 'dark';
     if (savedTheme !== 'dark') document.documentElement.setAttribute('data-theme', savedTheme);
@@ -6202,6 +6285,9 @@ const UI = {
     const icons = { success: 'check-circle', error: 'x-circle', info: 'info', warning: 'alert-triangle' };
     const t = document.createElement('div');
     t.className = `toast toast-${type}`;
+    // Sadece background'u nötr tut — tema renkli bg-elevated'ın lacivert/renkli tonunu engelle
+    const _th = document.documentElement.getAttribute('data-theme') || 'dark';
+    t.style.background = _th === 'white' ? '#FFFFFF' : '#242428';
     t.innerHTML = `<svg class="toast-icon" data-lucide="${icons[type]}"></svg><span class="toast-text">${msg}</span>`;
     c.appendChild(t);
     lucide.createIcons({ nodes: [t] });

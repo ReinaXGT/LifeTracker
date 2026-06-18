@@ -72,8 +72,12 @@ const FocusWidget = (() => {
         ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
         : `${m}:${String(s).padStart(2,'0')}`;
     }
-    const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
-    return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    const h = Math.floor(timeLeft / 3600);
+    const m = Math.floor((timeLeft % 3600) / 60);
+    const s = timeLeft % 60;
+    return h > 0
+      ? `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+      : `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
   }
 
   function _elapsedMin(state) {
@@ -192,7 +196,7 @@ const FocusWidget = (() => {
   function _updateSidebar(state) {
     const w = document.getElementById('focus-sidebar-widget');
     if (!w) return;
-    if (!state) { w.style.display = 'none'; return; }
+    if (!state || (typeof UI !== 'undefined' && UI.isModuleHidden('focusmode'))) { w.style.display = 'none'; return; }
     w.style.display = 'block';
 
     const col   = _color(state);
@@ -210,6 +214,7 @@ const FocusWidget = (() => {
   // ── Topbar widget inject & güncelle ────────────────────────────────────────
   function _injectTopbar() {
     if (_isPomoPage) return;
+    if (typeof UI !== 'undefined' && UI.isModuleHidden('focusmode')) return;
     const right = document.querySelector('header.topbar .topbar-right');
     if (!right || document.getElementById('focus-topbar-widget')) return;
 
@@ -257,7 +262,7 @@ const FocusWidget = (() => {
     const w = document.getElementById('focus-topbar-widget');
     if (!w) return;
 
-    if (!state) { w.style.display = 'none'; return; }
+    if (!state || (typeof UI !== 'undefined' && UI.isModuleHidden('focusmode'))) { w.style.display = 'none'; return; }
     w.style.display = 'flex';
 
     const col   = _color(state);
@@ -316,11 +321,12 @@ const FocusWidget = (() => {
     const ydDate = new Date(); ydDate.setDate(ydDate.getDate() - 1);
     const ydStr  = `${ydDate.getFullYear()}-${String(ydDate.getMonth()+1).padStart(2,'0')}-${String(ydDate.getDate()).padStart(2,'0')}`;
 
-    // Bugünkü mola-dışı pomodoro oturumları
-    const sessions = pomo.sessions.filter(s => s.date === td && s.mode !== 'short' && s.mode !== 'long');
-    const pomoTodaySecs = sessions.reduce((a, s) => a + (s.duration || 0), 0) * 60;
-
-    // Bugünkü manuel zaman logları (pomodoro çift-sayımını önlemek için source=pomodoro hariç)
+    // Bugünkü akış: pomodoro kaynaklı loglar + manuel loglar (çift kaynak, tek tablo)
+    // source='pomodoro' loglar pomo session yerine time_logs tablosundan alınır;
+    // böylece tarih düzenlemesi anında yansır, pomo session ile çakışma olmaz.
+    const pomoTodaySecs = timeLogs
+      .filter(l => l.date === td && l.source === 'pomodoro')
+      .reduce((a, l) => a + (l.duration || 0), 0) * 60;
     const manualTodaySecs = timeLogs
       .filter(l => l.date === td && l.source !== 'pomodoro')
       .reduce((a, l) => a + (l.duration || 0), 0) * 60;
@@ -339,23 +345,25 @@ const FocusWidget = (() => {
     const workMins     = Store.get('pomo_cfg')?.work || 25;
     const sessionCount = Math.round(flowMins / workMins * 10) / 10;
 
-    // Dün karşılaştırması — pomodoro oturumları + manuel zaman logları
-    const ydPomoMins = pomo.sessions
-      .filter(s => s.date === ydStr && s.mode !== 'short' && s.mode !== 'long')
-      .reduce((a, s) => a + (s.duration || 0), 0);
+    // Dün karşılaştırması — pomodoro logları + manuel loglar (çift kaynak, tek tablo)
+    const ydPomoMins = timeLogs
+      .filter(l => l.date === ydStr && l.source === 'pomodoro')
+      .reduce((a, l) => a + (l.duration || 0), 0);
     const ydManualMins = timeLogs
       .filter(l => l.date === ydStr && l.source !== 'pomodoro')
       .reduce((a, l) => a + (l.duration || 0), 0);
     const ydFlowMins = Math.floor(ydPomoMins + ydManualMins);
     const ydCount = Math.round(ydFlowMins / workMins * 10) / 10;
 
-    // Günlük seri — günde bir kez hesaplanır (cache)
-    if (!_kpiStreak || _kpiStreak.date !== td) {
+    // Günlük seri — canlı lap varsa her hesaplamada taze; aksi halde gün başına bir kez (cache)
+    if (!_kpiStreak || _kpiStreak.date !== td || laps.length > 0) {
       let streak = 0;
       for (let i = 0; i < 365; i++) {
         const d  = new Date(); d.setDate(d.getDate() - i);
         const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        if (timeLogs.some(l => l.date === ds)) streak++;
+        const hasLog  = timeLogs.some(l => l.date === ds);
+        const hasFlag = ds === td && laps.length > 0;
+        if (hasLog || hasFlag) streak++;
         else break;
       }
       _kpiStreak = { date: td, value: streak };
@@ -472,9 +480,15 @@ const FocusWidget = (() => {
         if (!document.hidden) _update();
       });
       document.addEventListener('lt:pomo-state-change', () => _update());
-      document.addEventListener('lt:pomo-kpi-change',   () => { _kpiStreak = null; _renderKPIContainers(); });
+      document.addEventListener('lt:pomo-kpi-change',   () => {
+        _kpiStreak = null;
+        _renderKPIContainers();
+        const g = document.getElementById('kpi-grid');
+        if (g) g.innerHTML = _kpiHTML(_calcKPIData());
+      });
       document.addEventListener('lt:language-change',   () => _renderKPIContainers());
       document.addEventListener('lt:theme-change',      () => _renderKPIContainers());
+      document.addEventListener('lt:modules-change',    () => { _injectTopbar(); _update(); });
     },
     togglePause() { _togglePause(); },
     addFlag()     { _addFlag();     },

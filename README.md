@@ -60,7 +60,7 @@
 
 | Module | Page | Description |
 |--------|------|-------------|
-| **Dashboard** | `index.html` | At-a-glance summary of all modules with draggable panels and period selector |
+| **Dashboard** | `index.html` | At-a-glance summary of all modules with draggable panels, period selector, and dual investment pie charts (by symbol + by type) |
 | **Focus Mode** | `focusmode.html` | Pomodoro / Flow / Countdown timer with to-do list, flag splits, fullscreen, and Web Worker |
 | **Time Tracking** | `timelog.html` | Daily time log with category & project tracking and 30-day charts |
 | **Habits** | `habits.html` | Daily and scheduled habit tracking with streaks, 30-day heatmap, and weekly donuts |
@@ -134,8 +134,9 @@ Most productivity apps require an account, phone number, or monthly subscription
 - Live price feeds via **Alpha Vantage API** (24-hour cache)
 - Exchange rate via **Exchange Rates API** (2-hour cache)
 - **Trade system** — Buy More and Sell actions with weighted average cost updates and realized P&L tracking
-- **Trade history** — filterable log of all buy/sell transactions with per-trade P&L column
-- P&L by period: total, daily, weekly, monthly (includes realized trades)
+- **Trade history** — filterable log of all buy/sell transactions with per-trade P&L column; each row has edit and delete actions
+- **Trade edit** — update date, type, quantity, or price of any recorded trade directly from the history table
+- P&L by period: total, daily (close-to-close), weekly, monthly (includes realized trades)
 - USD / local currency display toggle
 
 ---

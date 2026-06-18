@@ -80,6 +80,8 @@
       this._cdM = c.cdM || 0;
       this._cdS = c.cdS || 0;
     }
+    // Timer type preference (persists independently of 8h-TTL pomo_state)
+    if (c.timerType) this.timerType = c.timerType;
     this._syncFsKpiToggle();
   },
 
@@ -124,6 +126,11 @@
       return false;
     }
 
+    // pomo_cfg.timerType is the authoritative user preference (written immediately on type switch).
+    // pomo_state.timerType can be stale if beforeunload didn't complete before the page unloaded.
+    const cfgType = (Store.get('pomo_cfg') || {}).timerType;
+    const resolvedType = cfgType || s.timerType || 'pomodoro';
+
     // Adjust timeLeft / overtimeSecs for time elapsed while away
     const away = Math.floor((Date.now() - s.savedAt) / 1000);
     let timeLeft = s.timeLeft;
@@ -132,13 +139,13 @@
       if (s.overtime) {
         overtimeSecs += away;
       } else {
-        timeLeft = s.timerType === 'flow'
+        timeLeft = resolvedType === 'flow'
           ? timeLeft + away
           : Math.max(0, timeLeft - away);
       }
     }
 
-    this.timerType           = s.timerType  || 'pomodoro';
+    this.timerType           = resolvedType;
     this.mode                = s.mode       || 'work';
     this.timeLeft            = timeLeft;
     this._laps               = s.laps       || [];
@@ -382,7 +389,12 @@
     // Try to restore previous session state
     const restored = this._restoreState();
     if (!restored) {
-      this.timeLeft = this._initialTime();
+      // _loadCfg may have set a non-default timerType — apply its UI
+      if (this.timerType !== 'pomodoro') {
+        this._doSetTimerType(this.timerType);
+      } else {
+        this.timeLeft = this._initialTime();
+      }
     }
 
     this._carryOverTodos();
@@ -831,7 +843,8 @@
       const durationMin = Math.round(lap.split / 60);
       if (durationMin < 1) return;
       const completedAt = lap.localTime || nowHHMM;
-      this._autoLogTime(durationMin, completedAt, today, 'flow');
+      const lapDate     = lap.localDate || today;
+      this._autoLogTime(durationMin, completedAt, lapDate, 'flow');
     });
 
     // Toplam süreyi tek bir pomo session olarak kaydet (KPI widgetları için)
@@ -852,6 +865,9 @@
     this._destroyCountdownPicker();
     this.timerType   = type;
     this._flowSaved  = false;
+    // Persist timer type to cfg (no TTL) so it survives page reload
+    const _cfg = Store.get('pomo_cfg') || {};
+    Store.set('pomo_cfg', { ..._cfg, timerType: type });
     this._laps       = [];
     this._sessionDur = 0;
     this._renderLaps();
@@ -1392,12 +1408,13 @@
     const prev = this._laps.length ? this._laps[this._laps.length - 1].elapsed : 0;
     const now  = new Date();
     const localTime = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    const localDate = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
     // flow: elapsed = artan sayaç (timeLeft büyür); diğerleri: tüketilen süre + overtime
     const elapsed = this.timerType === 'flow'
       ? this.timeLeft
       : (this._sessionDur - this.timeLeft + (this._overtimeSecs || 0));
     const split   = elapsed - prev;
-    this._laps.push({ elapsed, split, num: this._laps.length + 1, localTime });
+    this._laps.push({ elapsed, split, num: this._laps.length + 1, localTime, localDate });
     this._renderLaps();
 
     // Tüm modlarda pomodoro takibi varsa sayacı güncelle
@@ -2458,11 +2475,34 @@
 
     const [eh, em] = completedAt.split(':').map(Number);
     const durationSecs = Math.round(durationMin * 60);
-    let startSec = eh * 3600 + em * 60 - durationSecs;
-    if (startSec < 0) startSec += 86400;
-    const start = `${String(Math.floor(startSec / 3600)).padStart(2,'0')}:${String(Math.floor((startSec % 3600) / 60)).padStart(2,'0')}`;
+    const endSec = eh * 3600 + em * 60;
+    const startSec = endSec - durationSecs;
 
-    Store.addTimeLog({ date, category, project, start, end: completedAt, duration: durationMin, source: 'pomodoro', taskId });
+    if (startSec < 0) {
+      // Seans gece yarısını geçti → ikiye böl
+      const prevSecs = -startSec;  // gece yarısından önceki süre (saniye)
+      const curSecs  = durationSecs - prevSecs; // gece yarısından sonraki süre
+
+      const prevStart = 86400 + startSec; // önceki gün başlangıç saniyesi
+      const prevStartStr = `${String(Math.floor(prevStart / 3600)).padStart(2,'0')}:${String(Math.floor((prevStart % 3600) / 60)).padStart(2,'0')}`;
+
+      const d = new Date(date + 'T00:00:00');
+      d.setDate(d.getDate() - 1);
+      const prevDate = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+
+      // Önceki günün kısmı: prevStart → 00:00
+      if (prevSecs >= 60) {
+        Store.addTimeLog({ date: prevDate, category, project, start: prevStartStr, end: '00:00', duration: prevSecs / 60, source: 'pomodoro', taskId });
+      }
+      // Bugünün kısmı: 00:00 → completedAt
+      if (curSecs >= 60) {
+        Store.addTimeLog({ date, category, project, start: '00:00', end: completedAt, duration: curSecs / 60, source: 'pomodoro', taskId });
+      }
+    } else {
+      const startStr = `${String(Math.floor(startSec / 3600)).padStart(2,'0')}:${String(Math.floor((startSec % 3600) / 60)).padStart(2,'0')}`;
+      Store.addTimeLog({ date, category, project, start: startStr, end: completedAt, duration: durationMin, source: 'pomodoro', taskId });
+    }
+
     // Log yazıldıktan sonra görevin pomoDone'unu loglardan yeniden hesapla
     if (taskId) Store.syncTaskProgress(taskId);
     document.dispatchEvent(new CustomEvent('lt:pomo-kpi-change'));
@@ -2504,7 +2544,7 @@
       const h = Math.floor(secs / 3600);
       const m = Math.floor((secs % 3600) / 60);
       const s = secs % 60;
-      if (this.timerType === 'countdown' && h > 0) {
+      if (h > 0) {
         ts = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
       } else {
         ts = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;

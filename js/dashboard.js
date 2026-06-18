@@ -141,6 +141,11 @@ const Dashboard = {
       const el = document.querySelector(`[data-panel-id="${panelId}"]`);
       if (el) el.style.display = UI.isModuleHidden(module) ? 'none' : '';
     });
+    const allHidden = Object.keys(panelMap).every(m => UI.isModuleHidden(m));
+    const lockBtn   = document.getElementById('dashLayoutLockBtn');
+    const periodWrap = document.getElementById('periodDDBtn')?.parentElement;
+    if (lockBtn)    lockBtn.style.display    = allHidden ? 'none' : '';
+    if (periodWrap) periodWrap.style.display = allHidden ? 'none' : '';
   },
 
   init() {
@@ -234,12 +239,13 @@ const Dashboard = {
     const spentKey = `dash_${this._period}_spent`;
 
     const _allCards = [
-      { module: null,          label: UI.t('dash_net_worth'),    value: UI.maskCurrency(net, cur),           mono: true,  change: UI.t('dash_net_worth_change'),                                                              changeUp: true,                       icon: 'trending-up',   iconColor: '#7C6CFC' },
-      { module: 'budget',      label: UI.t(spentKey),            value: UI.maskCurrency(periodExp, cur),     mono: true,  change: UI.t('dash_in_limit'),                                                                      changeUp: true,                       icon: 'shopping-cart', iconColor: '#F87171' },
-      { module: 'habits',      label: UI.t('dash_habits_done'),  value: `${periodDone} / ${periodPoss}`,     mono: false, change: UI.t('dash_habits_pct', periodPct),                                                         changeUp: periodDone >= periodPoss * 0.5, icon: 'check-circle', iconColor: '#34D399' },
-      { module: 'goals',       label: UI.t('dash_active_goals'), value: String(activeGoals),                 mono: false, change: UI.t('dash_goals_of', gls.items.length),                                                    changeUp: true,                       icon: 'star',          iconColor: '#FBBF24' },
+      { hideWhen: () => UI.isModuleHidden('budget') && UI.isModuleHidden('investments'),
+                                   label: UI.t('dash_net_worth'),    value: UI.maskCurrency(net, cur),           mono: true,  change: UI.t('dash_net_worth_change'),                                                              changeUp: true,                       icon: 'trending-up',   iconColor: '#7C6CFC' },
+      { module: 'budget',          label: UI.t(spentKey),            value: UI.maskCurrency(periodExp, cur),     mono: true,  change: UI.t('dash_in_limit'),                                                                      changeUp: true,                       icon: 'shopping-cart', iconColor: '#F87171' },
+      { module: 'habits',          label: UI.t('dash_habits_done'),  value: `${periodDone} / ${periodPoss}`,     mono: false, change: UI.t('dash_habits_pct', periodPct),                                                         changeUp: periodDone >= periodPoss * 0.5, icon: 'check-circle', iconColor: '#34D399' },
+      { module: 'goals',           label: UI.t('dash_active_goals'), value: String(activeGoals),                 mono: false, change: UI.t('dash_goals_of', gls.items.length),                                                    changeUp: true,                       icon: 'star',          iconColor: '#FBBF24' },
     ];
-    const cards = _allCards.filter(c => !c.module || !UI.isModuleHidden(c.module));
+    const cards = _allCards.filter(c => !(c.hideWhen && c.hideWhen()) && (!c.module || !UI.isModuleHidden(c.module)));
 
     const grid = document.getElementById('kpi-grid');
     grid.innerHTML = cards.map(c => UI.kpiCard(c)).join('');
@@ -351,65 +357,97 @@ const Dashboard = {
 
   // ── Investment pie ──────────────────────────────────────
   renderInvestPie() {
-    const assets      = Store.getInvestments().assets;
-    const settings    = Store.getSettings();
-    const displayCur  = settings.displayCurrency || 'USD';
-    const rate        = Number(settings.exchangeRate) || 1;  // user currency per 1 USD
-    const userSym     = settings.currency || '$';
-    const sym         = displayCur === 'USD' ? '$' : userSym;
-    const prices      = Store.get('inv_prices') || {};
-    const ratesMap    = settings.rates || {};
-    const _usdRate    = code => (!code || code === 'USD') ? 1 : (ratesMap[code] || (code === 'TRY' ? (Number(settings.tryRate) || rate || 35) : 1));
-    const _aCur       = (symbol, buyCurrency) => buyCurrency || 'USD';
-    const _toDisp     = (price, aCur) => {
+    const assets     = Store.getInvestments().assets;
+    const settings   = Store.getSettings();
+    const displayCur = settings.displayCurrency || 'USD';
+    const rate       = Number(settings.exchangeRate) || 1;
+    const userSym    = settings.currency || '$';
+    const sym        = displayCur === 'USD' ? '$' : userSym;
+    const prices     = Store.get('inv_prices') || {};
+    const ratesMap   = settings.rates || {};
+    const _usdRate   = code => (!code || code === 'USD') ? 1 : (ratesMap[code] || (code === 'TRY' ? (Number(settings.tryRate) || rate || 35) : 1));
+    const _toDisp    = (price, aCur) => {
       const priceUSD = aCur === 'USD' ? price : price / _usdRate(aCur);
       return displayCur === 'USD' ? priceUSD : priceUSD * rate;
     };
-
     const typeMap = {
-      Stock:      UI.t('asset_stock_us'),
-      StockOther: UI.t('asset_stock_other'),
-      ETF:        UI.t('asset_etf'),
-      Crypto:     UI.t('asset_crypto'),
-      Commodity:  UI.t('asset_commodity'),
-      Bond:       UI.t('asset_bond'),
-      Cash:       UI.t('asset_cash'),
+      Stock: UI.t('asset_stock_us'), StockOther: UI.t('asset_stock_other'),
+      ETF: UI.t('asset_etf'), Crypto: UI.t('asset_crypto'),
+      Commodity: UI.t('asset_commodity'), Bond: UI.t('asset_bond'), Cash: UI.t('asset_cash'),
     };
-    const by = {};
-    assets.forEach(a => {
-      const rawPrice = prices[a.symbol]?.price || a.buyPrice || 0;
-      const aCur     = _aCur(a.symbol, a.buyCurrency);
-      const price    = _toDisp(rawPrice, aCur);
-      const baseType = a.assetType || 'Stock';
-      let type = baseType;
-      if (baseType === 'Stock') {
-        if (a.buyCurrency != null) {
-          type = 'StockOther';
-        }
-      }
-      by[type] = (by[type] || 0) + (a.quantity || 0) * price;
-    });
-    const total = Object.values(by).reduce((s, v) => s + v, 0);
-    if (!total || !assets.length) {
+    const cols = ['#7C6CFC','#34D399','#FBBF24','#60A5FA','#F87171','#F472B6','#A78BFA'];
+    const emptyMsg = `<div style="color:var(--text-muted);font-size:0.8125rem;text-align:center;padding:1rem 0">${UI.t('dash_no_assets')}</div>`;
+
+    if (!assets.length) {
       Charts.doughnut('investmentPieChart', [], [], {});
-      document.getElementById('investment-legend').innerHTML =
-        `<div style="color:var(--text-muted);font-size:0.8125rem;text-align:center;padding:1rem 0">${UI.t('dash_no_assets')}</div>`;
+      Charts.doughnut('investmentTypeChart', [], [], {});
+      document.getElementById('investment-legend-symbol').innerHTML = emptyMsg;
+      document.getElementById('investment-legend-type').innerHTML   = emptyMsg;
       return;
     }
-    const labels = Object.keys(by).map(t => typeMap[t] || t);
-    const pcts   = Object.values(by).map(v => Math.round(v / total * 100));
-    const vals   = Object.values(by);
-    const cols   = ['#7C6CFC','#34D399','#FBBF24','#60A5FA','#F87171','#F472B6','#A78BFA'];
 
-    Charts.doughnut('investmentPieChart', labels, pcts, {
-      colors: cols,
-      tip: c => ` ${c.label}: %${c.parsed} (${UI.maskCurrency(vals[c.dataIndex], sym)})`
+    // ── By Symbol ──
+    const _typeI18n = { Stock: 'inv_type_stock_lbl', StockOther: 'inv_type_stock_lbl', ETF: 'inv_type_etf_lbl', Crypto: 'inv_type_crypto_lbl', Commodity: 'inv_type_commodity_lbl', Bond: 'inv_type_bond_lbl', Cash: 'inv_type_cash_lbl' };
+    const _typeLbl  = t => UI.t(_typeI18n[t] || t);
+    const symData = assets.map(a => {
+      const rawPrice = prices[a.symbol]?.price || a.buyPrice || 0;
+      const val      = _toDisp(rawPrice, a.buyCurrency || 'USD') * (a.quantity || 0);
+      let type = a.assetType || 'Stock';
+      if (type === 'Stock' && a.buyCurrency != null) type = 'StockOther';
+      return { symbol: a.symbol, val, type };
+    }).sort((a, b) => b.val - a.val);
+    const totalSym  = symData.reduce((s, x) => s + x.val, 0);
+    const symCols   = symData.map((_, i) => cols[i % cols.length]);
+    const symPcts   = symData.map(x => totalSym > 0 ? (x.val / totalSym * 100) : 0);
+
+    Charts.doughnut('investmentPieChart', symData.map(x => x.symbol), symPcts.map(p => +p.toFixed(1)), {
+      colors: symCols,
+      tip: ctx => ` ${ctx.label}: %${ctx.parsed.toFixed(1)} (${UI.maskCurrency(symData[ctx.dataIndex].val, sym)})`,
     });
-    document.getElementById('investment-legend').innerHTML = labels.map((l, i) =>
-      `<div class="legend-item">
-        <div class="legend-dot" style="background:${cols[i]}"></div>
-        <span>${l}</span>
-        <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-primary);margin-left:0.25rem">%${pcts[i]}</span>
+    const centerEl = document.getElementById('inv-dash-center');
+    if (centerEl) centerEl.innerHTML =
+      `<span style="font-family:var(--font-mono);font-size:1.5rem;font-weight:700;color:var(--text-primary);line-height:1">${assets.length}</span>
+       <span style="font-size:0.625rem;color:var(--text-muted);font-weight:500;letter-spacing:.05em;margin-top:0.125rem">${UI.t('inv_asset_label')}</span>`;
+    const SYM_MAX = 7;
+    const symVisible = symData.slice(0, SYM_MAX);
+    const symRest    = symData.length - SYM_MAX;
+    document.getElementById('investment-legend-symbol').innerHTML =
+      symVisible.map((x, i) =>
+        `<div class="legend-item" style="gap:0.375rem;min-width:0;width:100%;justify-content:flex-start">
+          <div class="legend-dot" style="background:${symCols[i]};flex-shrink:0"></div>
+          <span style="font-size:0.8125rem;font-weight:600;white-space:nowrap">${x.symbol}</span>
+          <span style="white-space:nowrap;font-size:0.75rem"><span style="font-family:var(--font-mono);font-weight:700;color:${symCols[i]}">%${symPcts[i].toFixed(1)}</span> <span style="color:var(--text-muted)">${_typeLbl(x.type)}</span></span>
+        </div>`
+      ).join('') +
+      (symRest > 0
+        ? `<div style="font-size:0.75rem;color:var(--text-muted);padding-left:1.125rem">${UI.t('dash_n_more', symRest)}</div>`
+        : '');
+
+    // ── By Type ──
+    const byType = {};
+    assets.forEach(a => {
+      const rawPrice = prices[a.symbol]?.price || a.buyPrice || 0;
+      const val      = _toDisp(rawPrice, a.buyCurrency || 'USD') * (a.quantity || 0);
+      let type = a.assetType || 'Stock';
+      if (type === 'Stock' && a.buyCurrency != null) type = 'StockOther';
+      byType[type] = (byType[type] || 0) + val;
+    });
+    const totalType  = Object.values(byType).reduce((s, v) => s + v, 0);
+    const typeKeys   = Object.keys(byType);
+    const typeLabels = typeKeys.map(t => typeMap[t] || t);
+    const typeVals   = typeKeys.map(k => byType[k]);
+    const typePcts   = typeVals.map(v => totalType > 0 ? (v / totalType * 100) : 0);
+    const typeCols   = typeLabels.map((_, i) => cols[i % cols.length]);
+
+    Charts.doughnut('investmentTypeChart', typeLabels, typePcts.map(p => +p.toFixed(1)), {
+      colors: typeCols,
+      tip: ctx => ` ${ctx.label}: %${ctx.parsed.toFixed(1)} (${UI.maskCurrency(typeVals[ctx.dataIndex], sym)})`,
+    });
+    document.getElementById('investment-legend-type').innerHTML = typeLabels.map((l, i) =>
+      `<div class="legend-item" style="gap:0.375rem;min-width:0;width:100%;justify-content:flex-start">
+        <div class="legend-dot" style="background:${typeCols[i]};flex-shrink:0"></div>
+        <span style="font-size:0.8125rem;font-weight:600;white-space:nowrap">${l}</span>
+        <span style="white-space:nowrap;font-size:0.75rem;font-family:var(--font-mono);font-weight:700;color:${typeCols[i]}">%${typePcts[i].toFixed(1)}</span>
       </div>`
     ).join('');
   },

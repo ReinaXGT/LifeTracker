@@ -384,12 +384,16 @@ const TimePage = {
     UI.initTopbar({ noPrivacy: true }); UI.initEsc();
     const lbl = document.getElementById('logFilterDateLabel');
     if (lbl) lbl.textContent = UI.t('time_filter_date_placeholder');
+    const _savedTimelogUi = Store.get('timelog_ui');
+    if (_savedTimelogUi?.filter) this._filter = _savedTimelogUi.filter;
     this.render();
     document.getElementById('addLogBtn').addEventListener('click', () => this._openAdd());
     document.getElementById('historyBtn').addEventListener('click', () => this.openHistory());
     document.querySelectorAll('.time-filter-btn').forEach(btn =>
       btn.addEventListener('click', () => this.setFilter(btn.dataset.filter))
     );
+    // Apply saved filter button state after binding events
+    if (this._filter !== 'all') this.setFilter(this._filter);
     document.addEventListener('lt:language-change', () => {
       if (!this._filterDateFrom) {
         const l = document.getElementById('logFilterDateLabel');
@@ -436,6 +440,7 @@ const TimePage = {
 
   setFilter(f) {
     this._filter = f;
+    Store.set('timelog_ui', { filter: f });
     document.querySelectorAll('.time-filter-btn').forEach(btn =>
       btn.classList.toggle('active', btn.dataset.filter === f)
     );
