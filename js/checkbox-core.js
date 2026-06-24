@@ -21,7 +21,7 @@ const CheckboxCore = (() => {
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" `
          + `stroke="currentColor" stroke-width="${strokeWidth}" stroke-linecap="round" `
          + `stroke-linejoin="round" `
-         + `style="width:${size};height:${size};color:#fff;pointer-events:none;flex-shrink:0">`
+         + `style="width:${size};height:${size};pointer-events:none;flex-shrink:0">`
          + `<polyline points="20 6 9 17 4 12"/></svg>`;
   }
 

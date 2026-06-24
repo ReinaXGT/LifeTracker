@@ -77,12 +77,7 @@
       this._dailyFilterFrom = _savedDf.from || '';
       this._dailyFilterTo   = _savedDf.to   || '';
     }
-    const _savedBudgetUi = Store.get('budget_ui');
-    if (_savedBudgetUi?.activeView && _savedBudgetUi.activeView !== 'overview') {
-      this.setView(_savedBudgetUi.activeView);
-    } else {
-      this.render();
-    }
+    this.render();
     document.addEventListener('lt:privacy-change',  () => this.render());
     document.addEventListener('lt:panel-change',    () => { this._registerPanels(); this.renderOverview(); });
     document.addEventListener('lt:language-change', () => {
@@ -115,7 +110,6 @@
   setView(v) {
     if (this._editMode && v !== 'overview') this._editMode = false;
     this.activeView = v;
-    Store.set('budget_ui', { activeView: v });
     document.querySelectorAll('.bvtab').forEach(t => t.classList.remove('active'));
     document.getElementById('tab-' + v).classList.add('active');
     ['overview', 'categories', 'transactions'].forEach(name => {
@@ -272,6 +266,25 @@
   },
 
   // ── Cycle History ─────────────────────────────────────────
+
+  _cycleDateTitle(start, end) {
+    if (!start) return '';
+    const MONTHS = {
+      tr: ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'],
+      en: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+      zh: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+      es: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+      fr: ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'],
+    };
+    const names = MONTHS[UI.getLang()] || MONTHS.en;
+    const s = new Date(start + 'T00:00:00');
+    const e = end ? new Date(end + 'T00:00:00') : new Date();
+    const sm = s.getMonth(), sy = s.getFullYear();
+    const em = e.getMonth(), ey = e.getFullYear();
+    if (sm === em && sy === ey) return `${names[sm]} ${sy}`;
+    if (sy === ey) return `${names[sm]} – ${names[em]} ${sy}`;
+    return `${names[sm]} ${sy} – ${names[em]} ${ey}`;
+  },
 
   openCycleHistory() {
     this._histCycleIdx    = 0;
@@ -437,7 +450,7 @@
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;gap:12px">
         <button class="btn btn-icon btn-secondary" onclick="Budget._histNavTo(${idx + 1})" ${!hasPrev ? 'disabled' : ''} style="width:2.125rem;height:2.125rem;flex-shrink:0"><svg data-lucide="chevron-left"></svg></button>
         <div style="text-align:center;flex:1">
-          <div style="font-weight:700;font-size:0.875rem;color:var(--text-primary)">${UI.t('bud_history_cycle')} ${cycleNum}</div>
+          <div style="font-weight:700;font-size:0.875rem;color:var(--text-primary)">${this._cycleDateTitle(cycle.start, cycle.end)}</div>
           <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:2px">${fmtD(cycle.start)} – ${fmtD(cycle.end)}</div>
         </div>
         <button class="btn btn-icon btn-secondary" onclick="Budget._histNavTo(${idx - 1})" ${!hasNext ? 'disabled' : ''} style="width:2.125rem;height:2.125rem;flex-shrink:0"><svg data-lucide="chevron-right"></svg></button>

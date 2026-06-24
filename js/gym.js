@@ -305,7 +305,7 @@ const Gym = (() => {
     for (let i = 0; i < 365; i++) {
       const s   = cur.getFullYear() + '-' + String(cur.getMonth()+1).padStart(2,'0') + '-' + String(cur.getDate()).padStart(2,'0');
       const dow = cur.getDay();
-      if (offDays.has(dow)) { cur.setDate(cur.getDate() - 1); continue; }
+      if (offDays.has(dow)) { if (dates.has(s)) streak++; cur.setDate(cur.getDate() - 1); continue; }
       if (dates.has(s)) { streak++; }
       else { break; }
       cur.setDate(cur.getDate() - 1);
@@ -800,7 +800,7 @@ const Gym = (() => {
     return `<div style="padding:0.5rem 0.75rem;border-top:1px solid var(--border)">
       <button class="btn btn-secondary lt-show-more-btn" onclick="${handlerStr}">
         <svg data-lucide="chevron-down" style="width:0.875rem;height:0.875rem"></svg>
-        +${count} daha
+        ${UI.t('dash_n_more', count)}
       </button>
     </div>`;
   }

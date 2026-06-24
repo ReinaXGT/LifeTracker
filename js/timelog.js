@@ -4,6 +4,8 @@ const TimePage = {
   _filterDateTo: '',
   _filterDateCdp: null,
   _histOffset: 0,
+  _histTab: 'summary',
+  _histCtx: null,
   _editingId: null,
   _pendingDeleteId: null,
   _logDateCdp: null,
@@ -315,7 +317,7 @@ const TimePage = {
   },
 
   _historyModalHTML() {
-    return `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    return `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
       <button class="btn btn-ghost btn-sm" onclick="TimePage.prevHistoryMonth()" style="gap:6px">
         <svg data-lucide="chevron-left" style="width:1rem;height:1rem"></svg><span>${UI.t('time_prev_month')}</span>
       </button>
@@ -327,11 +329,8 @@ const TimePage = {
         <span>${UI.t('time_next_month')}</span><svg data-lucide="chevron-right" style="width:1rem;height:1rem"></svg>
       </button>
     </div>
-    <div class="chart-container" style="height:180px;margin-bottom:1.25rem">
-      <canvas id="histMonthChart"></canvas>
-    </div>
-    <div style="font-size:0.6875rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.375rem">${UI.t('time_panel_weekly')}</div>
-    <div id="hist-weekly"></div>`;
+    <div id="hist-stats-row" style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap"></div>
+    <div id="hist-tab-content"></div>`;
   },
 
   /* 24h → "hh:mm AM/PM" gösterim formatı */
@@ -480,7 +479,9 @@ const TimePage = {
   },
 
   _filteredLogs() {
-    let logs = Store.getTime().logs;
+    const d30 = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const cutoff = `${d30.getFullYear()}-${String(d30.getMonth()+1).padStart(2,'0')}-${String(d30.getDate()).padStart(2,'0')}`;
+    let logs = Store.getTime().logs.filter(l => l.date >= cutoff);
     if (this._filter === 'manual')   logs = logs.filter(l => l.source !== 'pomodoro');
     if (this._filter === 'pomodoro') logs = logs.filter(l => l.source === 'pomodoro');
     if (this._filterDateFrom) {
@@ -585,7 +586,7 @@ const TimePage = {
     const sourceBadge = l => l.source === 'pomodoro'
       ? `<span style="font-size:0.5625rem;font-weight:700;padding:0.125rem 0.375rem;border-radius:0.25rem;background:var(--accent-glow);color:var(--accent);margin-left:0.3125rem;vertical-align:middle;white-space:nowrap">${UI.t('time_auto_end')}</span>`
       : '';
-    tbody.innerHTML = logs.slice(0, 50).map(l => `
+    tbody.innerHTML = logs.map(l => `
       <tr style="${l.source === 'pomodoro' ? 'opacity:.92' : ''}">
         <td class="mono">${UI.formatDate(l.date)}</td>
         <td>${UI.catBadge(l.category)}${sourceBadge(l)}</td>
@@ -604,6 +605,7 @@ const TimePage = {
 
   openHistory() {
     this._histOffset = 0;
+    this._histTab = 'summary';
     this._histModal = new CustomModal({
       title:    UI.t('time_history_modal'),
       subtitle: UI.t('time_hist_subtitle'),
@@ -613,7 +615,34 @@ const TimePage = {
       buttons:  [],
     });
     this._histModal.open();
+    const header = this._histModal._overlay?.querySelector('.cm-header');
+    if (header) {
+      const closeBtn = header.querySelector('[data-cm-close]');
+      const sw = document.createElement('div');
+      sw.id = 'hist-tab-switcher';
+      sw.style.cssText = 'display:flex;background:var(--bg-elevated);border-radius:var(--radius-sm);padding:3px;gap:2px;border:1px solid var(--border);margin-right:8px;flex-shrink:0';
+      sw.innerHTML = `
+        <button class="hist-tab-btn" data-tab="summary" onclick="TimePage.switchHistTab('summary')"
+          style="padding:4px 14px;border:none;border-radius:calc(var(--radius-sm) - 2px);font-size:0.6875rem;font-weight:600;cursor:pointer;transition:background .15s,color .15s;background:var(--accent);color:var(--accent-contrast,#fff);white-space:nowrap">
+          ${UI.t('time_hist_tab_summary')}
+        </button>
+        <button class="hist-tab-btn" data-tab="logs" onclick="TimePage.switchHistTab('logs')"
+          style="padding:4px 14px;border:none;border-radius:calc(var(--radius-sm) - 2px);font-size:0.6875rem;font-weight:600;cursor:pointer;transition:background .15s,color .15s;background:transparent;color:var(--text-muted);white-space:nowrap">
+          ${UI.t('time_hist_tab_logs')}
+        </button>`;
+      header.insertBefore(sw, closeBtn);
+    }
     requestAnimationFrame(() => this._renderHistoryModal());
+  },
+
+  switchHistTab(tab) {
+    this._histTab = tab;
+    document.querySelectorAll('.hist-tab-btn').forEach(b => {
+      const active = b.dataset.tab === tab;
+      b.style.background = active ? 'var(--accent)' : 'transparent';
+      b.style.color      = active ? 'var(--accent-contrast,#fff)' : 'var(--text-muted)';
+    });
+    this._renderHistTabContent();
   },
 
   prevHistoryMonth() { this._histOffset--; this._renderHistoryModal(); },
@@ -628,46 +657,98 @@ const TimePage = {
     const today = UI.today();
 
     const lang = UI.getLang();
-    const MONTHS       = lang === 'en' ? UI.MONTHS_LONG_EN  : UI.MONTHS_LONG;
-    const MONTHS_SHORT = lang === 'en' ? UI.MONTHS_SHORT_EN : UI.MONTHS_SHORT;
+    const MONTHS = lang === 'en' ? UI.MONTHS_LONG_EN : lang === 'zh' ? UI.MONTHS_LONG_ZH
+                 : lang === 'es' ? UI.MONTHS_LONG_ES : lang === 'fr' ? UI.MONTHS_LONG_FR : UI.MONTHS_LONG;
+    const MONTHS_SHORT = lang === 'en' ? UI.MONTHS_SHORT_EN : lang === 'zh' ? UI.MONTHS_SHORT_ZH
+                       : lang === 'es' ? UI.MONTHS_SHORT_ES : lang === 'fr' ? UI.MONTHS_SHORT_FR : UI.MONTHS_SHORT;
 
     document.getElementById('hist-month-label').textContent = `${MONTHS[mon]} ${year}`;
     document.getElementById('hist-next-btn').disabled = this._histOffset >= 0;
 
-    const labels = [], data = [], colors = [];
+    const yearMon = `${year}-${String(mon+1).padStart(2,'0')}`;
+    const dayData = [];
     for (let d = 1; d <= days; d++) {
-      const ds = `${year}-${String(mon+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      const mins = logs.filter(l => l.date === ds).reduce((a,l) => a + l.duration, 0);
-      labels.push(d);
-      data.push(mins);
-      colors.push(ds === today ? _cv('--green') : _cv('--accent'));
+      const ds = `${yearMon}-${String(d).padStart(2,'0')}`;
+      const dayLogs = logs.filter(l => l.date === ds);
+      dayData.push({ d, ds, mins: dayLogs.reduce((a,l) => a + l.duration, 0), logs: dayLogs });
     }
 
-    const totalMins = data.reduce((a,b) => a + b, 0);
+    const totalMins = dayData.reduce((a,b) => a + b.mins, 0);
     document.getElementById('hist-total').textContent = UI.fmtMinutesHM(totalMins);
 
+    this._histCtx = { logs, dayData, totalMins, year, mon, days, today, yearMon, MONTHS, MONTHS_SHORT };
+    this._renderHistStats();
+    this._renderHistTabContent();
+  },
+
+  _renderHistStats() {
+    const { dayData, totalMins, logs, yearMon } = this._histCtx;
+    const activeDays = dayData.filter(d => d.mins > 0).length;
+    const dailyAvg   = activeDays > 0 ? Math.round(totalMins / activeDays) : 0;
+
+    const catTotals = {};
+    logs.filter(l => l.date.startsWith(yearMon)).forEach(l => {
+      catTotals[l.category] = (catTotals[l.category] || 0) + l.duration;
+    });
+    const topCat = Object.entries(catTotals).sort((a,b) => b[1]-a[1])[0];
+
+    const chip = (label, value) =>
+      `<div style="display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 14px;flex:1;min-width:70px">
+        <span style="font-size:0.625rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-muted)">${label}</span>
+        <span style="font-size:0.875rem;font-weight:700;font-family:var(--font-mono);color:var(--text-primary)">${value}</span>
+      </div>`;
+
+    const el = document.getElementById('hist-stats-row');
+    if (!el) return;
+    el.innerHTML = [
+      chip(UI.t('time_hist_active_days'), activeDays),
+      chip(UI.t('time_hist_daily_avg'), UI.fmtMinutesHM(dailyAvg)),
+      topCat ? chip(UI.t('time_hist_top_cat'), UI.esc(topCat[0])) : '',
+    ].join('');
+  },
+
+  _renderHistTabContent() {
+    if (this._histTab === 'summary') this._renderHistSummary();
+    else                              this._renderHistLogs();
+  },
+
+  _renderHistSummary() {
+    const { dayData, totalMins, mon, today, MONTHS_SHORT, days } = this._histCtx;
+    const el = document.getElementById('hist-tab-content');
+    if (!el) return;
+
+    el.innerHTML = `
+      <div class="chart-container" style="height:180px;margin-bottom:1.25rem">
+        <canvas id="histMonthChart"></canvas>
+      </div>
+      <div style="font-size:0.6875rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.375rem">${UI.t('time_panel_weekly')}</div>
+      <div id="hist-weekly"></div>`;
+
+    const labels   = dayData.map(d => d.d);
+    const data     = dayData.map(d => d.mins);
+    const colors   = dayData.map(d => d.ds === today ? _cv('--green') : _cv('--accent'));
+    const green    = _cv('--green');
     const ms = UI.t('mins_suffix'), hs = UI.t('hours_suffix');
-    const green = _cv('--green');
     Charts.line('histMonthChart', labels, [
       { label: UI.t('time_duration_label'), data, pointColors: colors, pointRadius: colors.map(c => c === green ? 5 : 3) }
     ], {
+      solidFill: true,
       yFmt: v => { const m = Math.round(v); return m < 60 ? (m ? m + ms : '0') : parseFloat((m/60).toFixed(1)) + hs; },
       tip:  c => ` ${UI.fmtMinutesHM(c.parsed.y)}`
     });
 
     const weeks = [];
     let wk = null;
-    for (let d = 1; d <= days; d++) {
-      const date = new Date(year, mon, d);
-      const dow  = (date.getDay() + 6) % 7;
+    for (let i = 0; i < days; i++) {
+      const { d, mins } = dayData[i];
+      const dow = (new Date(this._histCtx.year, mon, d).getDay() + 6) % 7;
       if (dow === 0 || !wk) wk = { start: d, end: d, mins: 0 };
-      wk.mins += data[d - 1];
+      wk.mins += mins;
       wk.end = d;
-      if (dow === 6 || d === days) { weeks.push({ ...wk }); wk = null; }
+      if (dow === 6 || i === days - 1) { weeks.push({ ...wk }); wk = null; }
     }
 
-    const weekEl = document.getElementById('hist-weekly');
-    weekEl.innerHTML = weeks.map(w => {
+    document.getElementById('hist-weekly').innerHTML = weeks.map(w => {
       const pct = totalMins > 0 ? Math.round(w.mins / totalMins * 100) : 0;
       return `
         <div style="display:flex;align-items:center;gap:14px;padding:0.5625rem 0;border-top:1px solid var(--border)">
@@ -678,6 +759,42 @@ const TimePage = {
           <span style="font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:${w.mins > 0 ? 'var(--text-primary)' : 'var(--text-muted)'};min-width:3.75rem;text-align:right">${UI.fmtMinutesHM(w.mins)}</span>
         </div>`;
     }).join('');
+  },
+
+  _renderHistLogs() {
+    const { dayData, mon, MONTHS_SHORT } = this._histCtx;
+    const el = document.getElementById('hist-tab-content');
+    if (!el) return;
+
+    const activeDays = [...dayData].reverse().filter(d => d.logs.length > 0);
+    if (!activeDays.length) {
+      el.innerHTML = `<div style="text-align:center;padding:2.5rem;color:var(--text-muted);font-size:0.875rem">${UI.t('time_no_logs')}</div>`;
+      return;
+    }
+
+    el.innerHTML = activeDays.map(({ d, logs: dayLogs }) => {
+      const dayTotal = dayLogs.reduce((a,l) => a + l.duration, 0);
+      const logsHtml = dayLogs.map(l => `
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--border)">
+          <div style="flex-shrink:0">${UI.catBadge(l.category)}</div>
+          <span style="flex:1;font-size:0.8125rem;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${UI.esc(l.project || l.category)}</span>
+          <span style="font-size:0.6875rem;font-family:var(--font-mono);color:var(--text-muted);white-space:nowrap;width:8.5rem;flex-shrink:0">${l.start || '--:--'} → ${l.end || '--:--'}</span>
+          <span style="font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--accent);width:5.5rem;flex-shrink:0">${UI.fmtMinutes(l.duration)}</span>
+          <div style="display:flex;gap:4px;flex-shrink:0">
+            <button class="btn btn-icon btn-secondary" style="width:26px;height:26px" onclick="TimePage.edit('${l.id}')"><svg data-lucide="pencil" style="width:0.75rem;height:0.75rem"></svg></button>
+            <button class="btn btn-icon btn-danger" style="width:26px;height:26px" onclick="TimePage.delete('${l.id}')"><svg data-lucide="trash-2" style="width:0.75rem;height:0.75rem"></svg></button>
+          </div>
+        </div>`).join('');
+      return `
+        <div style="margin-bottom:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0 6px">
+            <span style="font-size:0.75rem;font-weight:700;color:var(--text-primary);font-family:var(--font-mono)">${d} ${MONTHS_SHORT[mon]}</span>
+            <span style="font-size:0.75rem;font-weight:600;font-family:var(--font-mono);color:var(--text-secondary)">${UI.fmtMinutesHM(dayTotal)}</span>
+          </div>
+          ${logsHtml}
+        </div>`;
+    }).join('');
+    lucide.createIcons({ nodes: [el] });
   },
 
   save() {

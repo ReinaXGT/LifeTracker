@@ -5,6 +5,41 @@ Format: **New** · **Fixed** · **Changed** · **Removed**
 
 ---
 
+## [v2.0] — 2026-06-24
+
+### New
+- **Deposit (Mevduat) Tracking** — Full bank deposit module inside the Investments page. Supports two types: **Term** (fixed days, simple interest) and **Demand** (daily compound interest). Each deposit shows current value, accrued interest, daily gain, maturity date, and days remaining. Card / Table view toggle persisted per session. Drag-and-drop reordering. Add/Edit/Delete with themed modals. Deposits are included in the Portfolio Value KPI and in the Allocation pie chart as a distinct "Deposit" category.
+- **`InvPieCharts` shared module** (`js/inv-pie-charts.js`) — Unified dual pie-chart renderer (By Symbol + By Type) extracted from the dashboard and investments page. Exposes `InvPieCharts.render(container, items, opts)`, `typeColor(t)`, and `typeLabel(t)`. All type colors and palette constants now live here; the "Deposit" type gets a teal `#2DD4BF` color.
+- **Best / Worst Performers section** — New `#alloc-performers` block in the Investments Allocation panel shows top 5 gainers and top 5 losers by total P&L %, with colored dots and percentage badges.
+- **Deposit Trade History tab** — Trade History modal gains a second tab "Mevduatlar" alongside the existing "İşlemler" tab. Shows a month navigator with KPI chips (principal, current value, accrued) and a per-deposit detail table. A preview list of 10 most recent deposits is also visible in the Trades page inline table.
+- **Time History Modal — two-tab layout** — History modal now has **Summary** (existing chart + weekly breakdown) and **Logs** (day-by-day log list with edit/delete) tabs. Three stat chips above the tabs: Active Days, Daily Avg, Top Category.
+- **Dashboard KPI Cards overhaul** — Each KPI card is now a rich data card with mini bar breakdowns:
+  - *Net Worth* — Deposit / Budget / Investment split with proportional bars and a gradient net bar; deposits now included in net worth.
+  - *Budget* — Top 3 expense groups with mini bars + total budget progress footer.
+  - *Habits* — Today vs Period progress bars + completion rate footer.
+  - *Goals* — Top 3 active goals by progress + average progress footer.
+- **Dashboard midnight auto-refresh** — A 60-second interval detects date rollover and calls `_fullRender()` automatically, so the dashboard stays accurate past midnight without a manual reload.
+
+### Fixed
+- **Gym streak on rest days** — Workouts logged on configured rest days now correctly increment the streak counter (was previously skipped).
+- **Investments "Bought Today" zero P&L** — When an asset was purchased on the same day as the latest price history entry, P&L displayed as 0%. Both `_calcPortfolio` and `_calcReturn` now fall back to `buyRaw` as the baseline when the earliest history date equals the purchase date.
+- **Checkbox checkmark invisible on White theme** — The SVG checkmark inside `.cbx` had `color:#fff` hardcoded, making it invisible against a white background. Removed the hardcoded color so it inherits from CSS.
+- **Dropdown width collapse after selection** — `CustomDropdown` wrapper div could shrink when the selected label changed to shorter text. The wrapper now locks its `minWidth` to the button's rendered `offsetWidth` before wrapping.
+- **Time Log 50-row cap removed** — The log table was capped at 50 rows. All filtered logs are now rendered.
+- **Time Log 30-day pre-filter** — `_filteredLogs()` now pre-filters to the last 30 days before applying other filters, preventing slowdowns with large log histories.
+
+### Changed
+- **Budget tab state no longer persisted** — Budget always opens on the Overview tab on page load; the `budget_ui` localStorage key is no longer written.
+- **Investments type colors refactored** — `_TYPE_COLORS`, `_PALETTE`, `_TYPE_I18N`, and related helpers removed from `investments.js`; all delegated to `InvPieCharts.typeColor()` / `InvPieCharts.typeLabel()`. `inv_type_bond` label changed from "Tahvil / Mevduat" → "Tahvil" (deposits are their own category now). `inv_type_stock_lbl` → "ABD Hissesi"; new `inv_type_stock_other_lbl` = "Diğer Hisse".
+- **Dashboard investment pie charts unified** — Standalone `investmentPieChart` / `investmentTypeChart` canvases replaced by a single `<div id="dash-pie-container">` rendered by `InvPieCharts.render()`. Deposits included.
+- **Dashboard panel order** — Gym panel moved to below the Budget + Investment row (was before it).
+- **Investments Allocation ↔ Performance panel order** — Performance (Getiri Analizi) is now on the left, Allocation (Varlık Dağılımı) on the right.
+- **Investments privacy toggle** — Removed from the per-view topbar area; now injected directly into the Trade History modal header on open.
+- **Sidebar collapsed footer styling** — Footer nav links in collapsed state now render as 36×36px accent-bordered icon buttons, consistent with the privacy button treatment. Settings link and privacy button centered correctly.
+- **Seed data expanded** — Time logs doubled (14 → 28 entries), habits history extended (21 → 30 days), plans all gain subtasks plus an 8th item, goals expanded from 3 to 5, budget cycles restructured to 4 cycles with more transactions, Pomodoro sessions doubled (10 → 20), todos expanded (3 → 5), 3 deposit entries added.
+
+---
+
 ## [v1.9] — 2026-06-18
 
 ### New

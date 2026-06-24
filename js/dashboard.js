@@ -184,6 +184,7 @@ const Dashboard = {
     document.addEventListener('lt:currency-change', () => {
       this.renderKPIs();
       this.renderInvestPie();
+      this.renderBudgetStatus();
     });
     document.addEventListener('lt:language-change', () => {
       const lbl = document.getElementById('periodDDLabel');
@@ -197,6 +198,311 @@ const Dashboard = {
       this.renderGoals();
       this.renderGym();
     });
+
+    // Gece yarısı geçişinde dashboard'u otomatik yenile
+    let _watchDate = UI.today();
+    setInterval(() => {
+      const now = UI.today();
+      if (now !== _watchDate) {
+        _watchDate = now;
+        _fullRender();
+      }
+    }, 60000);
+  },
+
+  // ── Net Worth custom KPI card (gym week-style) ──────────
+  _netWorthKpiHtml(totalInv, depVal, hasDeposits, budNet, net, cur) {
+    const showInv = !UI.isModuleHidden('investments');
+    const showDep = showInv;
+    const showBud = !UI.isModuleHidden('budget');
+
+    const invColor = '#34D399';
+    const depColor = '#F472B6';
+    const budColor = '#FB923C';
+    const netColor = '#7C6CFC';
+
+    // Each bar fills proportionally to the total absolute sum
+    const absSum = (showInv ? Math.abs(totalInv) : 0)
+                 + (showDep ? Math.abs(depVal)   : 0)
+                 + (showBud ? Math.abs(budNet)   : 0) || 1;
+    const _pct = v => Math.max(0, Math.round(Math.abs(v) / absSum * 100));
+
+    const _bar = (color, pct) =>
+      `<div style="margin-top:.1875rem;height:3px;border-radius:2px;background:var(--bg-elevated)">
+        <div style="height:100%;background:${color};width:${pct}%;border-radius:2px;transition:width 300ms ease-out"></div>
+      </div>`;
+
+    const _dot = c =>
+      `<span style="width:.375rem;height:.375rem;border-radius:50%;background:${c};flex-shrink:0;display:inline-block"></span>`;
+
+    const _row = (lbl, dotC, val, valC, barColor, barPct) =>
+      `<div style="margin-top:.3125rem">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="display:flex;align-items:center;gap:.3125rem">
+            ${_dot(dotC)}
+            <span style="font-size:.625rem;color:var(--text-muted);letter-spacing:.03em">${lbl}</span>
+          </span>
+          <span class="mono" style="font-size:.6875rem;font-weight:700;color:${valC || 'var(--text-primary)'};">${val}</span>
+        </div>
+        ${_bar(barColor, barPct)}
+      </div>`;
+
+    let rows = '';
+    if (showDep) rows += _row(UI.t('dash_nw_dep'), depColor, UI.maskCurrency(depVal, cur),   depColor, depColor, _pct(depVal));
+    if (showBud) {
+      const sign = budNet < 0 ? '−' : '+';
+      rows += _row(UI.t('dash_nw_bud'), budColor,
+        sign + UI.maskCurrency(Math.abs(budNet), cur),
+        budNet < 0 ? 'var(--red)' : budColor,
+        budColor, _pct(budNet));
+    }
+    if (showInv) rows += _row(UI.t('dash_nw_inv'), invColor, UI.maskCurrency(totalInv, cur), invColor, invColor, _pct(totalInv));
+
+    // Bottom net worth bar — only include colors for non-zero values
+    const gradColors = [];
+    if (showInv && totalInv !== 0) gradColors.push(invColor);
+    if (showDep && depVal  !== 0) gradColors.push(depColor);
+    if (showBud && budNet  !== 0) gradColors.push(budColor);
+    if (gradColors.length === 0)  gradColors.push('var(--text-muted)');
+    const gradCss = gradColors.length === 1
+      ? gradColors[0]
+      : `linear-gradient(90deg,${gradColors.join(',')})`;
+    const netBar = `<div style="margin-top:auto;padding-top:.4375rem;border-top:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:.625rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary)">${UI.t('dash_net_worth')}</span>
+        <span class="mono" style="font-size:.6875rem;font-weight:700;color:var(--accent)">${UI.maskCurrency(net, cur)}</span>
+      </div>
+      <div style="margin-top:.1875rem;height:4px;border-radius:2px;background:var(--bg-elevated)">
+        <div style="height:100%;width:100%;border-radius:2px;background:${gradCss};opacity:.9"></div>
+      </div>
+    </div>`;
+
+    return `<div class="kpi-card" style="cursor:default;display:flex;flex-direction:column">
+      <div class="kpi-card-header">
+        <span class="kpi-label">${UI.t('dash_net_worth')}</span>
+        <span class="kpi-icon" style="background:rgba(124,108,252,.15)">
+          <svg data-lucide="trending-up" style="color:${netColor}"></svg>
+        </span>
+      </div>
+      <div class="kpi-value mono">${UI.maskCurrency(net, cur)}</div>
+      ${rows}
+      ${netBar}
+    </div>`;
+  },
+
+  // ── Budget KPI card ─────────────────────────────────────
+  _budgetKpiHtml(periodExp, cur, bud, period, from, cycles) {
+    const spentKey  = `dash_${period}_spent`;
+    const expGroups = bud.groups.filter(g => g.type === 'expense');
+
+    // Dönem filtreli işlemler: mevcut döngü + geçmiş döngüler
+    const _periodTx = (groupId) => {
+      const cur_ = bud.transactions.filter(t => t.groupId === groupId && t.type === 'expense' && t.date >= from);
+      const hist_ = cycles.flatMap(c => (c.transactions || []).filter(t => t.groupId === groupId && t.type === 'expense' && t.date >= from));
+      return [...cur_, ...hist_];
+    };
+
+    const groupData = expGroups.map(g => {
+      const budget = g.subs.reduce((a, s) => a + s.budget, 0);
+      const spent  = _periodTx(g.id).reduce((a, t) => a + t.amount, 0);
+      return { name: g.name, color: g.color, spent, budget };
+    }).sort((a, b) => b.spent - a.spent).slice(0, 3);
+
+    // Dönemde kaç bütçe döngüsü varsa bütçeyi o kadar çarp
+    const cyclesInPeriod = cycles.filter(c =>
+      (c.end && c.end >= from) || (c.transactions || []).some(t => t.date >= from)
+    ).length;
+    const budgetMultiplier = 1 + cyclesInPeriod; // +1 aktif döngü
+
+    const singleBudget = expGroups.reduce((a, g) => a + g.subs.reduce((b, s) => b + s.budget, 0), 0);
+    const totalBudget  = singleBudget * budgetMultiplier;
+    const totalSpent   = periodExp;
+    const totalPct     = totalBudget > 0 ? Math.round(totalSpent / totalBudget * 100) : 0; // %100 tavanı yok
+    const totalOver    = totalSpent > totalBudget;
+
+    const _bar = (color, pct) =>
+      `<div style="margin-top:.1875rem;height:3px;border-radius:2px;background:var(--bg-elevated)">
+        <div style="height:100%;background:${color};width:${pct}%;border-radius:2px;transition:width 300ms ease-out"></div>
+      </div>`;
+    const _dot = c =>
+      `<span style="width:.375rem;height:.375rem;border-radius:50%;background:${c};flex-shrink:0;display:inline-block"></span>`;
+
+    const rows = groupData.map(g => {
+      const periodGroupBudget = g.budget * budgetMultiplier;
+      const pct   = periodGroupBudget > 0 ? Math.min(Math.round(g.spent / periodGroupBudget * 100), 100) : (g.spent > 0 ? 100 : 0);
+      const over  = g.spent > periodGroupBudget;
+      const color = over ? 'var(--red)' : g.color;
+      return `<div style="margin-top:.3125rem">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="display:flex;align-items:center;gap:.3125rem">
+            ${_dot(color)}
+            <span style="font-size:.625rem;color:var(--text-muted);letter-spacing:.03em">${g.name}</span>
+          </span>
+          <span class="mono" style="font-size:.6875rem;font-weight:700;color:${over ? 'var(--red)' : 'var(--text-primary)'};">${UI.maskCurrency(g.spent, cur)}</span>
+        </div>
+        ${_bar(color, pct)}
+      </div>`;
+    }).join('');
+
+    const footer = totalBudget > 0
+      ? `<div style="margin-top:auto;padding-top:.4375rem;border-top:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:.625rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary)">${UI.t('dash_budget_total')}</span>
+            <span class="mono" style="font-size:.6875rem;font-weight:700;color:${totalOver ? 'var(--red)' : 'var(--accent)'}">${totalPct}%</span>
+          </div>
+          <div style="margin-top:.1875rem;height:4px;border-radius:2px;background:var(--bg-elevated)">
+            <div style="height:100%;width:${Math.min(totalPct, 100)}%;border-radius:2px;background:${totalOver ? 'var(--red)' : 'var(--accent)'};opacity:.85"></div>
+          </div>
+        </div>`
+      : `<div class="kpi-change" style="margin-top:auto">
+          <span class="${totalOver ? 'badge-down' : 'badge-up'}">${totalOver ? '▼' : '▲'} ${UI.t(totalOver ? 'dash_over_limit' : 'dash_in_limit')}</span>
+        </div>`;
+
+    return `<div class="kpi-card" style="cursor:default;display:flex;flex-direction:column">
+      <div class="kpi-card-header">
+        <span class="kpi-label">${UI.t(spentKey)}</span>
+        <span class="kpi-icon" style="background:rgba(248,113,113,.15)">
+          <svg data-lucide="shopping-cart" style="color:#F87171"></svg>
+        </span>
+      </div>
+      <div class="kpi-value mono">${UI.maskCurrency(periodExp, cur)}</div>
+      ${expGroups.length ? rows : ''}
+      ${footer}
+    </div>`;
+  },
+
+  // ── Habits KPI card ─────────────────────────────────────
+  _habitsKpiHtml(periodDone, periodPoss, periodPct, hab, period) {
+    const today      = UI.today();
+    const dayIdx     = new Date().getDay();
+    const habList    = hab.list;
+    const todayDone  = hab.logs.filter(l => l.date === today && l.done).length;
+    const todayPoss  = habList.filter(h =>
+      h.frequency === 'daily' || (h.frequency === 'scheduled' && (h.days || []).includes(dayIdx))
+    ).length;
+    const todayPct   = todayPoss > 0 ? Math.min(Math.round(todayDone / todayPoss * 100), 100) : 0;
+    const perPct     = Math.min(periodPct, 100);
+    const periodKey  = period === 'month' ? 'dash_this_month' : period === 'year' ? 'dash_this_year' : 'dash_this_week';
+    const clr        = p => p >= 80 ? 'var(--green)' : p >= 50 ? 'var(--yellow)' : 'var(--red)';
+    const todayColor = clr(todayPct);
+    const perColor   = clr(perPct);
+
+    const _bar = (color, pct) =>
+      `<div style="margin-top:.1875rem;height:3px;border-radius:2px;background:var(--bg-elevated)">
+        <div style="height:100%;background:${color};width:${pct}%;border-radius:2px;transition:width 300ms ease-out"></div>
+      </div>`;
+    const _dot = c =>
+      `<span style="width:.375rem;height:.375rem;border-radius:50%;background:${c};flex-shrink:0;display:inline-block"></span>`;
+
+    const rows = habList.length ? `
+      <div style="margin-top:.3125rem">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="display:flex;align-items:center;gap:.3125rem">
+            ${_dot(todayColor)}
+            <span style="font-size:.625rem;color:var(--text-muted);letter-spacing:.03em">${UI.t('dash_today')}</span>
+          </span>
+          <span class="mono" style="font-size:.6875rem;font-weight:700;color:${todayColor}">${todayDone} / ${todayPoss}</span>
+        </div>
+        ${_bar(todayColor, todayPct)}
+      </div>
+      <div style="margin-top:.3125rem">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="display:flex;align-items:center;gap:.3125rem">
+            ${_dot(perColor)}
+            <span style="font-size:.625rem;color:var(--text-muted);letter-spacing:.03em">${UI.t(periodKey)}</span>
+          </span>
+          <span class="mono" style="font-size:.6875rem;font-weight:700;color:${perColor}">${periodDone} / ${periodPoss}</span>
+        </div>
+        ${_bar(perColor, perPct)}
+      </div>` : '';
+
+    const footer = habList.length
+      ? `<div style="margin-top:auto;padding-top:.4375rem;border-top:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:.625rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary)">${UI.t('dash_completion_rate')}</span>
+            <span class="mono" style="font-size:.6875rem;font-weight:700;color:${perColor}">${perPct}%</span>
+          </div>
+          <div style="margin-top:.1875rem;height:4px;border-radius:2px;background:var(--bg-elevated)">
+            <div style="height:100%;width:${perPct}%;border-radius:2px;background:${perColor};opacity:.85"></div>
+          </div>
+        </div>`
+      : `<div class="kpi-change" style="margin-top:auto">
+          <span class="${periodDone >= periodPoss * 0.5 ? 'badge-up' : 'badge-down'}">${periodDone >= periodPoss * 0.5 ? '▲' : '▼'} ${UI.t('dash_habits_pct', periodPct)}</span>
+        </div>`;
+
+    return `<div class="kpi-card" style="cursor:default;display:flex;flex-direction:column">
+      <div class="kpi-card-header">
+        <span class="kpi-label">${UI.t('dash_habits_done')}</span>
+        <span class="kpi-icon" style="background:rgba(52,211,153,.15)">
+          <svg data-lucide="check-circle" style="color:#34D399"></svg>
+        </span>
+      </div>
+      <div class="kpi-value">${periodDone} / ${periodPoss}</div>
+      ${rows}
+      ${footer}
+    </div>`;
+  },
+
+  // ── Goals KPI card ──────────────────────────────────────
+  _goalsKpiHtml(activeGoals, gls) {
+    const items     = gls.items;
+    const topActive = items
+      .filter(g => g.progress < 100)
+      .sort((a, b) => b.progress - a.progress)
+      .slice(0, 3);
+    const avgProg   = activeGoals > 0
+      ? Math.round(items.filter(g => g.progress < 100).reduce((a, g) => a + (g.progress || 0), 0) / activeGoals)
+      : 0;
+    const clr       = p => p >= 75 ? 'var(--green)' : p >= 40 ? 'var(--yellow)' : 'var(--accent)';
+    const avgColor  = clr(avgProg);
+
+    const _bar = (color, pct) =>
+      `<div style="margin-top:.1875rem;height:3px;border-radius:2px;background:var(--bg-elevated)">
+        <div style="height:100%;background:${color};width:${pct}%;border-radius:2px;transition:width 300ms ease-out"></div>
+      </div>`;
+    const _dot = c =>
+      `<span style="width:.375rem;height:.375rem;border-radius:50%;background:${c};flex-shrink:0;display:inline-block"></span>`;
+
+    const rows = topActive.map(g => {
+      const p = g.progress || 0;
+      const c = clr(p);
+      return `<div style="margin-top:.3125rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:.375rem">
+          <span style="display:flex;align-items:center;gap:.3125rem;min-width:0;overflow:hidden">
+            ${_dot(c)}
+            <span style="font-size:.625rem;color:var(--text-muted);letter-spacing:.03em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${g.title}</span>
+          </span>
+          <span class="mono" style="font-size:.6875rem;font-weight:700;color:${c};flex-shrink:0">%${p}</span>
+        </div>
+        ${_bar(c, p)}
+      </div>`;
+    }).join('');
+
+    const footer = items.length
+      ? `<div style="margin-top:auto;padding-top:.4375rem;border-top:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:.625rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary)">${UI.t('dash_avg_progress')}</span>
+            <span class="mono" style="font-size:.6875rem;font-weight:700;color:${avgColor}">%${avgProg}</span>
+          </div>
+          <div style="margin-top:.1875rem;height:4px;border-radius:2px;background:var(--bg-elevated)">
+            <div style="height:100%;width:${avgProg}%;border-radius:2px;background:${avgColor};opacity:.85"></div>
+          </div>
+        </div>`
+      : `<div class="kpi-change" style="margin-top:auto">
+          <span class="badge-up">▲ ${UI.t('dash_goals_of', items.length)}</span>
+        </div>`;
+
+    return `<div class="kpi-card" style="cursor:default;display:flex;flex-direction:column">
+      <div class="kpi-card-header">
+        <span class="kpi-label">${UI.t('dash_active_goals')}</span>
+        <span class="kpi-icon" style="background:rgba(251,191,36,.15)">
+          <svg data-lucide="star" style="color:#FBBF24"></svg>
+        </span>
+      </div>
+      <div class="kpi-value">${activeGoals}</div>
+      ${topActive.length ? rows : ''}
+      ${footer}
+    </div>`;
   },
 
   // ── KPI ─────────────────────────────────────────────────
@@ -222,8 +528,27 @@ const Dashboard = {
     const inc     = bud.transactions.filter(t => t.type === 'income').reduce((a, t) => a + t.amount, 0);
     const exp     = bud.transactions.filter(t => t.type === 'expense').reduce((a, t) => a + t.amount, 0);
     const cycles  = Store.get('budget_cycles') || [];
-    const histNet = cycles.reduce((a, c) => a + (c.net || 0), 0);
-    const net     = totalInv + inc - exp + histNet;
+    const _tryRateDash = Number(s.tryRate) || Number(s.exchangeRate) || 35;
+    const deposits = Store.getDeposits();
+    const depTotalUSD = deposits.reduce((sum, dep) => {
+      const p = Number(dep.principal) || 0;
+      const r = Number(dep.rate) || 0;
+      const today = UI.today();
+      const elapsed = Math.max(0, Math.floor((new Date(today) - new Date(dep.startDate)) / 86400000));
+      const dailyRate = r / 100 / 365;
+      let curVal;
+      if (dep.type === 'term') {
+        const td = Number(dep.termDays) || 30;
+        const usedDays = Math.min(elapsed, td);
+        curVal = p + p * dailyRate * usedDays;
+      } else {
+        curVal = p * Math.pow(1 + dailyRate, elapsed);
+      }
+      const depCode = dep.currency || 'TRY';
+      return sum + (depCode === 'USD' ? curVal : curVal / _tryRateDash);
+    }, 0);
+    const budNet  = inc - exp;  // sadece mevcut döngü — bütçe sayfasındaki Net Bakiye ile eşleşir
+    const net     = totalInv + depTotalUSD * rate + budNet;
 
     const from        = this._periodFrom();
     const periodDays  = this._period === 'month' ? 30 : this._period === 'year' ? 365 : 7;
@@ -236,19 +561,14 @@ const Dashboard = {
     const periodPct   = periodPoss > 0 ? Math.round(periodDone / periodPoss * 100) : 0;
     const activeGoals = gls.items.filter(g => g.progress < 100).length;
 
-    const spentKey = `dash_${this._period}_spent`;
-
-    const _allCards = [
-      { hideWhen: () => UI.isModuleHidden('budget') && UI.isModuleHidden('investments'),
-                                   label: UI.t('dash_net_worth'),    value: UI.maskCurrency(net, cur),           mono: true,  change: UI.t('dash_net_worth_change'),                                                              changeUp: true,                       icon: 'trending-up',   iconColor: '#7C6CFC' },
-      { module: 'budget',          label: UI.t(spentKey),            value: UI.maskCurrency(periodExp, cur),     mono: true,  change: UI.t('dash_in_limit'),                                                                      changeUp: true,                       icon: 'shopping-cart', iconColor: '#F87171' },
-      { module: 'habits',          label: UI.t('dash_habits_done'),  value: `${periodDone} / ${periodPoss}`,     mono: false, change: UI.t('dash_habits_pct', periodPct),                                                         changeUp: periodDone >= periodPoss * 0.5, icon: 'check-circle', iconColor: '#34D399' },
-      { module: 'goals',           label: UI.t('dash_active_goals'), value: String(activeGoals),                 mono: false, change: UI.t('dash_goals_of', gls.items.length),                                                    changeUp: true,                       icon: 'star',          iconColor: '#FBBF24' },
-    ];
-    const cards = _allCards.filter(c => !(c.hideWhen && c.hideWhen()) && (!c.module || !UI.isModuleHidden(c.module)));
+    const nwHidden = UI.isModuleHidden('budget') && UI.isModuleHidden('investments');
+    const nwHtml   = nwHidden ? '' : this._netWorthKpiHtml(totalInv, depTotalUSD * rate, deposits.length > 0, budNet, net, cur);
+    const budHtml  = UI.isModuleHidden('budget')  ? '' : this._budgetKpiHtml(periodExp, cur, bud, this._period, from, cycles);
+    const habHtml  = UI.isModuleHidden('habits')  ? '' : this._habitsKpiHtml(periodDone, periodPoss, periodPct, hab, this._period);
+    const goaHtml  = UI.isModuleHidden('goals')   ? '' : this._goalsKpiHtml(activeGoals, gls);
 
     const grid = document.getElementById('kpi-grid');
-    grid.innerHTML = cards.map(c => UI.kpiCard(c)).join('');
+    grid.innerHTML = nwHtml + budHtml + habHtml + goaHtml;
     lucide.createIcons({ nodes: [grid] });
   },
 
@@ -370,86 +690,35 @@ const Dashboard = {
       const priceUSD = aCur === 'USD' ? price : price / _usdRate(aCur);
       return displayCur === 'USD' ? priceUSD : priceUSD * rate;
     };
-    const typeMap = {
-      Stock: UI.t('asset_stock_us'), StockOther: UI.t('asset_stock_other'),
-      ETF: UI.t('asset_etf'), Crypto: UI.t('asset_crypto'),
-      Commodity: UI.t('asset_commodity'), Bond: UI.t('asset_bond'), Cash: UI.t('asset_cash'),
-    };
-    const cols = ['#7C6CFC','#34D399','#FBBF24','#60A5FA','#F87171','#F472B6','#A78BFA'];
-    const emptyMsg = `<div style="color:var(--text-muted);font-size:0.8125rem;text-align:center;padding:1rem 0">${UI.t('dash_no_assets')}</div>`;
 
-    if (!assets.length) {
-      Charts.doughnut('investmentPieChart', [], [], {});
-      Charts.doughnut('investmentTypeChart', [], [], {});
-      document.getElementById('investment-legend-symbol').innerHTML = emptyMsg;
-      document.getElementById('investment-legend-type').innerHTML   = emptyMsg;
-      return;
-    }
+    const today = UI.today();
+    const depItems = (Store.getDeposits ? Store.getDeposits() : []).map(dep => {
+      const p2     = Number(dep.principal) || 0;
+      const r2     = Number(dep.rate) || 0;
+      const start  = dep.startDate || today;
+      const elapsed = Math.max(0, Math.round((new Date(today) - new Date(start)) / 86400000));
+      const dailyRate = r2 / 100 / 365;
+      const curVal = dep.type === 'term'
+        ? p2 + p2 * dailyRate * Math.min(elapsed, Number(dep.termDays) || 30)
+        : p2 * Math.pow(1 + dailyRate, elapsed);
+      const depCode = dep.currency || 'TRY';
+      const value   = _toDisp(curVal, depCode);
+      return { symbol: dep.bankName || 'Mevduat', value, type: 'Deposit' };
+    });
 
-    // ── By Symbol ──
-    const _typeI18n = { Stock: 'inv_type_stock_lbl', StockOther: 'inv_type_stock_lbl', ETF: 'inv_type_etf_lbl', Crypto: 'inv_type_crypto_lbl', Commodity: 'inv_type_commodity_lbl', Bond: 'inv_type_bond_lbl', Cash: 'inv_type_cash_lbl' };
-    const _typeLbl  = t => UI.t(_typeI18n[t] || t);
-    const symData = assets.map(a => {
+    const items = assets.map(a => {
       const rawPrice = prices[a.symbol]?.price || a.buyPrice || 0;
-      const val      = _toDisp(rawPrice, a.buyCurrency || 'USD') * (a.quantity || 0);
+      const value    = _toDisp(rawPrice, a.buyCurrency || 'USD') * (a.quantity || 0);
       let type = a.assetType || 'Stock';
       if (type === 'Stock' && a.buyCurrency != null) type = 'StockOther';
-      return { symbol: a.symbol, val, type };
-    }).sort((a, b) => b.val - a.val);
-    const totalSym  = symData.reduce((s, x) => s + x.val, 0);
-    const symCols   = symData.map((_, i) => cols[i % cols.length]);
-    const symPcts   = symData.map(x => totalSym > 0 ? (x.val / totalSym * 100) : 0);
+      return { symbol: a.symbol, value, type };
+    }).concat(depItems);
 
-    Charts.doughnut('investmentPieChart', symData.map(x => x.symbol), symPcts.map(p => +p.toFixed(1)), {
-      colors: symCols,
-      tip: ctx => ` ${ctx.label}: %${ctx.parsed.toFixed(1)} (${UI.maskCurrency(symData[ctx.dataIndex].val, sym)})`,
+    InvPieCharts.render('dash-pie-container', items, {
+      prefix: 'dash',
+      mask:   v => UI.maskCurrency(v, sym),
+      externalTooltip: false,
     });
-    const centerEl = document.getElementById('inv-dash-center');
-    if (centerEl) centerEl.innerHTML =
-      `<span style="font-family:var(--font-mono);font-size:1.5rem;font-weight:700;color:var(--text-primary);line-height:1">${assets.length}</span>
-       <span style="font-size:0.625rem;color:var(--text-muted);font-weight:500;letter-spacing:.05em;margin-top:0.125rem">${UI.t('inv_asset_label')}</span>`;
-    const SYM_MAX = 7;
-    const symVisible = symData.slice(0, SYM_MAX);
-    const symRest    = symData.length - SYM_MAX;
-    document.getElementById('investment-legend-symbol').innerHTML =
-      symVisible.map((x, i) =>
-        `<div class="legend-item" style="gap:0.375rem;min-width:0;width:100%;justify-content:flex-start">
-          <div class="legend-dot" style="background:${symCols[i]};flex-shrink:0"></div>
-          <span style="font-size:0.8125rem;font-weight:600;white-space:nowrap">${x.symbol}</span>
-          <span style="white-space:nowrap;font-size:0.75rem"><span style="font-family:var(--font-mono);font-weight:700;color:${symCols[i]}">%${symPcts[i].toFixed(1)}</span> <span style="color:var(--text-muted)">${_typeLbl(x.type)}</span></span>
-        </div>`
-      ).join('') +
-      (symRest > 0
-        ? `<div style="font-size:0.75rem;color:var(--text-muted);padding-left:1.125rem">${UI.t('dash_n_more', symRest)}</div>`
-        : '');
-
-    // ── By Type ──
-    const byType = {};
-    assets.forEach(a => {
-      const rawPrice = prices[a.symbol]?.price || a.buyPrice || 0;
-      const val      = _toDisp(rawPrice, a.buyCurrency || 'USD') * (a.quantity || 0);
-      let type = a.assetType || 'Stock';
-      if (type === 'Stock' && a.buyCurrency != null) type = 'StockOther';
-      byType[type] = (byType[type] || 0) + val;
-    });
-    const totalType  = Object.values(byType).reduce((s, v) => s + v, 0);
-    const typeKeys   = Object.keys(byType);
-    const typeLabels = typeKeys.map(t => typeMap[t] || t);
-    const typeVals   = typeKeys.map(k => byType[k]);
-    const typePcts   = typeVals.map(v => totalType > 0 ? (v / totalType * 100) : 0);
-    const typeCols   = typeLabels.map((_, i) => cols[i % cols.length]);
-
-    Charts.doughnut('investmentTypeChart', typeLabels, typePcts.map(p => +p.toFixed(1)), {
-      colors: typeCols,
-      tip: ctx => ` ${ctx.label}: %${ctx.parsed.toFixed(1)} (${UI.maskCurrency(typeVals[ctx.dataIndex], sym)})`,
-    });
-    document.getElementById('investment-legend-type').innerHTML = typeLabels.map((l, i) =>
-      `<div class="legend-item" style="gap:0.375rem;min-width:0;width:100%;justify-content:flex-start">
-        <div class="legend-dot" style="background:${typeCols[i]};flex-shrink:0"></div>
-        <span style="font-size:0.8125rem;font-weight:600;white-space:nowrap">${l}</span>
-        <span style="white-space:nowrap;font-size:0.75rem;font-family:var(--font-mono);font-weight:700;color:${typeCols[i]}">%${typePcts[i].toFixed(1)}</span>
-      </div>`
-    ).join('');
   },
 
   // ── Focus Mode ──────────────────────────────────────────
@@ -678,7 +947,7 @@ const Dashboard = {
       ${allSorted.length > 2 ? `<div style="padding:0.5rem 0.75rem;border-top:1px solid var(--border)">
         <button class="btn btn-secondary lt-show-more-btn" onclick="Dashboard.showGymMore(this)">
           <svg data-lucide="chevron-down" style="width:0.875rem;height:0.875rem"></svg>
-          +${allSorted.length - 2} daha
+          ${UI.t('dash_n_more', allSorted.length - 2)}
         </button>
       </div>` : ''}`;
 

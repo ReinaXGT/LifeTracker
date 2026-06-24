@@ -1,5 +1,5 @@
 const UI = {
-  VERSION: 'v1.9',
+  VERSION: 'v2.0',
 
   MONTHS_SHORT: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
   MONTHS_LONG: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'],
@@ -125,9 +125,15 @@ const UI = {
       dash_active_goals: 'AKTİF HEDEFLER',
       dash_habits_pct: '%{0} bugün',
       dash_goals_of: '{0} hedeften',
-      dash_net_worth_change: 'yatırım + bütçe tasarrufu',
+      dash_net_worth_change: 'yatırım + mevduat + bütçe',
+      dash_nw_inv: 'Yatırım',
+      dash_nw_dep: 'Mevduat',
+      dash_nw_bud: 'Bütçe',
       dash_over_limit: 'limit aşıldı',
       dash_in_limit: 'limit dahilinde',
+      dash_budget_total: 'TOPLAM BÜTÇE',
+      dash_completion_rate: 'TAMAMLANMA ORANI',
+      dash_avg_progress: 'ORT. İLERLEME',
       dash_no_plans: 'Yaklaşan plan yok',
       dash_today: 'Bugün',
       dash_tomorrow: 'Yarın',
@@ -326,6 +332,8 @@ const UI = {
       inv_pnl: 'KAR/ZARAR',
       inv_pnl_pct: 'GETİRİ %',
       inv_asset_label: 'VARLIK',
+      inv_more_assets: 'varlık daha',
+      inv_type_label: 'TÜR',
       inv_no_assets: 'Henüz varlık eklenmedi',
       inv_asset_added: 'Varlık eklendi',
       inv_asset_updated: 'Varlık güncellendi',
@@ -369,6 +377,11 @@ const UI = {
       inv_tab_portfolio: 'Portföy',
       inv_tab_trades: 'İşlem Geçmişi',
       inv_history_btn: 'Geçmiş',
+      inv_hist_tab_trades: 'İşlemler',
+      inv_hist_tab_deposits: 'Mevduatlar',
+      inv_dep_term_short: 'Vadeli',
+      inv_dep_free_short: 'Vadesiz',
+      inv_dep_type_label: 'Tür',
       inv_trade_search: 'Sembol, isim...',
       inv_trade_opt_new_desc: 'Portföyde olmayan yeni bir varlık ekle',
       inv_trade_opt_buy_desc: 'Mevcut varlıktan daha fazla al, ortalama maliyet güncellenir',
@@ -610,6 +623,11 @@ const UI = {
       time_hist_subtitle: 'Aylık ve haftalık dağılım',
       time_prev_month: 'Önceki ay',
       time_hist_total: 'Toplam',
+      time_hist_tab_summary: 'Özet',
+      time_hist_tab_logs: 'Loglar',
+      time_hist_active_days: 'Aktif Gün',
+      time_hist_daily_avg: 'Günlük Ort.',
+      time_hist_top_cat: 'En Çok',
       time_next_month: 'Sonraki ay',
       time_invalid_range: 'Geçerli bir saat aralığı girin',
       time_log_added: 'Log eklendi',
@@ -778,9 +796,9 @@ const UI = {
       inv_type_etf: '🗂️ ETF / Fon',
       inv_type_crypto: '₿ Kripto Para',
       inv_type_commodity: '🥇 Emtia (Altın, Gümüş…)',
-      inv_type_bond: '📄 Tahvil / Mevduat',
+      inv_type_bond: '📄 Tahvil',
       inv_type_cash: '💵 Nakit / Döviz',
-      inv_type_stock_lbl: 'Hisse', inv_type_etf_lbl: 'ETF', inv_type_crypto_lbl: 'Kripto',
+      inv_type_stock_lbl: 'ABD Hissesi', inv_type_stock_other_lbl: 'Diğer Hisse', inv_type_etf_lbl: 'ETF', inv_type_crypto_lbl: 'Kripto',
       inv_type_commodity_lbl: 'Emtia', inv_type_bond_lbl: 'Tahvil', inv_type_cash_lbl: 'Nakit',
       inv_exchange_label: 'Borsa / Piyasa',
       inv_exchange_us: '🇺🇸 ABD Borsası (NYSE / NASDAQ)',
@@ -813,8 +831,10 @@ const UI = {
       time_daily_total_sub: 'Günlük toplam süre',
       inv_no_assets_legend: 'Portföyde varlık yok',
       inv_no_assets_table: 'Portföyünüzde henüz varlık yok — "Varlık Ekle" ile başlayın',
-      inv_by_symbol: 'Semboller',
+      inv_by_symbol: 'Varlıklar',
       inv_by_type: 'Varlık Türü',
+      inv_top_gainers: 'Kazananlar',
+      inv_top_losers: 'Kaybedenler',
       inv_updating: 'Fiyatlar güncelleniyor…',
       inv_refresh_in: '{0} dakika sonra güncellenebilir',
       inv_refresh_title: 'Fiyatları güncelle (API)',
@@ -848,6 +868,49 @@ const UI = {
       inv_col_pnl: 'Toplam K/Z',
       inv_col_pct: 'Dağılım %',
       inv_pnl_toggle_title: 'K/Z görünümünü değiştir',
+      inv_tab_deposits: 'Mevduat',
+      inv_dep_add: 'Mevduat Ekle',
+      inv_dep_edit: 'Mevduatı Düzenle',
+      inv_dep_type_term: 'Vadeli Mevduat',
+      inv_dep_type_free: 'Serbest / Günlük Faiz',
+      inv_dep_bank: 'Banka Adı',
+      inv_dep_bank_ph: 'Garanti, Yapı Kredi…',
+      inv_dep_principal: 'Anapara',
+      inv_dep_rate: 'Yıllık Faiz Oranı (%)',
+      inv_dep_term: 'Vade Süresi',
+      inv_dep_term_1m: '1 Ay (30 gün)',
+      inv_dep_term_3m: '3 Ay (90 gün)',
+      inv_dep_term_6m: '6 Ay (180 gün)',
+      inv_dep_term_1y: '1 Yıl (365 gün)',
+      inv_dep_term_custom: 'Özel',
+      inv_dep_term_custom_days: 'Gün Sayısı',
+      inv_dep_term_custom_ph: 'Örn: 45',
+      inv_dep_free_info: 'Günlük bileşik faiz — para vade beklemeksizin her gün büyür.',
+      inv_dep_start: 'Başlangıç Tarihi',
+      inv_dep_notes: 'Notlar',
+      inv_dep_current_val: 'Güncel Değer',
+      inv_dep_daily_gain: 'Günlük Kazanç',
+      inv_dep_accrued: 'Birikmiş Faiz',
+      inv_dep_maturity: 'Vade Tarihi',
+      inv_dep_days_left: 'Kalan',
+      inv_dep_days_left_val: '{0} gün',
+      inv_dep_expired: 'Vade Doldu',
+      inv_dep_no_deposits: 'Henüz mevduat hesabı yok',
+      inv_dep_confirm_delete: 'Bu mevduatı silmek istediğinden emin misin?',
+      inv_dep_skip_confirm: 'Bugün tekrar sorma',
+      inv_sub_stocks:       'Borsa / ETF',
+      inv_dep_status:       'Durum',
+      inv_dep_deleted: 'Mevduat silindi',
+      inv_dep_view_cards:   'Kartlar',
+      inv_dep_view_table:   'Tablo',
+      inv_dep_maturity_interest: 'Vade Faizi',
+      inv_dep_total_return: 'Vade Sonu',
+      inv_dep_status_active: 'Aktif',
+      inv_dep_search_ph:    'Banka ara...',
+      inv_tab_hist:         'İşlem Geçmişi',
+      inv_dep_saved: 'Mevduat kaydedildi',
+      inv_dep_free_note: 'Serbest hesap: günlük bileşik faiz, vade yok.',
+      inv_dep_term_note: 'Vadeli hesap: vade sonunda basit faiz ödenir.',
 
       // Dashboard panels
       dash_this_week: 'Bu Hafta',
@@ -1084,9 +1147,15 @@ const UI = {
       dash_active_goals: 'ACTIVE GOALS',
       dash_habits_pct: '{0}% today',
       dash_goals_of: 'of {0} goals',
-      dash_net_worth_change: 'investments + budget savings',
+      dash_net_worth_change: 'investments + deposits + budget',
+      dash_nw_inv: 'Invest.',
+      dash_nw_dep: 'Deposits',
+      dash_nw_bud: 'Budget',
       dash_over_limit: 'over limit',
       dash_in_limit: 'within limit',
+      dash_budget_total: 'TOTAL BUDGET',
+      dash_completion_rate: 'COMPLETION RATE',
+      dash_avg_progress: 'AVG. PROGRESS',
       dash_no_plans: 'No upcoming plans',
       dash_today: 'Today',
       dash_tomorrow: 'Tomorrow',
@@ -1289,6 +1358,8 @@ const UI = {
       inv_pnl: 'PROFIT/LOSS',
       inv_pnl_pct: 'RETURN %',
       inv_asset_label: 'ASSET',
+      inv_more_assets: 'more assets',
+      inv_type_label: 'TYPE',
       inv_no_assets: 'No assets added yet',
       inv_asset_added: 'Asset added',
       inv_asset_updated: 'Asset updated',
@@ -1332,6 +1403,11 @@ const UI = {
       inv_tab_portfolio: 'Portfolio',
       inv_tab_trades: 'Trade History',
       inv_history_btn: 'History',
+      inv_hist_tab_trades: 'Trades',
+      inv_hist_tab_deposits: 'Deposits',
+      inv_dep_term_short: 'Term',
+      inv_dep_free_short: 'Flex',
+      inv_dep_type_label: 'Type',
       inv_trade_search: 'Symbol, name...',
       inv_trade_opt_new_desc: 'Add a new asset not yet in your portfolio',
       inv_trade_opt_buy_desc: 'Buy more of an existing asset, average cost updates',
@@ -1573,6 +1649,11 @@ const UI = {
       time_hist_subtitle: 'Monthly and weekly breakdown',
       time_prev_month: 'Previous month',
       time_hist_total: 'Total',
+      time_hist_tab_summary: 'Summary',
+      time_hist_tab_logs: 'Logs',
+      time_hist_active_days: 'Active Days',
+      time_hist_daily_avg: 'Daily Avg.',
+      time_hist_top_cat: 'Top Category',
       time_next_month: 'Next month',
       time_invalid_range: 'Enter a valid time range',
       time_log_added: 'Log added',
@@ -1734,9 +1815,9 @@ const UI = {
       inv_type_etf: '🗂️ ETF / Fund',
       inv_type_crypto: '₿ Crypto',
       inv_type_commodity: '🥇 Commodity (Gold, Silver…)',
-      inv_type_bond: '📄 Bond / Deposit',
+      inv_type_bond: '📄 Bond',
       inv_type_cash: '💵 Cash / Currency',
-      inv_type_stock_lbl: 'Stock', inv_type_etf_lbl: 'ETF', inv_type_crypto_lbl: 'Crypto',
+      inv_type_stock_lbl: 'US Stock', inv_type_stock_other_lbl: 'Other Stock', inv_type_etf_lbl: 'ETF', inv_type_crypto_lbl: 'Crypto',
       inv_type_commodity_lbl: 'Commodity', inv_type_bond_lbl: 'Bond', inv_type_cash_lbl: 'Cash',
       inv_exchange_label: 'Exchange / Market',
       inv_exchange_us: '🇺🇸 US Market (NYSE / NASDAQ)',
@@ -1769,8 +1850,10 @@ const UI = {
       time_daily_total_sub: 'Daily total time',
       inv_no_assets_legend: 'No assets in portfolio',
       inv_no_assets_table: 'No assets yet — click "Add Asset" to get started',
-      inv_by_symbol: 'By Symbol',
+      inv_by_symbol: 'Assets',
       inv_by_type: 'By Type',
+      inv_top_gainers: 'Gainers',
+      inv_top_losers: 'Losers',
       inv_updating: 'Updating prices…',
       inv_refresh_in: 'Available in {0} min',
       inv_refresh_title: 'Update Prices (API)',
@@ -1804,6 +1887,49 @@ const UI = {
       inv_col_pnl: 'Total P&L',
       inv_col_pct: 'Allocation %',
       inv_pnl_toggle_title: 'Toggle P&L view',
+      inv_tab_deposits: 'Deposits',
+      inv_dep_add: 'Add Deposit',
+      inv_dep_edit: 'Edit Deposit',
+      inv_dep_type_term: 'Term Deposit',
+      inv_dep_type_free: 'Flexible / Daily Interest',
+      inv_dep_bank: 'Bank Name',
+      inv_dep_bank_ph: 'Chase, Wells Fargo…',
+      inv_dep_principal: 'Principal',
+      inv_dep_rate: 'Annual Interest Rate (%)',
+      inv_dep_term: 'Term Length',
+      inv_dep_term_1m: '1 Month (30 days)',
+      inv_dep_term_3m: '3 Months (90 days)',
+      inv_dep_term_6m: '6 Months (180 days)',
+      inv_dep_term_1y: '1 Year (365 days)',
+      inv_dep_term_custom: 'Custom',
+      inv_dep_term_custom_days: 'Number of Days',
+      inv_dep_term_custom_ph: 'E.g: 45',
+      inv_dep_free_info: 'Daily compound interest — your money grows every day without waiting for maturity.',
+      inv_dep_start: 'Start Date',
+      inv_dep_notes: 'Notes',
+      inv_dep_current_val: 'Current Value',
+      inv_dep_daily_gain: 'Daily Gain',
+      inv_dep_accrued: 'Accrued Interest',
+      inv_dep_maturity: 'Maturity Date',
+      inv_dep_days_left: 'Remaining',
+      inv_dep_days_left_val: '{0} days',
+      inv_dep_expired: 'Matured',
+      inv_dep_no_deposits: 'No deposit accounts yet',
+      inv_dep_confirm_delete: 'Are you sure you want to delete this deposit?',
+      inv_dep_skip_confirm: "Don't ask again today",
+      inv_sub_stocks:       'Stocks / ETF',
+      inv_dep_status:       'Status',
+      inv_dep_deleted: 'Deposit deleted',
+      inv_dep_view_cards:   'Cards',
+      inv_dep_view_table:   'Table',
+      inv_dep_maturity_interest: 'Maturity Interest',
+      inv_dep_total_return: 'At Maturity',
+      inv_dep_status_active: 'Active',
+      inv_dep_search_ph:    'Search bank...',
+      inv_tab_hist:         'Transaction History',
+      inv_dep_saved: 'Deposit saved',
+      inv_dep_free_note: 'Flexible account: daily compound interest, no fixed term.',
+      inv_dep_term_note: 'Term deposit: simple interest paid at maturity.',
 
       // Dashboard panels
       dash_this_week: 'This Week',
@@ -2040,9 +2166,15 @@ const UI = {
       dash_active_goals: '活跃目标',
       dash_habits_pct: '今日 {0}%',
       dash_goals_of: '共 {0} 个目标',
-      dash_net_worth_change: '投资 + 预算储蓄',
+      dash_net_worth_change: '投资 + 存款 + 预算',
+      dash_nw_inv: '投资',
+      dash_nw_dep: '存款',
+      dash_nw_bud: '预算',
       dash_over_limit: '超出限额',
       dash_in_limit: '在限额内',
+      dash_budget_total: '总预算',
+      dash_completion_rate: '完成率',
+      dash_avg_progress: '平均进度',
       dash_no_plans: '暂无即将到来的计划',
       dash_today: '今天',
       dash_tomorrow: '明天',
@@ -2245,6 +2377,8 @@ const UI = {
       inv_pnl: '盈亏',
       inv_pnl_pct: '收益率 %',
       inv_asset_label: '资产',
+      inv_more_assets: '更多资产',
+      inv_type_label: '类型',
       inv_no_assets: '暂未添加资产',
       inv_asset_added: '资产已添加',
       inv_asset_updated: '资产已更新',
@@ -2288,6 +2422,11 @@ const UI = {
       inv_tab_portfolio: '投资组合',
       inv_tab_trades: '交易记录',
       inv_history_btn: '历史记录',
+      inv_hist_tab_trades: '交易',
+      inv_hist_tab_deposits: '存款',
+      inv_dep_term_short: '定期',
+      inv_dep_free_short: '活期',
+      inv_dep_type_label: '类型',
       inv_trade_search: '代码、名称...',
       inv_trade_opt_new_desc: '添加投资组合中尚未存在的新资产',
       inv_trade_opt_buy_desc: '买入更多现有资产，平均成本自动更新',
@@ -2529,6 +2668,11 @@ const UI = {
       time_hist_subtitle: '月度和周度细分',
       time_prev_month: '上个月',
       time_hist_total: '总计',
+      time_hist_tab_summary: '摘要',
+      time_hist_tab_logs: '日志',
+      time_hist_active_days: '活跃天',
+      time_hist_daily_avg: '日均',
+      time_hist_top_cat: '最多',
       time_next_month: '下个月',
       time_invalid_range: '请输入有效的时间范围',
       time_log_added: '记录已添加',
@@ -2690,9 +2834,9 @@ const UI = {
       inv_type_etf: '🗂️ ETF / 基金',
       inv_type_crypto: '₿ 加密货币',
       inv_type_commodity: '🥇 大宗商品（黄金、白银…）',
-      inv_type_bond: '📄 债券 / 存款',
+      inv_type_bond: '📄 债券',
       inv_type_cash: '💵 现金 / 外汇',
-      inv_type_stock_lbl: '股票', inv_type_etf_lbl: 'ETF', inv_type_crypto_lbl: '加密货币',
+      inv_type_stock_lbl: '美股', inv_type_stock_other_lbl: '其他市场', inv_type_etf_lbl: 'ETF', inv_type_crypto_lbl: '加密货币',
       inv_type_commodity_lbl: '商品', inv_type_bond_lbl: '债券', inv_type_cash_lbl: '现金',
       inv_exchange_label: '交易所 / 市场',
       inv_exchange_us: '🇺🇸 美国市场（NYSE / NASDAQ）',
@@ -2727,6 +2871,8 @@ const UI = {
       inv_no_assets_table: '暂无资产 — 点击"添加资产"开始',
       inv_by_symbol: '按代码',
       inv_by_type: '按类型',
+      inv_top_gainers: '涨幅排名',
+      inv_top_losers: '跌幅排名',
       inv_updating: '价格更新中…',
       inv_refresh_in: '{0} 分钟后可更新',
       inv_refresh_title: '更新价格（API）',
@@ -2760,6 +2906,49 @@ const UI = {
       inv_col_pnl: '总盈亏',
       inv_col_pct: '占比 %',
       inv_pnl_toggle_title: '切换盈亏视图',
+      inv_tab_deposits: '存款',
+      inv_dep_add: '添加存款',
+      inv_dep_edit: '编辑存款',
+      inv_dep_type_term: '定期存款',
+      inv_dep_type_free: '活期/日利率',
+      inv_dep_bank: '银行名称',
+      inv_dep_bank_ph: '工商银行、建设银行…',
+      inv_dep_principal: '本金',
+      inv_dep_rate: '年利率 (%)',
+      inv_dep_term: '存款期限',
+      inv_dep_term_1m: '1个月（30天）',
+      inv_dep_term_3m: '3个月（90天）',
+      inv_dep_term_6m: '6个月（180天）',
+      inv_dep_term_1y: '1年（365天）',
+      inv_dep_term_custom: '自定义',
+      inv_dep_term_custom_days: '天数',
+      inv_dep_term_custom_ph: '例如：45',
+      inv_dep_free_info: '每日复利——您的资金每天增长，无需等待到期。',
+      inv_dep_start: '开始日期',
+      inv_dep_notes: '备注',
+      inv_dep_current_val: '当前价值',
+      inv_dep_daily_gain: '每日收益',
+      inv_dep_accrued: '应计利息',
+      inv_dep_maturity: '到期日',
+      inv_dep_days_left: '剩余',
+      inv_dep_days_left_val: '{0}天',
+      inv_dep_expired: '已到期',
+      inv_dep_no_deposits: '暂无存款账户',
+      inv_dep_confirm_delete: '确定要删除此存款吗？',
+      inv_dep_skip_confirm: '今天不再询问',
+      inv_sub_stocks:       '股票/ETF',
+      inv_dep_view_cards:   '卡片',
+      inv_dep_view_table:   '表格',
+      inv_dep_maturity_interest: '到期利息',
+      inv_dep_total_return: '到期价值',
+      inv_dep_status_active: '活跃',
+      inv_dep_search_ph:    '搜索银行...',
+      inv_tab_hist:         '交易历史',
+      inv_dep_status:       '状态',
+      inv_dep_deleted: '存款已删除',
+      inv_dep_saved: '存款已保存',
+      inv_dep_free_note: '活期账户：每日复利，无固定期限。',
+      inv_dep_term_note: '定期存款：到期时支付单利。',
 
       // Dashboard panels
       dash_this_week: '本周',
@@ -2996,9 +3185,15 @@ const UI = {
       dash_active_goals: 'METAS ACTIVAS',
       dash_habits_pct: '{0}% hoy',
       dash_goals_of: 'de {0} metas',
-      dash_net_worth_change: 'inversiones + ahorro presupuestario',
+      dash_net_worth_change: 'inversiones + depósitos + presupuesto',
+      dash_nw_inv: 'Inversión',
+      dash_nw_dep: 'Depósitos',
+      dash_nw_bud: 'Ppto.',
       dash_over_limit: 'sobre el límite',
       dash_in_limit: 'dentro del límite',
+      dash_budget_total: 'PRESUPUESTO TOTAL',
+      dash_completion_rate: 'TASA COMPLETADO',
+      dash_avg_progress: 'PROGRESO PROM.',
       dash_no_plans: 'Sin planes próximos',
       dash_today: 'Hoy',
       dash_tomorrow: 'Mañana',
@@ -3201,6 +3396,8 @@ const UI = {
       inv_pnl: 'GANANCIA/PÉRDIDA',
       inv_pnl_pct: 'RENDIMIENTO %',
       inv_asset_label: 'ACTIVO',
+      inv_more_assets: 'activos más',
+      inv_type_label: 'TIPO',
       inv_no_assets: 'Aún no hay activos',
       inv_asset_added: 'Activo añadido',
       inv_asset_updated: 'Activo actualizado',
@@ -3244,6 +3441,11 @@ const UI = {
       inv_tab_portfolio: 'Portafolio',
       inv_tab_trades: 'Historial',
       inv_history_btn: 'Historial',
+      inv_hist_tab_trades: 'Operaciones',
+      inv_hist_tab_deposits: 'Depósitos',
+      inv_dep_term_short: 'Plazo',
+      inv_dep_free_short: 'Flex',
+      inv_dep_type_label: 'Tipo',
       inv_trade_search: 'Símbolo, nombre...',
       inv_trade_opt_new_desc: 'Añadir un nuevo activo que no está en tu cartera',
       inv_trade_opt_buy_desc: 'Comprar más de un activo existente, se actualiza el coste medio',
@@ -3485,6 +3687,11 @@ const UI = {
       time_hist_subtitle: 'Desglose mensual y semanal',
       time_prev_month: 'Mes anterior',
       time_hist_total: 'Total',
+      time_hist_tab_summary: 'Resumen',
+      time_hist_tab_logs: 'Registros',
+      time_hist_active_days: 'Días Activos',
+      time_hist_daily_avg: 'Prom. Diario',
+      time_hist_top_cat: 'Top Categoría',
       time_next_month: 'Mes siguiente',
       time_invalid_range: 'Introduce un intervalo de tiempo válido',
       time_log_added: 'Registro añadido',
@@ -3646,9 +3853,9 @@ const UI = {
       inv_type_etf: '🗂️ ETF / Fondo',
       inv_type_crypto: '₿ Cripto',
       inv_type_commodity: '🥇 Materia prima (Oro, Plata…)',
-      inv_type_bond: '📄 Bono / Depósito',
+      inv_type_bond: '📄 Bono',
       inv_type_cash: '💵 Efectivo / Divisa',
-      inv_type_stock_lbl: 'Acción', inv_type_etf_lbl: 'ETF', inv_type_crypto_lbl: 'Cripto',
+      inv_type_stock_lbl: 'Bolsa EE.UU.', inv_type_stock_other_lbl: 'Otra Bolsa', inv_type_etf_lbl: 'ETF', inv_type_crypto_lbl: 'Cripto',
       inv_type_commodity_lbl: 'Emtia', inv_type_bond_lbl: 'Bono', inv_type_cash_lbl: 'Efectivo',
       inv_exchange_label: 'Bolsa / Mercado',
       inv_exchange_us: '🇺🇸 Mercado EE.UU. (NYSE / NASDAQ)',
@@ -3683,6 +3890,8 @@ const UI = {
       inv_no_assets_table: 'Aún no hay activos — haz clic en "Añadir activo" para empezar',
       inv_by_symbol: 'Por símbolo',
       inv_by_type: 'Por tipo',
+      inv_top_gainers: 'Ganadores',
+      inv_top_losers: 'Perdedores',
       inv_updating: 'Actualizando precios…',
       inv_refresh_in: 'Disponible en {0} min',
       inv_refresh_title: 'Actualizar precios (API)',
@@ -3716,6 +3925,49 @@ const UI = {
       inv_col_pnl: 'G/P Total',
       inv_col_pct: 'Asignación %',
       inv_pnl_toggle_title: 'Cambiar vista de G/P',
+      inv_tab_deposits: 'Depósitos',
+      inv_dep_add: 'Añadir Depósito',
+      inv_dep_edit: 'Editar Depósito',
+      inv_dep_type_term: 'Depósito a Plazo',
+      inv_dep_type_free: 'Flexible / Interés Diario',
+      inv_dep_bank: 'Nombre del Banco',
+      inv_dep_bank_ph: 'BBVA, Santander…',
+      inv_dep_principal: 'Principal',
+      inv_dep_rate: 'Tasa de Interés Anual (%)',
+      inv_dep_term: 'Plazo',
+      inv_dep_term_1m: '1 Mes (30 días)',
+      inv_dep_term_3m: '3 Meses (90 días)',
+      inv_dep_term_6m: '6 Meses (180 días)',
+      inv_dep_term_1y: '1 Año (365 días)',
+      inv_dep_term_custom: 'Personalizado',
+      inv_dep_term_custom_days: 'Número de Días',
+      inv_dep_term_custom_ph: 'Ej: 45',
+      inv_dep_free_info: 'Interés compuesto diario — su dinero crece cada día sin esperar al vencimiento.',
+      inv_dep_start: 'Fecha de Inicio',
+      inv_dep_notes: 'Notas',
+      inv_dep_current_val: 'Valor Actual',
+      inv_dep_daily_gain: 'Ganancia Diaria',
+      inv_dep_accrued: 'Interés Acumulado',
+      inv_dep_maturity: 'Fecha de Vencimiento',
+      inv_dep_days_left: 'Restante',
+      inv_dep_days_left_val: '{0} días',
+      inv_dep_expired: 'Vencido',
+      inv_dep_no_deposits: 'No hay cuentas de depósito aún',
+      inv_dep_confirm_delete: '¿Estás seguro de que deseas eliminar este depósito?',
+      inv_dep_skip_confirm: 'No preguntar hoy',
+      inv_sub_stocks:       'Acciones / ETF',
+      inv_dep_view_cards:   'Tarjetas',
+      inv_dep_view_table:   'Tabla',
+      inv_dep_maturity_interest: 'Interés al Vencimiento',
+      inv_dep_total_return: 'Al Vencimiento',
+      inv_dep_status_active: 'Activo',
+      inv_dep_search_ph:    'Buscar banco...',
+      inv_tab_hist:         'Historial de Transacciones',
+      inv_dep_status:       'Estado',
+      inv_dep_deleted: 'Depósito eliminado',
+      inv_dep_saved: 'Depósito guardado',
+      inv_dep_free_note: 'Cuenta flexible: interés compuesto diario, sin plazo fijo.',
+      inv_dep_term_note: 'Depósito a plazo: interés simple pagado al vencimiento.',
 
       // Dashboard panels
       dash_this_week: 'Esta semana',
@@ -3952,9 +4204,15 @@ const UI = {
       dash_active_goals: 'OBJECTIFS ACTIFS',
       dash_habits_pct: "{0}% aujourd'hui",
       dash_goals_of: 'sur {0} objectifs',
-      dash_net_worth_change: 'investissements + épargne budgétaire',
+      dash_net_worth_change: 'investissements + dépôts + budget',
+      dash_nw_inv: 'Invest.',
+      dash_nw_dep: 'Dépôts',
+      dash_nw_bud: 'Budget',
       dash_over_limit: 'au-dessus de la limite',
       dash_in_limit: 'dans la limite',
+      dash_budget_total: 'BUDGET TOTAL',
+      dash_completion_rate: 'TAUX D\'ACHÈVEMENT',
+      dash_avg_progress: 'PROGRESSION MOY.',
       dash_no_plans: 'Aucun plan à venir',
       dash_today: "Aujourd'hui",
       dash_tomorrow: 'Demain',
@@ -4157,6 +4415,8 @@ const UI = {
       inv_pnl: 'GAIN/PERTE',
       inv_pnl_pct: 'RENDEMENT %',
       inv_asset_label: 'ACTIF',
+      inv_more_assets: 'actifs de plus',
+      inv_type_label: 'TYPE',
       inv_no_assets: "Aucun actif pour l'instant",
       inv_asset_added: 'Actif ajouté',
       inv_asset_updated: 'Actif mis à jour',
@@ -4200,6 +4460,11 @@ const UI = {
       inv_tab_portfolio: 'Portefeuille',
       inv_tab_trades: 'Historique',
       inv_history_btn: 'Historique',
+      inv_hist_tab_trades: 'Opérations',
+      inv_hist_tab_deposits: 'Dépôts',
+      inv_dep_term_short: 'Terme',
+      inv_dep_free_short: 'Flex',
+      inv_dep_type_label: 'Type',
       inv_trade_search: 'Symbole, nom...',
       inv_trade_opt_new_desc: 'Ajouter un nouvel actif absent de votre portefeuille',
       inv_trade_opt_buy_desc: 'Acheter davantage d\'un actif existant, le coût moyen se met à jour',
@@ -4441,6 +4706,11 @@ const UI = {
       time_hist_subtitle: 'Répartition mensuelle et hebdomadaire',
       time_prev_month: 'Mois précédent',
       time_hist_total: 'Total',
+      time_hist_tab_summary: 'Résumé',
+      time_hist_tab_logs: 'Journaux',
+      time_hist_active_days: 'Jours Actifs',
+      time_hist_daily_avg: 'Moy. Journ.',
+      time_hist_top_cat: 'Catégorie Top',
       time_next_month: 'Mois suivant',
       time_invalid_range: 'Entrez une plage horaire valide',
       time_log_added: 'Enregistrement ajouté',
@@ -4602,9 +4872,9 @@ const UI = {
       inv_type_etf: '🗂️ ETF / Fonds',
       inv_type_crypto: '₿ Crypto',
       inv_type_commodity: '🥇 Matière première (Or, Argent…)',
-      inv_type_bond: '📄 Obligation / Dépôt',
+      inv_type_bond: '📄 Obligation',
       inv_type_cash: '💵 Liquidités / Devise',
-      inv_type_stock_lbl: 'Action', inv_type_etf_lbl: 'ETF', inv_type_crypto_lbl: 'Crypto',
+      inv_type_stock_lbl: 'Bourse US', inv_type_stock_other_lbl: 'Autre Bourse', inv_type_etf_lbl: 'ETF', inv_type_crypto_lbl: 'Crypto',
       inv_type_commodity_lbl: 'Matière première', inv_type_bond_lbl: 'Obligation', inv_type_cash_lbl: 'Liquidités',
       inv_exchange_label: 'Bourse / Marché',
       inv_exchange_us: '🇺🇸 Marché US (NYSE / NASDAQ)',
@@ -4639,6 +4909,8 @@ const UI = {
       inv_no_assets_table: "Aucun actif pour l'instant — cliquez sur \"Ajouter un actif\" pour commencer",
       inv_by_symbol: 'Par symbole',
       inv_by_type: 'Par type',
+      inv_top_gainers: 'Gagnants',
+      inv_top_losers: 'Perdants',
       inv_updating: 'Mise à jour des prix…',
       inv_refresh_in: 'Disponible dans {0} min',
       inv_refresh_title: 'Mettre à jour les prix (API)',
@@ -4672,6 +4944,49 @@ const UI = {
       inv_col_pnl: 'G/P Total',
       inv_col_pct: 'Répartition %',
       inv_pnl_toggle_title: 'Changer la vue G/P',
+      inv_tab_deposits: 'Dépôts',
+      inv_dep_add: 'Ajouter un Dépôt',
+      inv_dep_edit: 'Modifier le Dépôt',
+      inv_dep_type_term: 'Dépôt à Terme',
+      inv_dep_type_free: 'Flexible / Intérêt Quotidien',
+      inv_dep_bank: 'Nom de la Banque',
+      inv_dep_bank_ph: 'BNP Paribas, Crédit Agricole…',
+      inv_dep_principal: 'Principal',
+      inv_dep_rate: "Taux d'Intérêt Annuel (%)",
+      inv_dep_term: 'Durée',
+      inv_dep_term_1m: '1 Mois (30 jours)',
+      inv_dep_term_3m: '3 Mois (90 jours)',
+      inv_dep_term_6m: '6 Mois (180 jours)',
+      inv_dep_term_1y: '1 An (365 jours)',
+      inv_dep_term_custom: 'Personnalisé',
+      inv_dep_term_custom_days: 'Nombre de Jours',
+      inv_dep_term_custom_ph: 'Ex : 45',
+      inv_dep_free_info: 'Intérêts composés quotidiens — votre argent croît chaque jour sans attendre l\'échéance.',
+      inv_dep_start: 'Date de Début',
+      inv_dep_notes: 'Notes',
+      inv_dep_current_val: 'Valeur Actuelle',
+      inv_dep_daily_gain: 'Gain Quotidien',
+      inv_dep_accrued: 'Intérêts Courus',
+      inv_dep_maturity: "Date d'Échéance",
+      inv_dep_days_left: 'Restant',
+      inv_dep_days_left_val: '{0} jours',
+      inv_dep_expired: 'Échu',
+      inv_dep_no_deposits: 'Aucun compte de dépôt pour le moment',
+      inv_dep_confirm_delete: 'Êtes-vous sûr de vouloir supprimer ce dépôt ?',
+      inv_dep_skip_confirm: 'Ne plus demander aujourd\'hui',
+      inv_sub_stocks:       'Actions / ETF',
+      inv_dep_view_cards:   'Cartes',
+      inv_dep_view_table:   'Tableau',
+      inv_dep_maturity_interest: "Intérêt à l'Échéance",
+      inv_dep_total_return: "À l'Échéance",
+      inv_dep_status_active: 'Actif',
+      inv_dep_search_ph:    'Rechercher une banque...',
+      inv_tab_hist:         "Historique des Transactions",
+      inv_dep_status:       'Statut',
+      inv_dep_deleted: 'Dépôt supprimé',
+      inv_dep_saved: 'Dépôt enregistré',
+      inv_dep_free_note: 'Compte flexible : intérêts composés quotidiens, sans durée fixe.',
+      inv_dep_term_note: "Dépôt à terme : intérêts simples versés à l'échéance.",
 
       // Dashboard panels
       dash_this_week: 'Cette semaine',
@@ -4845,13 +5160,17 @@ const UI = {
       }
     });
 
-    // Settings link in footer
-    const settingsLink = document.querySelector('.sidebar-footer .nav-link');
+    // Settings & Help links in footer
+    const settingsLink = document.querySelector('.sidebar-footer .settings-privacy-row .nav-link');
     if (settingsLink) {
       const label = settingsLink.querySelector('.nav-label');
       const txt = this.t('sidebar_settings');
       if (label) label.textContent = txt;
       settingsLink.dataset.tooltip = txt;
+    }
+    const helpLink = document.querySelector('.sidebar-footer > .nav-link');
+    if (helpLink) {
+      helpLink.dataset.tooltip = this.t('sidebar_help');
     }
 
     // Topbar title + browser tab title
@@ -4882,13 +5201,18 @@ const UI = {
   // ── Help modal ───────────────────────────────────────────
   _openHelp() {
     const lang = this.getLang();
-    const pages = this._helpPages()[lang] || this._helpPages()['en'];
+    const allPages = this._helpPages()[lang] || this._helpPages()['en'];
     const titles = { tr: 'Kullanım Kılavuzu', en: 'User Guide', zh: '使用指南', es: 'Guía de uso', fr: "Guide d'utilisation" };
     const tipLabels = { tr: 'İpucu', en: 'Tip', zh: '提示', es: 'Consejo', fr: 'Astuce' };
     const featLabels = { tr: 'Özellikler', en: 'Features', zh: '功能', es: 'Funciones', fr: 'Fonctionnalités' };
     const closeLabel = { tr: 'Kapat', en: 'Close', zh: '关闭', es: 'Cerrar', fr: 'Fermer' };
 
     if (document.getElementById('lt-help-overlay')) return;
+
+    // Page index 0=Settings,1=Dashboard,2=focusmode,3=timelog,4=habits,5=gym,6=plans,7=goals,8=budget,9=investments
+    const _PAGE_MODULE_KEYS = [null, null, 'focusmode', 'timelog', 'habits', 'gym', 'plans', 'goals', 'budget', 'investments'];
+    const _hidden = Store.get('hidden_modules') || {};
+    const pages = allPages.filter((_, i) => !_PAGE_MODULE_KEYS[i] || !_hidden[_PAGE_MODULE_KEYS[i]]);
 
     let activePage = 0;
 
@@ -4960,262 +5284,777 @@ const UI = {
     return {
       tr: [
         {
-          icon: 'settings', title: 'Ayarlar', desc: 'Genel tercihler, görünüm ve veri yönetimi merkezi. Sidebar alt kısmındaki dişli çark ikonuna tıklayarak her sayfadan açılır. Değişiklikler tüm sayfalara anında yansır.',
-          features: ['Dil seçimi: TR / EN / ZH / ES / FR — arayüz seçilen dile anında geçer', 'Para birimi: ₺, $, €, £ ve diğerleri — finansal değerlerin gösterim sembolü', 'Tema: 12 tema (Dark, Midnight, Ocean, Forest, Sunset, Rose, Amber, Crimson, Nebula, Arctic, Neon, White)', 'Arayüz Ölçeği: %60–%140 arası kaydırıcı — rem tabanlı tüm ölçüler orantılı büyür/küçülür', 'Gizlilik Modu: para değerlerini •••• ile maskeler; sidebar\'daki göz butonu ya da buradan açılıp kapatılır', 'Hafta Başlangıcı: Pazartesi veya Pazar seçilebilir — alışkanlık ve zaman grafiklerini etkiler', 'Yatırım API Anahtarları: Alpha Vantage (hisse/ETF/kripto fiyatı) ve Exchange Rates API (döviz kuru)', 'Veri Dışa Aktar: tüm lt_ verilerini JSON dosyası olarak bilgisayara indirir', 'Veri İçe Aktar: JSON dosyasındaki verilerle mevcut tüm verilerin üzerine yazar (geri dönüşü yok)', 'Tüm Verileri Sil: 🔄 Seed veriye dön — tüm veriler silinir, uygulama örnek verilerle yeniden başlar (sıfırlama güvenli kapı); 💥 Tamamen sil — hiçbir veri kalmaz, geri dönüş yoktur'],
-          tip: 'İçe Aktar, mevcut tüm verileri silerek dosyadakileri yazar — önce Dışa Aktar ile yedek al. Verilerini kaybetme endişesi varsa "Seed veriye dön" seçeneği her zaman örnek içerikli temiz bir başlangıç sağlar.'
+          icon: 'settings', title: 'Ayarlar', desc: 'Uygulamanın tüm görünüm ve davranış ayarları burada toplanmıştır. Sol menünün en altındaki dişli çark simgesine tıklayarak her sayfadan ulaşabilirsiniz. Yaptığınız değişiklikler hemen geçerli olur.',
+          features: ['Dil: Uygulamanın dilini Türkçe, İngilizce, Çince, İspanyolca veya Fransızca olarak seçin. Tüm menüler ve yazılar seçtiğiniz dilde görünür.', 'Para birimi: Uygulamada tutarlar hangi sembolle gösterilsin? Türk lirası (₺), dolar ($), euro (€) ve daha fazlası arasından seçim yapın.', 'Renk düzeni (Tema): Uygulamanın renklerini değiştirin. 12 farklı renk seçeneği var — koyu, açık ve renkli tasarımlar arasından dilediğinizi seçin.', 'Yazı ve öğe boyutu: Ekranınız küçükse ya da büyük yazı tercih ediyorsanız, kaydırıcıyla her şeyi büyütebilir veya küçültebilirsiniz.', 'Gizlilik modu: Açıkken tüm para miktarları •••• olarak gizlenir. Yanınızda biri varken bilgilerinizi korumak için kullanışlıdır.', 'Hafta başlangıcı: Haftanın Pazartesi mi Pazar mı başladığını seçin. Bu tercih alışkanlık ve zaman takibi grafiklerini etkiler.', 'Canlı fiyat güncelleme: Hisse senedi, kripto para ve döviz kurlarının otomatik güncellenmesi için bağlantı anahtarlarını buradan girebilirsiniz. (Yatırım modülü kullanıcıları içindir.)', 'Yedekleme (Dışa Aktar): Tüm verilerinizi bilgisayarınıza dosya olarak kaydeder. Verilerinizi korumak için düzenli yedek almanızı öneririz.', 'Yedekten Yükleme (İçe Aktar): Daha önce aldığınız yedeği geri yükler. Dikkat: mevcut verilerinizin üzerine yazar ve bu işlem geri alınamaz.', 'Veri sil — iki farklı seçenek sunar: "Örnek verilere sıfırla" kişisel verilerinizi siler ve uygulama hazır örnek içerikle yeniden başlar; "Her şeyi sil" ise tüm verileri kalıcı olarak siler, geri dönüş yoktur.', 'Modülleri gizle (Paneller sekmesi): Kullanmadığınız sayfaları sol menüden kaldırabilirsiniz. Verileriniz silinmez, yalnızca o sayfa menüde görünmez olur.'],
+          tip: 'Verilerinizi düzenli olarak yedeklemek için "Dışa Aktar" butonunu kullanın. İçe Aktar işlemi mevcut verilerinizin üzerine yazar — önce mutlaka yedek alın. Uygulamayı temizden başlatmak istiyorsanız "Örnek verilere sıfırla" seçeneği hazır içerikli bir başlangıç sunar.'
         },
         {
-          icon: 'layout-dashboard', title: 'Dashboard', desc: 'Tüm modüllerin merkezi özet ekranı. Net varlık, harcama, alışkanlık tamamlama oranı ve aktif hedef sayısı gibi kritik metrikleri tek bakışta görürsün. Panel sırasını ve görünürlüğünü kendi tercihine göre düzenleyebilirsin.',
-          features: ['Haftalık / Aylık / Yıllık period seçimi ile trend analizi', 'Panelleri kilit butonuyla sürükle-bırak ile yeniden sırala', 'Yaklaşan planlar ve gecikmiş görev uyarıları', 'Yatırım portföyü pasta grafiği ve varlık dağılımı', 'Hedefler ilerleme çubukları ve milestone sayacı', 'Son antrenmanlar ve egzersiz detayları', 'Bütçe harcama durumu — kategori bazlı progress bar\'lar'],
-          tip: 'Sağ üstteki kilit ikonuna tıklayarak panelleri sürükleyip sıralayabilir, göz ikonuyla da istediğin paneli gizleyebilirsin.'
+          icon: 'layout-dashboard', title: 'Dashboard', desc: 'Uygulamanın tüm bölümlerinin özetini tek ekranda gösteren ana sayfanızdır. Harcamalarınız, alışkanlıklarınız, hedefleriniz, antrenmalarınız ve daha fazlası burada bir arada görünür. Hangi bilgilerin öne çıkacağını ve sıralamayı siz belirlersiniz.',
+          features: [
+            'Dört özet kutucuk (sayfanın en üstünde): Net varlığınız, seçilen dönemdeki toplam harcamanız, alışkanlıklarınızı ne oranda tamamladığınız ve kaç aktif hedefiniz olduğu — en önemli bilgiler sizi hemen karşılar.',
+            'Zaman grafiği: Seçilen hafta, ay veya yılda aktivitelerinize toplam kaç dakika harcadığınızı çizgi grafik olarak gösterir. Yoğun günlerinizi ve boş geçen haftaları kolayca fark edebilirsiniz.',
+            'Pomodoro bölümü: Çalışma seanslarınızın kısa özeti — kaç oturum tamamladığınız, odaklanarak kaç dakika geçirdiğiniz ve kaç günlük çalışma seriniz olduğu görünür.',
+            'Spor bölümü: Son iki antrenmanınızın tarihi, türü ve süresi listelenir. Üzerine tıklayarak hangi egzersizleri yaptığınızı ve detaylarını görebilirsiniz.',
+            'Bütçe bölümü: Belirlediğiniz bütçeye göre her gider kategorisinde ne kadar harcadığınız yatay çubuk grafiklerle gösterilir. Dolmak üzere olan kategoriler daha koyu renkte öne çıkar.',
+            'Yatırım bölümü: Portföyünüzdeki varlıkların dağılımını iki pasta grafik olarak gösterir — biri varlık varlık bazında, diğeri hisse/kripto/tahvil gibi türlere göre.',
+            'Hayaller & Hedefler bölümü: Tamamlanmamış hedefleriniz ilerleme çubuklarıyla listelenir. Hangi hedefinizin ne kadar yol kat ettiğini bir bakışta anlarsınız.',
+            'Yaklaşan Planlar bölümü: Önümüzdeki 7 gün içinde bitirilmesi gereken görevleriniz ve geciken işler burada listelenir; hiçbir şeyi gözden kaçırmazsınız.',
+            'Dönem seçici (sağ üst köşe): "Bu Hafta", "Bu Ay" veya "Bu Yıl" seçeneğini değiştirerek özet kutucukları ve grafiklerin hangi zaman dilimini kapsayacağını belirleyebilirsiniz.',
+            'Bölümleri yeniden sıralama: Sağ üstteki kilit simgesine tıkladığınızda bölümler kesik çerçeveli hale gelir. Bu modda bölümleri tutup istediğiniz yere sürükleyebilirsiniz. Kilit simgesine tekrar tıklayarak düzenlemeyi kaydedip çıkabilirsiniz.',
+            'Hangi bölümler görünsün? Ayarlar → Paneller sekmesinden kullanmadığınız bölümleri kapatabilirsiniz. Kapattığınızda o bölüm hem Dashboard\'dan hem de sol menüden kalkar; verileriniz silinmez, sadece ekrandan kaldırılmış olur.'
+          ],
+          tip: 'En sık kontrol ettiğiniz bilgileri öne alın. Örneğin yalnızca bütçe ve hedef takip ediyorsanız spor ve pomodoro bölümlerini gizleyerek daha sade bir görünüm elde edebilirsiniz. Bölümleri istediğiniz zaman tekrar açabilirsiniz.'
         },
         {
-          icon: 'timer', title: 'Pomodoro', desc: 'Üç modlu odak zamanlayıcı. Klasik Pomodoro döngüsü (çalışma + mola), sınırsız Flow modu veya özel geri sayımla derinlemesine odaklanabilirsin. Her oturum otomatik olarak Zaman sayfasına kaydedilir.',
-          features: ['Pomodoro (25 dk çalışma + mola döngüsü), Flow (sınırsız) ve Geri Sayım modları', 'Göreve bağlama — aktif görevi başlığa yansıtır; harcanan pomodoro sayısı takip edilir', 'Alt görev paneli — çalışırken subtask\'ları görüntüle ve işaretle', 'Bayrak butonu: timer çalışırken anlık split noktası işaretler; geçen süre ve saat kaydedilir', 'Sıfırla butonu: son flag\'e kadar kaydet / son flag\'e sar / tümünü sil — 3 seçenek sunar', 'Bitir butonu: tüm süreyi kaydet ya da flag\'lere göre bölerek kaydet seçeneği sunar', 'Fazla mesai modu: süre dolunca +MM:SS ile devam eder, Bitir butonuyla sonlandırılır', 'Tarayıcı kapatılsa veya sayfa yenilense bile timer kaldığı yerden devam eder (8 saatlik TTL)', 'Birden fazla açık sekme gerçek zamanlı olarak birbiriyle senkronize çalışır'],
-          tip: 'Ayarlar bölümünden çalışma, kısa mola ve uzun mola sürelerini ihtiyacına göre değiştirebilirsin.'
+          icon: 'timer', title: 'Odaklanma Modu', desc: 'Çalışma sürenizi ölçen ve kayıt altına alan zamanlayıcı sayfasıdır. Üç farklı çalışma biçimi sunar: klasik Pomodoro döngüsü, sınırsız akış modu ve kendi belirlediğiniz geri sayım. Her oturum tamamlandığında Zaman Takibi sayfasına otomatik olarak eklenir.',
+          features: [
+            'Pomodoro modu: 25 dakika çalışma, ardından 5 dakika kısa mola döngüsüyle ilerler. Dört oturum tamamlandıktan sonra 15 dakikalık uzun mola başlar. Çalışma ve mola sürelerini ayarlar bölümünden istediğiniz gibi değiştirebilirsiniz.',
+            'Akış modu (Flow): Süre sınırı olmayan, sıfırdan ilerleyen bir kronometre. Ne kadar çalıştığınızı kayıt altına almak ama süreyle sınırlı kalmamak istediğinizde kullanın.',
+            'Geri sayım modu: Kendiniz saat, dakika ve saniye girersiniz; süre dolduğunda sesli uyarı alırsınız ve sayaç sıfırlanır.',
+            'Göreve bağlama: Zamanlayıcıyı başlatmadan önce o gün yapmanız gereken görevlerden birini seçebilirsiniz. Seçili görevin adı sayaç ekranında görünür ve harcadığınız süre o görevin üzerine yazılır.',
+            'Alt görev paneli: Seçili görevin alt adımları ekranın sol tarafında görünür. Çalışırken bunları tıklayarak tamamlanmış olarak işaretleyebilirsiniz. Oturumu bitirdiğinizde kalan alt adımlar otomatik olarak tamamlandı kabul edilir.',
+            'Bayrak butonu: Çalışırken "şu ana kadar olan kısmı kaydet" demek için bayrağa tıklarsınız. Her bayrak, o anın saatini ve geçen süreyi hatırlar. Daha sonra bayrağa kadar olan kısmı kaydedip devam edebilirsiniz.',
+            'Sıfırla butonu — üç seçenek sunar: (1) "Son bayrağa kadar kaydet ve çık" — bayrağa kadar geçen süre kaydedilir, kalanı silinir; (2) "Son bayrağa geri dön ve devam et" — sayaç son bayrak noktasına döner, çalışmaya devam edersiniz; (3) "Tamamen sıfırla" — hiçbir şey kaydedilmez, sayaç başa döner.',
+            'Bitir butonu: Oturumu sona erdirir ve sürenizi Zaman Takibi sayfasına kaydeder. Bayrak koyduysanız "son bayrağa kadar kaydet" seçeneği de sunulur.',
+            'Fazla mesai modu: Pomodoro süresi dolduğunda sayaç durmaz; +01:23 gibi ekstra geçen süreyi göstermeye devam eder ve sarı renge döner. İstediğiniz an Bitir butonuna basarak oturumu kapatabilirsiniz.',
+            'Sekme kapatılsa da kaybolmaz: Tarayıcıyı veya sekmeyi kapatsanız bile sayaç bilgileri 8 saat boyunca saklanır. Sayfayı tekrar açtığınızda kaldığınız yerden devam edebilirsiniz.',
+            'Tam ekran modu: Sağ üstteki simgeye tıklayarak sol menü ve üst çubuk gizlenir, yalnızca sayaç ekranda kalır. Daha derin odaklanmak için idealdir. Tam ekran açıkken alt köşede bir bilgi çubuğu da açabilirsiniz — günün toplam çalışma süresini ve serinizi gösterir.'
+          ],
+          tip: 'Başlamadan önce bir görev seçin — çalışırken "şu anda ne yapıyorum" sorusunu sormak zorunda kalmazsınız ve geçen süre doğrudan o göreve bağlanır. Odaklanmayı kesmeden devam etmek istediğinizde bayrak kullanın: ara kayıt gibi çalışır.'
         },
         {
-          icon: 'clock', title: 'Zaman Takibi', desc: 'Günlük aktivitelerini kategori ve projeye göre kaydet. Pomodoro tamamlandığında loglar otomatik aktarılır; manuel giriş de her zaman yapabilirsin. 30 günlük bar grafik ile zaman dağılımını analiz et.',
-          features: ['Manuel log ekleme: tarih, kategori, proje, başlangıç–bitiş saati', 'Pomodoro oturumları otomatik olarak "pomodoro" kaynağıyla aktarılır', 'Kaynak filtresi: Tümü / Sadece Manuel / Sadece Pomodoro', 'Tarih aralığı seçimi ile geçmişi analiz et', '30 günlük ve haftalık bar grafikler', 'Aylık geçmiş modalı — gün ve hafta toplamlarıyla'],
-          tip: 'Pomodoro\'dan gelen kayıtlar "pomodoro" kaynağıyla otomatik eklenir; kaynak filtresiyle sadece Pomodoro veya sadece manuel girişleri ayrı ayrı görüntüleyebilirsin.'
+          icon: 'clock', title: 'Zaman Takibi', desc: 'Günlük aktivitelerinize ne kadar süre harcadığınızı kayıt altına aldığınız sayfadır. Odaklanma modunda tamamlanan oturumlar buraya otomatik eklenir; istediğiniz zaman kendiniz de kayıt girebilirsiniz. Günlük, haftalık ve aylık grafikler zamanınızı nereye harcadığınızı görmenizi sağlar.',
+          features: [
+            'Özet bilgi kartları (üstte üç rakam): Bugün kaç dakika geçirdiniz, bu hafta toplam kaç saat oldu ve bu ayki toplamınız nedir — en üstte sizi karşılar.',
+            'Manuel kayıt ekleme: Sağ üstteki "Log Ekle" butonuna tıklayın. Tarih, kategori (Çalışma, Öğrenme, Egzersiz, Sosyal, Uyku, Diğer), proje adı ile başlangıç ve bitiş saatini girersiniz. Süre otomatik hesaplanır.',
+            'Odaklanma modundan otomatik gelen kayıtlar: Pomodoro veya akış oturumu tamamlandığında bu sayfaya otomatik olarak eklenir. Bu kayıtlar tabloda küçük bir "Otomatik" etiketiyle ayrı gösterilir.',
+            'Kayıt filtreleme: Tablonun üstündeki butonlarla "Tümü", "Manuel" veya "Otomatik" kayıtları ayrı ayrı görüntüleyebilirsiniz. Seçtiğiniz filtre sayfayı kapatsanız bile korunur.',
+            'Tarih aralığı filtresi: Belirli bir tarih veya tarih aralığı seçerek yalnızca o döneme ait kayıtları görebilirsiniz. Takvim simgesine tıklayarak başlangıç ve bitiş tarihini belirleyin.',
+            '30 günlük trend grafiği: Son otuz günün her biri için o gün kaç dakika geçirdiğinizi gösterir. Yükselen ve düşen günleri kolayca fark edebilirsiniz.',
+            'Haftalık dağılım grafiği: Son yedi günü tek tek karşılaştırır. Haftanın hangi günlerinde daha yoğun çalıştığınızı görmenizi sağlar.',
+            'Kayıt düzenleme ve silme: Tablodaki her kaydın yanında kalem (düzenle) ve çöp kutusu (sil) simgesi bulunur. Silme işleminde onay istenir; "Bugün bir daha sorma" seçeneğini işaretlerseniz o gün sonraki silmelerde onay penceresi açılmaz.',
+            'Aylık geçmiş: Sağ üstteki "Geçmiş" butonuna tıklayarak geçmiş aylara bakabilirsiniz. Ok butonlarıyla aylar arasında geçiş yapın. "Özet" sekmesinde ay grafik ve haftalık toplamlar, "Loglar" sekmesinde ise günlük bazda tüm kayıtlar listelenir. Her ay için o ayın toplam aktif gün sayısını, günlük ortalamanızı ve en çok vakit harcadığınız kategoriyi görebilirsiniz.'
+          ],
+          tip: 'Odaklanma modunu düzenli kullanıyorsanız kayıtlarınız zaten otomatik geliyor. "Manuel" filtresini açarak yalnızca elle girdiğiniz kayıtları görebilir, "Otomatik" filtresini seçerek de yalnızca Pomodoro seanslarınızı inceleyebilirsiniz.'
         },
         {
-          icon: 'check-circle', title: 'Alışkanlıklar', desc: 'Günlük alışkanlıklarını takip et ve seri oluştur. Kalıcı (her gün) veya zamanlanmış (belirli günlerde) alışkanlıklar ekleyebilir, günlük ilerlemeyi görsel ızgara ve grafiklerle izleyebilirsin.',
-          features: ['İki alışkanlık tipi: Kalıcı (her gün) ve Zamanlanmış (seçili günler)', 'Günlük atlama (Skip) sistemi — o günü kayıp saymadan geçebilirsin', '🔥 Seri sayacı: kaç gün üst üste tamamladığını gösterir', '30 günlük tamamlama ızgarası — her alışkanlık için geçmiş', 'Haftalık donut grafikler ile tamamlama yüzdesi', 'Sürükle-bırak ile alışkanlık sıralamasını düzenle'],
-          tip: 'Zamanlanmış bir alışkanlık, seçili olmayan günlerde listede görünmez — o günlerin serini etkilemez.'
+          icon: 'check-circle', title: 'Alışkanlıklar', desc: 'Her gün yapmak istediğiniz şeyleri takip ettiğiniz sayfadır. Alışkanlıklarınızı tamamladıkça seri oluşturur, geçmiş ilerlemelerinizi görsel olarak izlersiniz. Hem her gün tekrarlanan hem de haftanın belirli günlerine özel alışkanlıklar tanımlayabilirsiniz.',
+          features: [
+            'İki alışkanlık tipi: "Her gün" tipi alışkanlıklar her sabah listede sizi bekler. "Belirli günler" tipi ise yalnızca seçtiğiniz günlerde (örneğin Pazartesi–Cuma) listede görünür; diğer günlerde tamamen kaybolur ve o günler seriyi etkilemez.',
+            'Alışkanlık eklerken: bir ad yazın, istediğinizde emoji ve renk seçin, ardından "Her gün" ya da "Belirli günler" tipini belirleyin. Uygulama yazdığınız ada uygun emojiyi otomatik olarak önerir.',
+            'Günlük liste üç bölüme ayrılır: üstte henüz yapılmayanlar, ortada tamamladıklarınız, altta ise o gün için atladıklarınız. Başlıkta "3 / 5" gibi bir sayaç kaç tanesini bitirdiğinizi gösterir.',
+            'Atlama (Geç) butonu: Her alışkanlığın yanındaki küçük eksi simgesine tıklarsanız o gün için atlayabilirsiniz. Önemli olan şu: atlama seriyi kırmaz. Hastalandığınız ya da o güne gerçekten fırsat bulamadığınız günlerde güvenle kullanabilirsiniz. Fikrinizi değiştirirseniz döner ok simgesine tıklayarak geri alabilirsiniz.',
+            '🔥 Seri sayacı: Bir alışkanlığı art arda kaç gün tamamladığınızı gösterir. Bir gün yapamazsanız seri sıfırlanır — ama atlama (Geç) yaptığınız günler bu hesaba girmez. Zamanlanmış alışkanlıklarda ise yalnızca o alışkanlığın atanmış günleri sayılır; diğer günler seriyi etkilemez.',
+            '30 günlük ilerleme ızgarası: Her alışkanlık için son otuz günü küçük kutucuklarla gösterir. Tamamladığınız günler alışkanlığınızın rengiyle dolar, yapmadığınız günler boş kalır. Bugünün kutucuğu mavi çerçeveyle öne çıkar. Satırın başında tamamlama yüzdeniz yazar.',
+            'Haftalık grafikler: Haftanın her günü için küçük bir daire grafik gösterilir. Yeşil doluluk o gün kaç alışkanlığı tamamladığınızın oranıdır. Yanında haftanın genel özeti de yer alır.',
+            'Üç özet bilgi kartı: Bugün kaç alışkanlık tamamladığınız, bu haftaki ortalama tamamlama yüzdeniz ve tüm alışkanlıklarınız arasındaki en uzun seri — en alta sizi bekler.',
+            'Sırayı değiştirme: Günlük listede bir alışkanlığı basılı tutup sürükleyerek istediğiniz sıraya taşıyabilirsiniz. Sıra değişikliği otomatik olarak kaydedilir.',
+            'Düzenleme ve silme: Sağ üstteki "Yönet" butonuna tıklayın. Açılan pencerede tüm alışkanlıklarınız listelenir; kalem simgesiyle düzenleyebilir, çöp kutusuyla silebilirsiniz. Silme işlemi o alışkanlığa ait geçmiş kayıtları da siler ve geri alınamaz.'
+          ],
+          tip: 'Seriyi korumak için her gün yapmak zorunda değilsiniz — "Belirli günler" tipiyle sadece seçtiğiniz günleri takip edin. Bir günü gerçekten atlayacaksanız seriyi kırmamak için Geç butonunu kullanın; ilerisi için kendinize baskı yaratmamış olursunuz.'
         },
         {
-          icon: 'dumbbell', title: 'Spor', desc: 'Antrenman günlüğü. Kuvvet, kardiyo, esneklik ve diğer türlerde antrenman ekle; egzersizlerini set/tekrar/ağırlık veya süre/mesafe ile kaydet. Şablon kaydet ve birden fazla seferde kullan.',
-          features: ['Antrenman türleri: Kuvvet, Kardiyo, Esneklik, CrossFit, Spor, Diğer', 'Kuvvet: set, tekrar, ağırlık (kg/lb) ve kas grubu', 'Kardiyo: süre (dk) ve mesafe (km)', 'Şablon kaydetme — sık kullandığın egzersiz setlerini yeniden kullan', 'Vücut ölçümleri takibi (göğüs, bel, kalça vb.)', '1 Tekrar Maksimum (1TM) otomatik hesaplama', 'Haftalık antrenman hacmi ve ilerleme grafikleri'],
-          tip: 'kg ve lb arasında geçiş yapmak için sağ üstteki birim toggle\'ını kullan — tüm veriler otomatik dönüştürülür.'
+          icon: 'dumbbell', title: 'Spor', desc: 'Antrenman günlüğünüzdür. Her çalışma sonrası yaptıklarınızı kaydeder, zaman içindeki ilerlemenizi grafiklerle takip eder ve kişisel rekorlarınızı otomatik olarak listeleyen bir sayfa. Hem ağırlık hem de kardiyo hem de başka tür antrenmanları destekler.',
+          features: [
+            'Antrenman ekleme: "Antrenman Ekle" butonuna tıklayın. Tarih, süre (dakika) ve tür seçin. Altı antrenman türü vardır: Kuvvet, Kardiyo, Esneklik, CrossFit, Spor ve Diğer. İsteğe bağlı olarak not ve zorluk derecesi (1–10) girebilirsiniz.',
+            'Egzersiz kaydetme: Antrenman formunun altında her egzersizi ayrı ayrı eklersiniz. Kuvvet antrenmanlarında egzersiz adı, kas grubu, kaç set, kaç tekrar ve kaç kilo giriyorsunuz. Kardiyo antrenmanlarında ise süre ve mesafe (km) giriyorsunuz. Form seçtiğiniz türe göre otomatik değişir.',
+            'Şablonlar: Sık yaptığınız antrenman planını bir kez kaydedip her seferinde tek tıkla yükleyebilirsiniz. Antrenman formunu doldurun, "Şablon Olarak Kaydet" butonuna tıklayın ve bir ad verin. Bir dahaki seferde "Şablon Yükle" açılır menüsünden seçerek egzersizler otomatik dolar.',
+            'Kişisel rekortlar (PR) paneli: Her egzersiz adı için o egzersizde kaldırdığınız en yüksek ağırlığı ve tarihi otomatik olarak listeler. Ayrıca her PR için 1 Tekrar Maksimum değerinizi (kaldırdığınız ağırlık ve tekrar sayısından hesaplanan teorik maksimum) otomatik hesaplar.',
+            'Vücut ölçümleri: Vücut ağırlığı, vücut yağ yüzdesi, bel, göğüs, kol ve bacak çevresi olmak üzere altı ölçümü tarihli olarak girebilirsiniz. Vücut ağırlığınızın zaman içindeki değişimi grafikle gösterilir.',
+            'Antrenman frekansı grafiği: Son sekiz haftada kaç antrenman yaptığınızı haftalar bazında gösterir. Düzenli mi çalışıyorsunuz, boşluk var mı, bir bakışta anlarsınız.',
+            'Hacim grafiği: Son sekiz haftada toplam ne kadar ağırlık kaldırdığınızı (set × tekrar × kilo) gösterir. Antrenmanlarınızın yoğunluğunun haftalara göre değişimini takip edebilirsiniz.',
+            'Kas grubu dağılımı ve egzersiz ilerleme grafiği: Hangi kas gruplarına ne kadar zaman ayırdığınızı pasta grafikle görürsünüz. Belirli bir egzersizi seçerek o egzersizdeki ağırlığınızın zaman içinde nasıl ilerlediğini de takip edebilirsiniz.',
+            'Antrenman geçmişi kartları: Kaydettiğiniz her antrenman tarih, tür, süre ve egzersiz özeti olarak listelenir. Herhangi bir kartın üzerine tıklayarak düzenleyebilirsiniz.',
+            'kg / lb değişimi: Sağ üstteki düğmeyle kilogram ve pound arasında geçiş yapabilirsiniz. Tüm ağırlık değerleri, grafikler ve kişisel rekortlar otomatik olarak dönüştürülür.',
+            'Panel yönetimi: Sağ üstteki ızgara simgesine tıklayarak hangi panellerin görüneceğini seçebilirsiniz. Kilit simgesiyle panelleri sürükleyip yeniden sıralayabilir, genişliklerini ayarlayabilirsiniz.'
+          ],
+          tip: 'Şablonları düzenli kullanırsanız her antrenmanda egzersizleri tek tek girmek zorunda kalmazsınız. Ayrıca kişisel rekortlar panelini takip etmek motivasyon için oldukça işe yarar — geçen ayki en yüksek kilonuzu görmek bir sonraki antrenmanı planlamayı kolaylaştırır.'
         },
         {
-          icon: 'kanban', title: 'Planlar', desc: 'Kanban tarzı görev yöneticisi. Görevlerini Yapılacak, Devam Eden ve Tamamlandı sütunlarında takip et. Her görevin altında sürükleyip sıralayabileceğin alt görevler ekleyebilirsin.',
-          features: ['Kanban (sütun) ve Liste (tablo) görünümleri arasında geçiş', 'Alt görevler: tamamlandı işareti, çok satırlı metin, sürükle-bırak sıralama', 'Öncelik seviyeleri: Yüksek (kırmızı), Orta (sarı), Düşük (mavi)', 'Kategori etiketleri ve son tarih ile organize et', 'Gecikmiş görevlerde kırmızı tarih uyarısı', 'Alt görev metni Shift+Enter ile çok satırlı olabilir'],
-          tip: 'Kanban ve Liste görünümleri arasında geçiş yapabilirsin — Liste modu tüm görevleri son tarihe göre sıralı tek tabloda gösterir, takibi kolaylaştırır.'
+          icon: 'kanban', title: 'Planlar', desc: 'Yapılacak işlerinizi takip ettiğiniz görev yönetimi sayfasıdır. Görevlerinizi üç aşamada izleyebilirsiniz: Yapılacak, Devam Eden ve Tamamlandı. Her görevin içine adım adım tamamlanacak alt görevler ekleyebilirsiniz.',
+          features: [
+            'İki görünüm arasında geçiş yapabilirsiniz. Kanban görünümü görevleri üç sütun halinde yan yana gösterir — her görev bir kart olarak durur. Liste görünümü ise tüm görevleri tek bir tabloda, son tarihe göre sıralı şekilde gösterir; çok sayıda görev varken taramak daha kolaydır.',
+            'Görev ekleme: "Görev Ekle" butonuna tıklayın. Bir başlık girin, öncelik (Yüksek, Orta, Düşük) ve kategori seçin, isteğe bağlı olarak son tarih ile notlar ekleyin.',
+            'Yedi sabit kategori arasından seçim yapabilirsiniz: Proje, Eğitim, Finans, Yatırım, Kişisel, Sağlık ve Diğer. Kategoriler görevi sınıflandırmanıza ve bir bakışta hangi alana ait olduğunu görmenize yardımcı olur.',
+            'Öncelik renkleri: Yüksek öncelikli görevler kırmızı, orta öncelikli görevler sarı, düşük öncelikli görevler mavi renkli etiketle gösterilir. Bir bakışta hangisinin acil olduğunu anlarsınız.',
+            'Görevi ilerletme: Kanban ve Liste görünümlerinde her görevin yanında iki buton bulunur. "Başla" butonu görevi Yapılacak\'tan Devam Eden\'e taşır. "Tamamla" butonu ise Devam Eden\'den Tamamlandı\'ya taşır. Geri almak isterseniz "Geri" butonu bir adım geri döndürür.',
+            'Gecikmiş görevler: Son tarihi geçmiş olan ve henüz tamamlanmamış görevlerin tarihi otomatik olarak kırmızıya döner. Tamamlandı sütununa taşınan görevlerde bu uyarı görünmez.',
+            'Alt görevler: Bir görevi düzenlerken altına adım adım yapılacaklar ekleyebilirsiniz. Her alt görevin yanında bir onay kutusu bulunur; tıklayarak tamamlandı olarak işaretleyebilirsiniz. Görev kartında "2 / 5" gibi bir sayaç ve doluluk çubuğu kaç adımı bitirdiğinizi gösterir.',
+            'Alt görev düzenleme: Alt görev adının üzerine tıklayarak metnini düzenleyebilirsiniz. Enter tuşu değişikliği kaydeder; Shift+Enter ise metin içinde yeni satır açar. Alt görevleri tutup sürükleyerek sıralarını değiştirebilirsiniz.',
+            'Üç özet bilgi kartı (sayfanın üstünde): Kaç görevin Yapılacak, kaç görevin Devam Eden aşamasında olduğunu ve kaç görevinizi tamamladığınızı yüzdeyle birlikte gösterir.',
+            'Düzenleme ve silme: Her görevin yanındaki kalem simgesiyle düzenleyebilir, çöp kutusu simgesiyle silebilirsiniz. Silme işleminde onay istenir ve görevle birlikte tüm alt görevler de kalıcı olarak silinir.'
+          ],
+          tip: 'Çok sayıda göreviniz varsa Liste görünümüne geçin — tümü tek tabloda son tarihe göre sıralanmış şekilde görünür, geciken ve yaklaşan görevleri hızlıca fark edebilirsiniz. Kanban görünümü ise bir projenin hangi aşamada olduğunu anlamak için daha uygundur.'
         },
         {
-          icon: 'star', title: 'Hayaller & Hedefler', desc: 'Hayallerini ve hedeflerini milestone\'larla takip et. Her hedefe ilerleme yüzdesi, hedef tarihi, emoji ve renk atayabilirsin. Tamamlanma yaklaştığında kalan gün sayısını gösterir.',
-          features: ['Milestone (kilometre taşı) listesi — her tik ilerlemeyi günceller', 'Tamamlama yüzdesi milestone oranından otomatik hesaplanır', 'Hedef tarihine kaç gün kaldığını gösterir (30 günden az ise kırmızı)', 'Emoji ve renk özelleştirmesi — her hedef kendine özgü görünür', 'Düzenleme modunda sürükle-bırak ile hedef sıralaması', 'Kategori grupları: Kariyer, Seyahat, Sağlık, Eğitim ve daha fazlası'],
-          tip: '%100 tamamlandığında konfeti animasyonu ve tebrik bildirimi çıkar.'
+          icon: 'star', title: 'Hayaller & Hedefler', desc: 'Hayallerinizi ve uzun vadeli hedeflerinizi takip ettiğiniz sayfadır. Her hayali adım adım ilerleyerek tamamlayabilir, ne kadar yol kat ettiğinizi görebilirsiniz. Büyük bir hedefi küçük adımlara bölerek ilerlemeyi hissetmek çok daha kolay olur.',
+          features: [
+            'Hayal eklemek için "Hayal Ekle" butonuna tıklayın ve bir başlık girin. Açıklama, kategori, hedef tarih, emoji ve renk seçmek tamamen isteğe bağlıdır — sadece başlık bile yeterlidir.',
+            'Altı sabit kategori arasından seçim yapabilirsiniz: Kariyer, Seyahat, Sağlık, Eğitim, Kişisel ve Finansal. Kategori, kartın üzerinde renkli bir etiketle gösterilir, bu sayede benzer hayalleri bir bakışta gruplandırabilirsiniz.',
+            'Her hayale bir emoji seçebilirsiniz. Seçtiğiniz emoji kartın en üstünde büyük olarak görünür ve hayalinizi görsel olarak tanımlar. Renk seçimi ise kartın kenarlığını, ilerleme çubuğunu ve kategori etiketini renklendirir.',
+            'Alt adımlar (kilometre taşları): bir hayali düzenlerken içine küçük adımlar ekleyebilirsiniz. Her adımın yanında bir onay kutusu bulunur. Adımları tamamladıkça onları işaretleyin — ilerleme yüzdesi otomatik olarak hesaplanır.',
+            'İlerleme yüzdesi tamamen otomatiktir. Kaç adımdan kaçını tamamladığınıza göre sistem yüzdeyi kendisi hesaplar. Elle bir yüzde girmenize gerek yoktur.',
+            'Alt adımları düzenlemek için adımın üzerine tıklayın ve yazıyı değiştirin. Sırayı değiştirmek istiyorsanız adımları tutup yukarı veya aşağı sürükleyebilirsiniz.',
+            'Hedef tarih belirlediğinizde kartın alt kısmında kaç gün kaldığı yazar. 30 günden az kaldığında bu sayı kırmızıya döner, böylece aciliyeti olan hayalleri hemen fark edebilirsiniz.',
+            'Sırayı değiştirmek için sağ üstteki kilit simgesine tıklayın — düzenleme modu açılır ve kartların üzerinde tutma tutacakları belirir. Kartları istediğiniz sıraya sürükleyin, ardından kilidi kapatın.',
+            'Bir hayalin tüm adımları tamamlandığında ve ilerleme %100\'e ulaştığında ekranda kutlama bildirimi görünür.',
+            'Düzenlemek için kartın üzerindeki kalem simgesine, silmek için çöp kutusu simgesine tıklayın. Silme işlemi geri alınamaz, bu nedenle uygulama sizden onay ister.'
+          ],
+          tip: 'Büyük bir hayali doğrudan eklemeye çalışmak bunaltıcı gelebilir. Hayali önce ekleyin, sonra düzenleme ekranında küçük adımlara bölün. Her adımı tamamladıkça ilerleme çubuğunun dolduğunu görmek sizi motive eder.'
         },
         {
-          icon: 'wallet', title: 'Bütçe', desc: 'Aylık bütçe ve harcama takibi. 3 sekmeli yapısıyla gelir/gider kategori yönetimi, bütçe limitleri ve döngü tabanlı tarihsel arşiv sunar.',
-          features: ['3 sekme: Özet (KPI ve grafikler), Kategoriler (bütçe yapısı), İşlem Takibi (tüm hareketler)', 'Özet sekmesi: net gelir, toplam gider, bütçe doluluğu pasta grafiği ve panel sıralama', 'Kategoriler sekmesi: gelir/gider grupları ve alt kategoriler oluştur, her birine bütçe limiti ata', 'İşlem Takibi: tüm kayıtlar, metin arama ve kategori/tarih aralığı filtresi', 'Döngü sistemi: bütçe her ayın belirlenen gününde sıfırlanır; geçmiş dönemler otomatik arşivlenir', 'Geçmiş döngü modalı: önceki aylara göz at, her dönemin gelir/gider/net özetini incele'],
-          tip: 'Bütçe > Veri Aktar butonuyla tam bir yedekten yalnızca bütçe verilerini geri yükleyebilirsin.'
+          icon: 'wallet', title: 'Bütçe', desc: 'Aylık gelir ve giderlerinizi takip ettiğiniz sayfadır. Ne kadar para geldiğini, nereye harcadığınızı ve ne kadar artıp artmadığını görebilirsiniz. Bütçe limitleri belirleyerek harcamalarınızın sınırın içinde kalıp kalmadığını anlık olarak takip edebilirsiniz.',
+          features: [
+            'Sayfa üç sekmeden oluşur: Özet (grafikler ve özet bilgiler), Ana Kategoriler (gelir-gider yapısı) ve İşlem Takibi (tüm kayıtlar). Sekme seçimi sayfa yenilendiğinde de hatırlanır.',
+            'Özet sekmesinde dört özet kart gösterilir: toplam gelir, toplam gider, net bakiye (gelir eksi gider) ve bütçeden ne kadar kaldığı. Ayrıca grafikler bulunur: harcama dağılımı pasta grafiği, günlük harcama çizgi grafiği ve aylara göre net bakiye trendi.',
+            'Ana Kategoriler sekmesinde harcama kategorilerinizi oluşturursunuz. Önce bir grup ekleyin (örneğin "Market" veya "Maaş"), ardından altına alt kategoriler ekleyin. Her alt kategoriye aylık bir bütçe limiti belirleyebilirsiniz.',
+            'Bütçe limiti: bir alt kategoriye limit koyduğunuzda o aya ait gerçek harcamanız limitin yüzde kaçına ulaşmış gösterilir. %75\'in üzerinde sarıya, limitin üzerinde kırmızıya döner. Uygulama sizi engellemez — sadece görsel uyarı verir.',
+            'İşlem Takibi sekmesinde tüm gelir ve gider kayıtlarınız listelenir. Tarih, açıklama, kategori ve tutar ile yeni kayıt ekleyebilirsiniz. Mevcut kayıtları düzenleyebilir veya silebilirsiniz.',
+            'Kayıtları bulmak için: açıklama veya kategori adına göre metin araması yapabilirsiniz. Tarih aralığı ve kategori grubuna göre de filtre uygulayabilirsiniz.',
+            'Döngü sistemi: bütçe her ay belirli bir günde sıfırlanır (varsayılan: ayın 1\'i). Bu günü kendiniz ayarlayabilirsiniz. Ayı kapattığınızda o döneme ait tüm veriler arşivlenir, üzerine yazılmaz.',
+            'Geçmiş dönemler: sağ üstteki geçmiş butonu ile eski aylara bakabilirsiniz. Her dönemin toplam geliri, gideri ve net farkı görüntülenir. Geçmiş dönemlere yeni kayıt ekleyebilir veya mevcut kayıtları düzenleyebilirsiniz.',
+            'Panel düzeni: Özet sekmesindeki grafik panellerini istediğiniz sıraya koyabilirsiniz — kalem simgesine tıklayarak düzenleme modunu açın. Kullanmadığınız panelleri sağ üstteki panel yöneticisinden gizleyebilirsiniz.',
+            'Bütçe verisini ayrı yedekleyip geri yükleyebilirsiniz. İşlem Takibi sekmesindeki "Veri Aktar" butonu yalnızca bütçeye ait verileri içe aktarır; diğer modüllerdeki bilgilerinize dokunmaz.'
+          ],
+          tip: 'Başlarken önce Ana Kategoriler sekmesine gidin ve gelir/gider gruplarınızı oluşturun. Gruplar olmadan işlem ekleyemezsiniz. Birkaç basit kategori bile — örneğin "Maaş" ve "Market" — başlangıç için yeterlidir.'
         },
         {
-          icon: 'trending-up', title: 'Yatırım', desc: 'Yatırım portföyünü takip et. Alpha Vantage API ile hisse, ETF ve kripto fiyatlarını otomatik çek; döviz kuru entegrasyonuyla TRY/USD çift para birimi desteği kullan.',
-          features: ['Varlık türleri: Hisse, ETF, Kripto, Emtia, Tahvil, Nakit', 'Alpha Vantage API ile otomatik fiyat güncelleme (24 saatlik önbellek)', 'K/Z hesaplama: Günlük / Haftalık / Aylık / Toplam dönem seçimi', 'TRY ↔ USD görüntüleme para birimi toggle\'ı', 'Portföy dağılımı pasta grafiği ve yüzdesel paylar', 'Ayarlar\'dan Alpha Vantage ve Döviz Kuru API anahtarı girilebilir'],
-          tip: 'Fiyat çekilemeyen varlıklar (Emtia, Tahvil, Nakit) alış fiyatını kullanır. Gerekirse kalemek üzerinden manuel fiyat girebilirsin.'
+          icon: 'trending-up', title: 'Yatırım', desc: 'Hisse senedi, kripto para, ETF ve diğer yatırımlarınızı tek bir yerden izlediğiniz sayfadır. Portföyünüzün toplam değerini, kârınızı veya zararınızı ve varlıklarınızın dağılımını görürsünüz. Banka mevduat hesaplarınızı da buraya ekleyebilir, her gün ne kadar faiz kazandığınızı takip edebilirsiniz.',
+          features: [
+            'Altı farklı yatırım türü desteklenir: Hisse Senedi, ETF (fon), Kripto Para, Emtia (altın, gümüş gibi), Tahvil ve Nakit/Döviz. Her varlık için sembol, ad, kaç adet aldığınız, alış fiyatı ve tarih bilgisi girersiniz.',
+            'Yeni yatırım eklemek veya mevcut varlığınızı değiştirmek için sağ üstteki "Varlık Al/Sat" butonunu kullanın. "Yeni Ekle" ile sıfırdan varlık eklersiniz; "Daha Fazla Al" ile aynı varlıktan ek alım yaparsınız — ortalama maliyetiniz otomatik güncellenir; "Sat" ile bir kısmını ya da tamamını satarsınız.',
+            'Otomatik fiyat güncellemesi: Ayarlar bölümünden bir ücretsiz Alpha Vantage anahtarı girdiğinizde, ABD borsasındaki hisseler, ETF\'ler ve kripto paralar için fiyatlar her 24 saatte bir otomatik çekilir. Sağ üstteki yenile düğmesine basarak da elle güncelleme yapabilirsiniz.',
+            'Altın veya kendi bankanızın hissesi gibi otomatik fiyat desteği olmayan varlıklarda fiyatı kendiniz girebilirsiniz: portföy tablosunda o satırın kalem simgesine tıklayın ve güncel fiyatı yazın.',
+            'Kâr/Zarar sütunu: portföy tablosunun sağ üstündeki sütun başlığına tıklayarak Günlük, Haftalık, Aylık veya Tüm Zamanlar görünümüne geçebilirsiniz. Hangi varlığın ne kadar kazandırdığını ya da kaybettirdiğini tek bakışta görürsünüz.',
+            'Para birimi seçimi: Portföyünüzü Türk Lirası veya Amerikan Doları olarak görmek istiyorsanız sayfanın sağ üstündeki TRY/USD düğmesine basmanız yeterli. Döviz kuru otomatik güncellenir; isterseniz topbardaki "1$=" kutusuna kuru kendiniz de yazabilirsiniz.',
+            'Banka mevduatı takibi: Sayfanın alt bölümündeki "🏦 Mevduat" panelinde vadeli veya serbest (günlük faizli) hesaplarınızı kayıt altına alabilirsiniz. Bankanızın adı, anapara, yıllık faiz oranı ve başlangıç tarihini girin — uygulama her gün birikmiş faizi, kalan vade gününü ve vade sonunda elinize geçecek toplam tutarı otomatik hesaplar.',
+            'Mevduat görünümü: Mevduat panelinin sağ üstündeki "Kartlar / Tablo" düğmeleriyle hesaplarınızı iki farklı biçimde görebilirsiniz. Kartlar görünümü her hesabı geniş bir bilgi kartı olarak açar; Tablo görünümü tüm detayları yan yana sütunlarda dizer. Uygulama son tercih ettiğiniz görünümü hatırlar.',
+            'Sıralama — sürükle bırak: Portföy tablosundaki varlıkları ve mevduat listesindeki hesapları istediğiniz sıraya dizebilirsiniz. Taşımak istediğiniz satırın üzerine gelin, sol fare tuşunu basılı tutun ve yukarı ya da aşağı sürükleyin. Bıraktığınızda yeni sıra otomatik kaydedilir.',
+            'İşlem geçmişi sekmesi: "İşlem Geçmişi" sekmesinde "Borsa/ETF" ve "Mevduat" olmak üzere iki ayrı bölüm vardır. Hangisi seçiliyken "Geçmiş" butonuna basarsanız, açılan pencerede o bölüm zaten seçili gelir — tekrar tıklamanıza gerek kalmaz. Geçmiş penceresinde aylık görünümle ok tuşlarıyla geriye gidip eski işlemlerinizi inceleyebilirsiniz.',
+            'Satış kâr/zararı: Bir varlığı sattığınızda, o satıştan elde ettiğiniz kâr ya da zarar ayrıca kaydedilir ve işlem geçmişinde görünür. Bu sayede portföyünüzden çıkardığınız yatırımların toplam getirisi kaybolmaz.',
+            'Bağlantı anahtarları Ayarlar → Yatırım API Anahtarları bölümünden girilir. Anahtar olmadan da uygulamayı kullanabilirsiniz; yalnızca fiyatları elle güncellemeniz gerekir.'
+          ],
+          tip: 'Mevduat hesabınızı eklerken faiz oranını yıllık olarak girin (örneğin %42 için "42" yazın). Vadeli hesaplarda vade süresini günü gününe seçin — uygulama bitiş tarihini ve vade faizini otomatik hesaplar. Portföy için de, hisse anahtarı olmadan bile alış fiyatlarını kendiniz girerek kâr/zarar takibini kullanabilirsiniz.'
         }
       ],
       en: [
         {
-          icon: 'settings', title: 'Settings', desc: 'General preferences, appearance, and data management hub. Open it from the gear icon at the bottom of the sidebar on any page. Changes apply instantly across all pages.',
-          features: ['Language: TR / EN / ZH / ES / FR — the entire interface switches immediately', 'Currency: ₺, $, €, £, and others — controls the display symbol for all financial values', 'Theme: 12 themes (Dark, Midnight, Ocean, Forest, Sunset, Rose, Amber, Crimson, Nebula, Arctic, Neon, White)', 'UI Scale: 60%–140% slider — all rem-based sizes scale proportionally up or down', 'Privacy Mode: masks all currency values with ••••; toggle here or via the eye icon in the sidebar', 'Week Start: Monday or Sunday — affects habit and time tracking charts', 'Investment API Keys: Alpha Vantage (stock/ETF/crypto prices) and Exchange Rates API (FX rate)', 'Export Data: downloads all lt_ data as a JSON backup file to your computer', 'Import Data: replaces all existing data with the contents of a JSON file (irreversible)', 'Delete All Data: two options — 🔄 Reset to seed data (all data cleared, app restarts with built-in sample data — safe escape hatch); 💥 Wipe everything (complete erasure, no recovery possible)'],
-          tip: 'Import overwrites all existing data — always Export a backup first. If you just want a clean slate, "Reset to seed data" is a safe way to restart with sample content.'
+          icon: 'settings', title: 'Settings', desc: 'All appearance and behavior settings for the app are gathered here. Click the gear icon at the bottom of the left menu on any page to open it. Changes take effect right away.',
+          features: ['Language: Choose the app\'s language — Turkish, English, Chinese, Spanish, or French. All menus and text will switch to the language you pick.', 'Currency: Choose which currency symbol is shown throughout the app — Turkish Lira (₺), Dollar ($), Euro (€), and more.', 'Color theme: Change the look of the app. There are 12 color themes to choose from — dark, light, and colorful options.', 'Text and item size: If the screen feels cramped or text is hard to read, use the slider to make everything larger or smaller.', 'Privacy mode: When turned on, all money amounts are hidden and shown as ••••. Handy when others are nearby and you don\'t want them to see your figures.', 'Week start day: Choose whether your week starts on Monday or Sunday. This changes how habit and time tracking charts look.', 'Live price updates: Enter the connection keys here to enable automatic updates for stock, crypto, and exchange rate prices. (Only needed if you use the Investments section.)', 'Backup (Export): Saves all your data as a file on your computer. We recommend doing this regularly to keep your data safe.', 'Restore from backup (Import): Loads a backup file you saved earlier. Important: this replaces all your current data and cannot be undone.', 'Delete data — two choices: "Reset to sample data" removes your personal data and restarts the app with ready-made example content; "Wipe everything" permanently deletes all data with no way to get it back.', 'Hide sections (Panels tab): You can remove pages you don\'t use from the left menu. Your data is not deleted — the page simply disappears from the menu.'],
+          tip: 'Use the "Export" button regularly to back up your data. Importing a backup will replace your current data — always export a backup first. If you want a fresh start, "Reset to sample data" gives you a clean app with example content already filled in.'
         },
         {
-          icon: 'layout-dashboard', title: 'Dashboard', desc: 'Central overview of all modules. See critical metrics like net worth, spending, habit completion rate, and active goals at a glance. Customize which panels are shown and in what order.',
-          features: ['Week / Month / Year period selector for trend analysis', 'Drag-to-reorder panels via the lock button in the top bar', 'Upcoming plans with overdue task alerts', 'Investment portfolio pie chart and asset allocation', 'Goals progress bars and milestone counters', 'Recent workouts with exercise details', 'Budget spending status — per-category progress bars'],
-          tip: 'Click the lock icon in the top bar to enter edit mode, then drag panels to rearrange. Use the eye icon to hide panels you don\'t need.'
+          icon: 'layout-dashboard', title: 'Dashboard', desc: 'The home screen that shows a summary of all sections in one place. Your spending, habits, goals, workouts, and more are all visible at a glance. You decide which sections appear and in what order.',
+          features: [
+            'Four summary cards (at the very top): Your net worth, total spending for the selected period, habit completion percentage, and number of active goals — the most important figures are right there when you open the app.',
+            'Time chart: Shows how many minutes you spent on activities during the selected week, month, or year as a line graph. You can easily spot your most productive days and the quiet stretches.',
+            'Pomodoro section: A quick summary of your work sessions — how many sessions you completed, how many minutes you spent in deep focus, and how many days in a row you\'ve kept at it.',
+            'Gym section: Lists your last two workouts with their date, type, and duration. Click on any workout to expand it and see exactly which exercises you did.',
+            'Budget section: Shows how much of each spending category you\'ve used up, displayed as horizontal bars. Categories that are nearly full stand out so you can see where your money is going.',
+            'Investments section: Displays how your portfolio is spread across two pie charts — one showing each individual holding, the other grouping by type such as stocks, crypto, or bonds.',
+            'Goals section: All unfinished goals are listed with progress bars so you can see at a glance how far along each one is.',
+            'Upcoming Plans section: Tasks due within the next 7 days and any overdue items are listed here so nothing slips through the cracks.',
+            'Period selector (top right corner): Switch between "This Week", "This Month", and "This Year" to change the time range the summary cards and charts cover.',
+            'Rearranging sections: Click the lock icon in the top right. The sections get a dashed border — in this mode you can grab any section and drag it wherever you like. Click the lock icon again to save and exit.',
+            'Which sections appear? Go to Settings → Panels tab to hide sections you don\'t use. When you hide one, it disappears from both the Dashboard and the left menu. Your data is not deleted — it\'s just tucked out of sight and can be brought back any time.'
+          ],
+          tip: 'Move the information you check most often to the top. If you mainly track budget and goals, you can hide the gym and pomodoro sections for a cleaner view. You can always bring them back from Settings → Panels.'
         },
         {
-          icon: 'timer', title: 'Pomodoro', desc: 'Three-mode focus timer. Use classic Pomodoro cycles (work + break), unlimited Flow mode, or a custom countdown. Every completed session is automatically logged to the Time Tracking page.',
-          features: ['Pomodoro (25 min work + break cycle), Flow (unlimited), and Countdown modes', 'Link sessions to a task — active task name shown in header; pomodoro usage is tracked', 'Subtask panel — view and check off subtasks while working', 'Flag button: marks a split point while the timer runs; records elapsed time and current clock time', 'Reset button: 3 options — save up to last flag / rewind to last flag / hard reset (discard all)', 'Finish button: save the full elapsed time, or split by flags and save each segment separately', 'Overtime mode: continues past the time limit with a +MM:SS counter; ended via the Finish button', 'Timer state auto-saves — reloading or reopening the tab resumes from where you left off (8h TTL)', 'Real-time sync across multiple browser tabs'],
-          tip: 'Adjust work, short break, and long break durations from the settings panel at the top of the timer page.'
+          icon: 'timer', title: 'Focus Mode', desc: 'The timer page that measures and records your work sessions. It offers three different ways to work: classic Pomodoro cycles, an open-ended flow timer, and a custom countdown. Each completed session is automatically added to the Time Tracking page.',
+          features: [
+            'Pomodoro mode: Runs in 25-minute work intervals followed by a 5-minute short break. After four sessions, a 15-minute long break begins. You can change all durations from the settings panel at the top of the page.',
+            'Flow mode: An open-ended stopwatch that counts up from zero with no time limit. Use it when you want to record how long you work without being tied to a fixed interval.',
+            'Countdown mode: You set the hours, minutes, and seconds yourself. When the time runs out, an alert sounds and the timer resets.',
+            'Link to a task: Before starting, you can choose one of today\'s tasks from a list. The task name appears on the timer screen and the time you spend is recorded against that task.',
+            'Subtask panel: The steps of your selected task appear on the left side of the screen. You can check them off as you finish each one without leaving the timer. When you finish the session, any remaining steps are automatically marked as done.',
+            'Flag button: Tap the flag while the timer is running to mark the current moment — like placing a bookmark in time. Each flag remembers the exact time of day and how long had passed. You can later save up to a flag or rewind to it.',
+            'Reset button — three choices: (1) "Save up to last flag and stop" — everything up to your last flag is saved, the rest is discarded; (2) "Rewind to last flag and continue" — the timer jumps back to your last flag so you can carry on from there; (3) "Start over" — nothing is saved and the timer goes back to the beginning.',
+            'Finish button: Ends the session and saves your time to the Time Tracking page. If you placed flags, you also get the option to save only up to the last flag.',
+            'Overtime mode: When the Pomodoro time runs out, the timer keeps going and shows the extra time as +01:23 in yellow. Press Finish whenever you\'re ready to wrap up.',
+            'Stays put if you close the tab: Your timer is saved for up to 8 hours even if you close the browser or the tab. When you come back, it picks up right where you left off.',
+            'Full-screen mode: Click the icon in the top right to hide the menu and toolbar, leaving only the timer on screen. Great for deeper focus. In full-screen you can also open a small info bar at the bottom that shows your total work time and daily streak.'
+          ],
+          tip: 'Select a task before you start — that way your time is automatically tied to what you\'re actually working on. Use the flag button like a mid-session checkpoint: it lets you mark a moment without stopping, so you can save or rewind to it later.'
         },
         {
-          icon: 'clock', title: 'Time Tracking', desc: 'Log daily activities by category and project. Pomodoro sessions auto-import; you can also add manual entries anytime. Analyze time distribution with 30-day bar charts.',
-          features: ['Manual log: date, category, project, start and end time', 'Pomodoro sessions auto-import tagged with "pomodoro" source', 'Source filter: All / Manual only / Pomodoro only', 'Date range picker for historical analysis', '30-day and weekly bar charts', 'Monthly history modal — daily and weekly totals'],
-          tip: 'Pomodoro sessions are auto-imported with a "pomodoro" source tag. Use the source filter to view only Pomodoro or only manual entries separately.'
+          icon: 'clock', title: 'Time Tracking', desc: 'The page where you record how much time you spend on your daily activities. Sessions from Focus Mode are added here automatically; you can also enter time manually whenever you like. Daily, weekly, and monthly charts help you see where your time actually goes.',
+          features: [
+            'Three summary cards at the top: How many minutes you logged today, your total for the week, and your total for the month — the most important figures right at the top.',
+            'Adding a manual entry: Click the "Add Log" button in the top right. You fill in the date, a category (Work, Learning, Exercise, Social, Sleep, or Other), an optional project name, and the start and end time. The duration is calculated for you automatically.',
+            'Automatic entries from Focus Mode: Whenever you finish a Pomodoro or Flow session, it is added to this page automatically. These entries are shown in the table with a small "Automatic" label so you can tell them apart from manual ones.',
+            'Filtering entries: The buttons above the table let you switch between "All", "Manual only", and "Automatic only". The filter you choose is remembered even after you close the page.',
+            'Date range filter: Click the calendar icon to pick a start and end date and see only the entries from that period. Clear the filter to go back to the full list.',
+            '30-day trend chart: Shows how many minutes you logged on each of the past thirty days. You can easily spot your most active days and the quiet stretches at a glance.',
+            'Weekly breakdown chart: Compares the last seven days side by side. A quick way to see which days of the week you tend to be most productive.',
+            'Editing and deleting entries: Every row in the table has a pencil icon to edit it and a bin icon to delete it. Deleting asks for confirmation; tick "Don\'t ask again today" and you won\'t see the confirmation prompt for the rest of the day.',
+            'Monthly history: Click the "History" button in the top right to browse past months. Use the arrow buttons to move between months. The "Summary" tab shows a monthly chart and weekly totals; the "Logs" tab lists every entry day by day. At the top of each month you can see the number of active days, your daily average, and the category you spent the most time on.'
+          ],
+          tip: 'If you use Focus Mode regularly, your entries are already coming in automatically. Switch to the "Manual" filter to see only what you entered by hand, or choose "Automatic" to review just your Pomodoro and Flow sessions.'
         },
         {
-          icon: 'check-circle', title: 'Habits', desc: 'Track daily habits and build streaks. Add permanent (every day) or scheduled (specific days) habits, and monitor progress through visual grids and charts.',
-          features: ['Two habit types: Permanent (daily) and Scheduled (selected days only)', 'Skip system for today — doesn\'t break your streak', '🔥 Streak counter: consecutive days completed', '30-day completion grid — visual history per habit', 'Weekly donut charts with completion percentage', 'Drag-to-reorder habits in the daily checklist'],
-          tip: 'Scheduled habits only appear on their assigned days — they won\'t affect streaks on other days.'
+          icon: 'check-circle', title: 'Habits', desc: 'The page where you track the things you want to do every day. As you complete habits you build streaks, and you can look back at your progress visually. You can set up habits that repeat every single day, or ones that only apply on certain days of the week.',
+          features: [
+            'Two habit types: "Every day" habits appear in your list every morning. "Specific days" habits only show up on the days you chose — for example Monday to Friday — and stay completely hidden on other days, so those days don\'t affect your streak at all.',
+            'Adding a habit: type a name, optionally pick an emoji and a color, then choose whether it\'s an every-day or specific-days habit. The app suggests a matching emoji automatically based on what you type.',
+            'The daily list has three sections: habits you haven\'t done yet at the top, completed ones in the middle, and any you\'ve skipped for the day at the bottom. A counter like "3 / 5" in the heading shows how many you\'ve finished.',
+            'Skip button: click the small minus icon next to any habit to mark it as skipped for today. Crucially, skipping does not break your streak. Use it freely on days you\'re ill or simply can\'t fit it in. If you change your mind, click the circular arrow icon to undo the skip.',
+            '🔥 Streak counter: shows how many days in a row you\'ve completed a habit. Miss a day and the streak resets — but days you skipped are not counted against you. For scheduled habits, only the assigned days count; the rest of the week doesn\'t affect the streak at all.',
+            '30-day progress grid: shows the last thirty days as small squares for each habit. Days you completed are filled in with that habit\'s color; days you missed stay empty. Today\'s square has a blue border to stand out. The completion percentage is shown at the start of each row.',
+            'Weekly charts: a small circular chart appears for each day of the week, showing what proportion of your habits you completed that day. A summary chart for the whole week sits alongside it.',
+            'Three summary cards: how many habits you completed today, your average completion rate for the week, and the longest streak across all your habits — shown at the bottom of the page.',
+            'Reordering: press and hold a habit in the daily list, then drag it to where you want it. The new order is saved automatically.',
+            'Editing and deleting: click the "Manage" button in the top right. A window lists all your habits; use the pencil icon to edit one or the bin icon to delete it. Deleting also removes all the historical records for that habit and cannot be undone.'
+          ],
+          tip: 'You don\'t have to do something every day to build a streak — use the "Specific days" type to only track the days that make sense. And if you genuinely can\'t do a habit on a given day, hit Skip instead of leaving it undone: it keeps your streak intact and removes the pressure of an open task.'
         },
         {
-          icon: 'dumbbell', title: 'Gym', desc: 'Workout journal. Add strength, cardio, flexibility and other workouts; log exercises with sets/reps/weight or duration/distance. Save templates to reuse across sessions.',
-          features: ['Workout types: Strength, Cardio, Flexibility, CrossFit, Sport, Other', 'Strength: sets, reps, weight (kg/lb) and muscle group', 'Cardio: duration (min) and distance (km)', 'Template saving — reuse your most common exercise sets', 'Body measurements tracker (chest, waist, hips, etc.)', '1 Rep Max (1RM) auto-calculation', 'Weekly volume and progress charts per exercise'],
-          tip: 'Use the unit toggle in the top right to switch between kg and lb — all existing data converts automatically.'
+          icon: 'dumbbell', title: 'Gym', desc: 'Your workout journal. Record what you do after each session, track your progress over time with charts, and let the app automatically keep a list of your personal bests. Works for weight training, cardio, and any other type of exercise.',
+          features: [
+            'Adding a workout: click "Add Workout". Choose the date, how long it lasted in minutes, and the type. There are six types to choose from: Strength, Cardio, Flexibility, CrossFit, Sport, and Other. You can also add notes and a difficulty rating from 1 to 10.',
+            'Logging exercises: at the bottom of the workout form you add each exercise one by one. For strength workouts you enter the exercise name, muscle group, how many sets, how many reps, and how much weight. For cardio workouts you enter the duration and distance in kilometres. The form adjusts automatically to match the type you chose.',
+            'Templates: if you follow the same workout plan regularly, save it once and load it with a single click every time. Fill in the workout form, hit "Save as Template" and give it a name. Next time, pick it from the "Load Template" menu and all your exercises fill in automatically.',
+            'Personal records panel: for every exercise you have ever logged, the app automatically tracks your heaviest weight and the date you lifted it. It also calculates your estimated one-rep maximum — the heaviest weight you could theoretically lift once — based on your sets and reps.',
+            'Body measurements: you can log six measurements with a date: body weight, body fat percentage, waist, chest, arm, and leg circumference. Your body weight change over time is shown as a chart.',
+            'Workout frequency chart: shows how many sessions you did in each of the last eight weeks. A quick way to see whether you are training consistently or whether there are gaps.',
+            'Volume chart: shows the total weight you moved each week over the last eight weeks (sets × reps × weight). Helps you see whether your training is getting heavier over time.',
+            'Muscle group chart and exercise progress: a pie chart shows which muscle groups you have been training and how much. You can also pick a specific exercise from a menu to see a chart of how your weight has increased over time for that exercise.',
+            'Workout history cards: every workout you logged is listed as a card with the date, type, duration, and a summary of exercises. Click on any card to open and edit it.',
+            'kg / lb switch: use the button in the top right to toggle between kilograms and pounds. All weights, charts, and personal records convert automatically.',
+            'Panel management: click the grid icon in the top right to choose which panels are visible. Use the lock icon to drag panels into a different order or adjust their width on screen.'
+          ],
+          tip: 'Use templates for your regular sessions so you never have to re-enter the same exercises from scratch. And keep an eye on the personal records panel — seeing your previous best weight is a simple but effective way to set a target for your next session.'
         },
         {
-          icon: 'kanban', title: 'Plans', desc: 'Kanban-style task manager. Track tasks across Todo, In Progress, and Done columns. Add subtasks to each task with drag-to-reorder support.',
-          features: ['Switch between Kanban (columns) and List (table) views', 'Subtasks: checkboxes, multi-line text, drag-to-reorder', 'Priority levels: High (red), Medium (yellow), Low (blue)', 'Category tags and due dates to stay organized', 'Red overdue alert on past-due tasks', 'Shift+Enter in subtask text creates a new line'],
-          tip: 'Switch between Kanban and List views — List mode shows all tasks sorted by due date in a single table, ideal when managing many tasks at once.'
+          icon: 'kanban', title: 'Plans', desc: 'This is your task management page where you track everything you need to do. Tasks move through three stages — To Do, In Progress, and Done — so you always know what\'s pending, what you\'re working on, and what\'s finished.',
+          features: [
+            'Two views to choose from: Kanban view arranges your tasks in three side-by-side columns (To Do, In Progress, Done), which makes it easy to see your overall workload at a glance. List view shows everything in a single scrollable table sorted by due date — better when you have many tasks and want to see deadlines.',
+            'Adding a task: click the "Add Task" button and fill in the title. You can also set a due date, priority level, category, and add notes. None of these extra fields are required — even a title alone is enough.',
+            'Seven fixed categories to organize your tasks by area of life: Work, Learning, Personal, Health, Finance, Home, and Other. Each has its own color label so you can tell them apart at a glance.',
+            'Priority colors: High priority tasks are marked red, Medium are yellow, Low are blue. Use priority to decide what to tackle first when your list gets long.',
+            'Moving a task forward: in Kanban view, you can drag a task card from one column to the next, or click the arrow button on the card to advance it one stage. In List view, click the status label to change it directly.',
+            'Overdue tasks: any task whose due date has passed is highlighted in red. This makes it easy to spot things that need your immediate attention without hunting through the list.',
+            'Subtasks: when editing a task, you can add a list of smaller steps inside it. Each subtask has its own checkbox. Breaking a big task into steps makes it less intimidating and helps you track partial progress.',
+            'Editing subtasks: click on a subtask\'s text to edit it in place. Press Enter to save, or Shift+Enter to add a new line within the same subtask. You can also drag subtasks up or down to reorder them.',
+            'Three summary cards at the top of the page: Total tasks, Completed today, and Overdue. These give you an instant overview of where things stand without scrolling through the full list.',
+            'Editing and deleting: click the pencil icon on any task to open the edit form, or the trash icon to delete it. Deleted tasks cannot be recovered, so the app asks for confirmation before removing one.'
+          ],
+          tip: 'If you have many tasks, switch to List view — it shows all tasks in one table sorted by due date, making it much easier to see what\'s coming up next. Use Kanban view when you want to drag tasks across stages and see your workflow visually.'
         },
         {
-          icon: 'star', title: 'Goals & Dreams', desc: 'Track your dreams and goals with milestones. Assign a progress percentage, target date, emoji, and color to each goal. Days remaining is shown as the deadline approaches.',
-          features: ['Milestone checklist — each tick auto-updates progress percentage', 'Completion % calculated automatically from milestone ratio', 'Days remaining shown (red when fewer than 30 days left)', 'Emoji and color customization for each goal', 'Drag-to-reorder goals in edit mode', 'Category groups: Career, Travel, Health, Education, and more'],
-          tip: 'Reaching 100% triggers a confetti animation and a congratulation toast.'
+          icon: 'star', title: 'Goals & Dreams', desc: 'This is the page where you track your dreams and long-term goals. You can move each dream forward step by step and see how far you\'ve come. Breaking a big goal into small steps makes progress feel real and achievable.',
+          features: [
+            'To add a dream, click the "Add Dream" button and type a title. Description, category, target date, emoji, and color are all optional — a title alone is enough to save.',
+            'Six fixed categories to choose from: Career, Travel, Health, Education, Personal, and Financial. The category appears as a colored badge on the card so you can group similar goals at a glance.',
+            'Each goal can have an emoji, which appears large at the top of the card and gives your dream a visual identity. The color you choose applies to the card\'s border, progress bar, and category badge.',
+            'Milestones (steps): when editing a goal, you can add a list of small steps inside it. Each step has its own checkbox. Check them off as you complete them — the progress percentage updates automatically.',
+            'The progress percentage is fully automatic. The app calculates it from how many milestones you\'ve completed out of the total. You never need to enter a percentage manually.',
+            'To edit a milestone\'s text, click on it and type the new wording. To reorder milestones, drag them up or down using the handle that appears beside each one.',
+            'When you set a target date, the card shows how many days remain. If fewer than 30 days are left, that number turns red — making it easy to spot goals that need attention soon.',
+            'To reorder your goals, click the lock icon in the top-right corner — this opens edit mode, and each card gets a drag handle. Move the cards into your preferred order, then close the lock.',
+            'When all milestones are ticked and progress reaches 100%, a congratulation notification appears on screen.',
+            'To edit a goal, click the pencil icon on its card. To delete it, click the trash icon. Deletion is permanent, so the app asks for confirmation first.'
+          ],
+          tip: 'If a big goal feels overwhelming, add it first with just a title, then open it to break it into smaller steps. Watching the progress bar fill up as you tick each step off is surprisingly motivating.'
         },
         {
-          icon: 'wallet', title: 'Budget', desc: 'Monthly budget and expense tracker with a 3-tab layout. Manage categories, set budget limits, and review historical cycles with full income/expense breakdowns.',
-          features: ['3 tabs: Overview (KPIs & charts), Categories (budget structure), Transactions (all entries)', 'Overview tab: net income, total expenses, spending allocation pie chart, and panel reordering', 'Categories tab: create income/expense groups and subcategories, assign budget limits to each', 'Transactions tab: full list of entries with text search and date/category filters', 'Cycle system: budget resets on a chosen day each month; all past periods are archived automatically', 'Past cycle modal: browse previous months with income, expense, and net summary per period'],
-          tip: 'Use the "Import Data" button in the Transactions tab to restore only budget data from a full backup.'
+          icon: 'wallet', title: 'Budget', desc: 'This is the page where you track your monthly income and expenses. You can see how much money comes in, where it\'s going, and whether you\'re saving or overspending. By setting spending limits per category, you can tell at a glance if you\'re staying within your budget.',
+          features: [
+            'The page is divided into three tabs: Overview (charts and summary), Categories (your income and expense structure), and Transactions (a complete list of every entry). The app remembers which tab you were on when you return.',
+            'The Overview tab shows four summary cards: total income, total expenses, net balance (income minus expenses), and how much budget remains. It also includes charts — a spending breakdown pie chart, a daily spending line chart, and a net balance trend across months.',
+            'The Categories tab is where you set up your spending structure. First create a group (for example "Groceries" or "Salary"), then add subcategories inside it. Each subcategory can have a monthly budget limit.',
+            'Budget limits: once you set a limit for a subcategory, the page shows how much of it you\'ve used as a percentage. Above 75% the bar turns yellow; above 100% it turns red. The app doesn\'t block you from spending — it just gives you a visual warning.',
+            'The Transactions tab lists all your income and expense entries. You can add a new entry with a date, description, category, and amount. Existing entries can be edited or deleted.',
+            'To find specific entries, use the text search box to search by description or category name. You can also filter by date range and by category group.',
+            'The cycle system: the budget resets each month on a day you choose (default: the 1st). When a new cycle starts, the previous month\'s data is automatically archived — nothing is deleted.',
+            'Past cycles: click the history button in the top-right to browse previous months. Each past period shows its total income, expenses, and net result. You can also add or edit transactions in past cycles.',
+            'Panel layout: the charts in the Overview tab can be rearranged — click the pencil icon to enter edit mode. You can also hide panels you don\'t use by opening the panel manager in the top-right corner.',
+            'Budget-specific backup: the "Import Data" button in the Transactions tab lets you restore only your budget data from a backup file, without affecting any other module (habits, plans, goals, etc.).'
+          ],
+          tip: 'Start by going to the Categories tab and creating your income and expense groups. You can\'t add transactions until you have at least one category set up. A few simple groups — like "Salary" and "Groceries" — are enough to get started.'
         },
         {
-          icon: 'trending-up', title: 'Investments', desc: 'Track your investment portfolio. Auto-fetch stock, ETF, and crypto prices via the Alpha Vantage API. Multi-currency support with live exchange rate integration.',
-          features: ['Asset types: Stock, ETF, Crypto, Commodity, Bond, Cash', 'Auto price updates via Alpha Vantage API (24-hour cache)', 'P&L tracking: Daily / Weekly / Monthly / Total period selector', 'TRY ↔ USD display currency toggle', 'Portfolio allocation pie chart with percentage breakdown', 'Enter Alpha Vantage and Exchange Rate API keys in Settings'],
-          tip: 'Assets without API prices (Commodity, Bond, Cash) use the purchase price. You can also override any asset\'s price manually.'
+          icon: 'trending-up', title: 'Investments', desc: 'This page lets you track all your investments in one place — stocks, crypto, ETFs, and more. You can see your total portfolio value, profit or loss, and how your assets are spread across different types. Bank savings accounts can also be added here, so you can see the interest building up every day.',
+          features: [
+            'Six asset types are supported: Stock, ETF, Crypto, Commodity (gold, silver, etc.), Bond, and Cash. For each asset you enter a symbol, name, quantity, purchase price, and date.',
+            'To add a new position, click the "Add/Trade" button in the top-right corner and choose "Add New". Later, use "Buy More" to add to an existing position, or "Sell" to record a partial or full sale.',
+            'Automatic price updates: once you enter a connection key (Alpha Vantage) in Settings, prices for US-listed stocks, ETFs, and cryptocurrencies will update automatically in the background every 24 hours.',
+            'For assets without automatic pricing — Commodity, Bond, Cash, or non-US stocks — you can manually enter the current price by clicking the pencil icon on that asset\'s row in the portfolio table.',
+            'Profit and loss tracking: click the column header in the portfolio table to switch between Daily, Weekly, Monthly, or Total gain/loss views. Each asset shows how much it has earned or lost in the selected period.',
+            'Currency toggle: view your entire portfolio in your local currency or US Dollars — switch any time with the TRY/USD button in the top-right. The exchange rate updates automatically; you can also type it directly into the "1$=" box in the topbar.',
+            'Bank deposit tracking: the "🏦 Deposits" panel at the bottom of the page lets you record term or flexible savings accounts. Enter the bank name, principal, annual interest rate, and start date — the app automatically calculates accrued interest, days remaining, and the final payout at maturity.',
+            'Deposit view: use the "Cards / Table" buttons in the top-right corner of the Deposits panel to switch between two layouts. Cards view shows each account as a wide detail card; Table view lines up all the details in columns side by side. The app remembers your last choice.',
+            'Drag-and-drop reordering: both the portfolio table and the deposits list support drag-and-drop. Hover over a row, hold the left mouse button, and drag it up or down. The new order saves automatically.',
+            'Trade history tab sync: the "Trade History" section has two tabs — "Stocks/ETF" and "Deposits". Whichever one is active when you click the "History" button, that tab opens straight away in the history window. Use the arrow buttons inside to navigate between months.',
+            'When you sell an asset, the realized profit or loss is recorded separately. These completed sale results appear in the trade history and are reflected in the portfolio summary cards.',
+            'Connection keys are entered in Settings → Investment API Keys. The app works without keys — you just need to update prices manually. Automatic price fetching is a convenience feature, not a requirement.'
+          ],
+          tip: 'You can use the app without any connection keys: add your assets, enter purchase prices, and update current prices manually when you check them. For the deposits section, enter the interest rate as a yearly figure — for example, type "42" for 42%. The app does the rest, including the daily interest calculation and maturity date.'
         }
       ],
       zh: [
         {
-          icon: 'settings', title: '设置', desc: '通用偏好设置、外观和数据管理中心。点击任意页面侧边栏底部的齿轮图标即可打开。更改立即反映到所有页面。',
-          features: ['语言：TR / EN / ZH / ES / FR — 整个界面立即切换', '货币：₺、$、€、£等 — 控制所有财务值的显示符号', '主题：12个主题（Dark、Midnight、Ocean、Forest、Sunset、Rose、Amber、Crimson、Nebula、Arctic、Neon、White）', '界面缩放：60%–140%滑块 — 所有基于rem的尺寸按比例缩放', '隐私模式：用••••遮盖所有货币值；在此处或侧边栏眼睛图标切换', '周起始日：周一或周日 — 影响习惯和时间追踪图表', '投资API密钥：Alpha Vantage（股票/ETF/加密货币价格）和汇率API', '导出数据：将所有lt_数据下载为JSON备份文件', '导入数据：用JSON文件内容替换所有现有数据（不可撤销）', '删除所有数据：两个选项 — 🔄 重置为种子数据（所有数据清除，应用以内置示例数据重新启动，安全的后路）；💥 彻底清除（完全擦除，无法恢复）'],
-          tip: '导入会用文件内容覆盖所有现有数据 — 导入前请先导出备份。如果只想重新开始，"重置为种子数据"是安全地以示例内容重启的方式。'
+          icon: 'settings', title: '设置', desc: '应用程序的所有外观和行为设置都在这里。点击任意页面左侧菜单底部的齿轮图标即可打开。您所做的更改会立即生效。',
+          features: ['语言：选择应用程序的语言 — 土耳其语、英语、中文、西班牙语或法语。所有菜单和文字将以您选择的语言显示。', '货币：选择应用程序中显示的货币符号 — 土耳其里拉 (₺)、美元 ($)、欧元 (€) 等。', '颜色主题：更改应用程序的外观。共有12种颜色主题可供选择 — 深色、浅色和多彩选项。', '文字和内容大小：如果屏幕显得拥挤或文字难以阅读，可使用滑块将所有内容放大或缩小。', '隐私模式：开启后，所有金额将显示为 ••••。当他人在旁时，这个功能可以保护您的财务信息。', '周起始日：选择您的一周从星期一还是星期日开始。这会影响习惯和时间追踪图表的显示方式。', '实时价格更新：在此输入连接密钥，以启用股票、加密货币和汇率价格的自动更新。（仅适用于使用投资功能的用户。）', '备份（导出）：将您的所有数据保存为文件到电脑中。建议定期执行此操作以确保数据安全。', '从备份恢复（导入）：加载您之前保存的备份文件。注意：这将替换您当前的所有数据，且无法撤销。', '删除数据 — 两种选择："重置为示例数据"会删除您的个人数据，应用程序以示例内容重新开始；"清除所有内容"会永久删除所有数据，无法恢复。', '隐藏模块（面板选项卡）：您可以从左侧菜单中移除不使用的页面。您的数据不会被删除 — 只是该页面从菜单中消失。'],
+          tip: '请定期使用"导出"按钮备份您的数据。导入备份将替换您当前的数据 — 请务必先导出备份。如果您想重新开始，"重置为示例数据"会给您一个已填入示例内容的全新应用程序。'
         },
         {
-          icon: 'layout-dashboard', title: '仪表盘', desc: '所有模块的中央概览。一目了然地查看净资产、支出、习惯完成率和活跃目标等关键指标。可自定义面板的显示和排列顺序。',
-          features: ['周/月/年时间段选择器，用于趋势分析', '通过顶部栏的锁定按钮拖拽重新排列面板', '即将到期的计划及逾期任务提醒', '投资组合饼图和资产分配', '目标进度条和里程碑计数器', '最近的训练记录及练习详情', '预算支出状态 — 按类别显示进度条'],
-          tip: '点击顶部栏的锁定图标进入编辑模式，然后拖拽面板重新排列。使用眼睛图标可隐藏不需要的面板。'
+          icon: 'layout-dashboard', title: '仪表盘', desc: '在一个屏幕上显示所有功能模块摘要的主页面。您的支出、习惯、目标、锻炼记录等信息汇聚于此。您可以决定哪些内容显示以及如何排列。',
+          features: [
+            '四个摘要卡片（页面最顶部）：您的净资产、所选时间段的总支出、习惯完成百分比以及活跃目标数量 — 最重要的数据在您打开应用时便一目了然。',
+            '时间图表：以折线图的形式显示所选周、月或年内您在各类活动上花费的总分钟数。您可以轻松发现最有效率的日子和空闲较多的时段。',
+            '番茄钟区块：您工作专注阶段的简短摘要 — 完成了多少次专注，进入心流状态的分钟数，以及连续坚持的天数。',
+            '运动区块：列出您最近两次锻炼的日期、类型和时长。点击任意一次锻炼，即可展开查看您做了哪些具体练习。',
+            '预算区块：以横向进度条显示每个支出类别已使用的比例。接近上限的类别会更加醒目，方便您了解钱花在了哪里。',
+            '投资区块：通过两个饼图展示您的投资组合分布 — 一个按具体持仓显示，另一个按股票、加密货币、债券等类型分组显示。',
+            '梦想与目标区块：所有未完成的目标附带进度条列出，让您一眼看出每个目标进展到了哪里。',
+            '即将到来的计划区块：未来7天内到期的任务和所有逾期事项列于此处，确保您不会遗漏任何事情。',
+            '时间段选择器（右上角）：在"本周"、"本月"和"本年"之间切换，以改变摘要卡片和图表所覆盖的时间范围。',
+            '重新排列区块：点击右上角的锁定图标，各区块会出现虚线边框 — 在此模式下，您可以抓住任意区块拖到您喜欢的位置。再次点击锁定图标即可保存并退出。',
+            '哪些区块显示？进入"设置"→"面板"选项卡，可以隐藏您不使用的区块。隐藏后，该区块将从仪表盘和左侧菜单中消失。您的数据不会被删除 — 随时可以重新开启。'
+          ],
+          tip: '将您最常查看的信息移至顶部。如果您主要追踪预算和目标，可以隐藏运动和番茄钟区块，让界面更加简洁。随时可以在"设置"→"面板"中恢复它们。'
         },
         {
-          icon: 'timer', title: '番茄钟', desc: '三模式专注计时器。使用经典番茄钟循环（工作+休息）、无限流动模式或自定义倒计时。每次完成的会话自动记录到时间追踪页面。',
-          features: ['番茄钟（25分钟工作+休息循环）、流动（无限）和倒计时模式', '关联任务 — 当前任务名称显示在标题中；已使用的番茄钟数量被追踪', '子任务面板 — 工作时查看并勾选子任务', '标记按钮：计时器运行时标记分割点，记录已用时间和当前时刻', '重置按钮：3个选项 — 保存到最后标记 / 回退到最后标记 / 硬重置（丢弃全部）', '完成按钮：保存全部时间，或按标记分段分别保存', '超时模式：超过时间限制后以+MM:SS继续，通过完成按钮结束', '即使关闭浏览器或刷新页面，计时器也会从中断处继续（8小时TTL）', '跨多个浏览器标签实时同步'],
-          tip: '从计时器页面顶部的设置面板调整工作、短休息和长休息时长。'
+          icon: 'timer', title: '专注模式', desc: '用于记录工作时间的计时页面。提供三种不同的工作方式：经典番茄钟循环、无时限的自由计时，以及自定义倒计时。每次完成的工作阶段都会自动添加到时间追踪页面。',
+          features: [
+            '番茄钟模式：以25分钟工作+5分钟短暂休息的节奏循环进行。完成四个工作阶段后，自动开始15分钟的长休息。您可以在页面顶部的设置面板中随意更改这些时长。',
+            '心流模式：从零开始向上计数、没有时间限制的秒表。当您想记录工作时长但不希望被固定时间约束时使用。',
+            '倒计时模式：由您自己设定小时、分钟和秒数。时间结束时会发出提醒声，计时器随即归零。',
+            '关联任务：开始之前，您可以从今天的任务列表中选择一项任务。任务名称会显示在计时屏幕上，您花费的时间将记录到该任务下。',
+            '子任务面板：所选任务的步骤会显示在屏幕左侧。您可以在不离开计时页面的情况下逐一勾选完成的步骤。结束工作阶段时，剩余步骤会自动标记为已完成。',
+            '标记按钮：在计时器运行过程中点击标记，即可在当前时刻打下一个"书签"。每个标记都会记住打标时的时刻和已用时长。您随后可以选择保存到标记处或回退到标记处继续。',
+            '重置按钮 — 三个选项：(1)"保存到最后标记并停止" — 最后一个标记之前的时间被保存，其余部分丢弃；(2)"回退到最后标记并继续" — 计时器跳回最后一个标记处，您可以从那里继续；(3)"完全重置" — 不保存任何内容，计时器回到起点。',
+            '完成按钮：结束工作阶段并将时间保存到时间追踪页面。如果打过标记，还可以选择只保存到最后一个标记处。',
+            '超时模式：番茄钟时间结束后，计时器不会停止，而是继续以 +01:23 的形式显示超出的时间，并变为黄色。当您准备好结束时，按下"完成"即可。',
+            '关闭标签不会丢失进度：即使关闭浏览器或标签页，计时器状态也会保存长达8小时。重新打开页面后，可以从上次离开的地方继续。',
+            '全屏模式：点击右上角的图标，左侧菜单和顶部工具栏会隐藏，只留下计时器。适合需要深度专注时使用。全屏下还可以在底部打开一个信息栏，显示今日总工作时长和连续坚持天数。'
+          ],
+          tip: '开始前先选择一项任务 — 这样您的时间会自动关联到正在做的事情上。使用标记按钮就像在工作途中设置检查点：它让您在不停止计时的情况下记录一个时刻，方便之后保存或回退。'
         },
         {
-          icon: 'clock', title: '时间追踪', desc: '按类别和项目记录每日活动。番茄钟会话自动导入；您也可以随时手动添加记录。通过30天柱状图分析时间分配。',
-          features: ['手动记录：日期、类别、项目、开始和结束时间', '番茄钟会话自动导入，标记为"pomodoro"来源', '来源筛选：全部 / 仅手动 / 仅番茄钟', '日期范围选择器用于历史分析', '30天和每周柱状图', '月度历史弹窗 — 每日和每周合计'],
-          tip: '番茄钟会话以"pomodoro"来源自动导入。使用来源筛选器可单独查看番茄钟或手动记录。'
+          icon: 'clock', title: '时间追踪', desc: '记录您每天在各类活动上花费了多少时间的页面。专注模式中完成的工作阶段会自动添加到这里；您也可以随时手动输入记录。每日、每周和每月图表帮助您清楚地看到时间花在了哪里。',
+          features: [
+            '顶部三个摘要卡片：今天记录了多少分钟、本周总计和本月总计 — 最重要的数据一目了然。',
+            '手动添加记录：点击右上角的"添加记录"按钮。填写日期、类别（工作、学习、运动、社交、睡眠或其他）、可选的项目名称，以及开始和结束时间，时长会自动计算。',
+            '来自专注模式的自动记录：每次完成番茄钟或心流工作阶段后，记录会自动添加到这个页面。这些记录在表格中会显示一个小小的"自动"标签，方便与手动记录区分。',
+            '筛选记录：表格上方的按钮可以在"全部"、"仅手动"和"仅自动"之间切换。您选择的筛选条件在关闭页面后仍会保留。',
+            '日期范围筛选：点击日历图标，选择开始和结束日期，只查看该时间段内的记录。清除筛选条件即可回到完整列表。',
+            '30天趋势图：显示过去三十天中每天记录的分钟数。一眼便能看出您最活跃的日子和较为清闲的时段。',
+            '每周分布图：将最近七天逐一对比。快速了解一周中哪些天您通常最高效。',
+            '编辑和删除记录：表格中每条记录旁都有铅笔图标（编辑）和垃圾桶图标（删除）。删除时会弹出确认提示；勾选"今天不再询问"后，当天的后续删除操作将不再弹出确认窗口。',
+            '月度历史：点击右上角的"历史"按钮即可浏览过去的月份。用箭头按钮在月份之间切换。"概览"标签显示月度图表和每周汇总；"记录"标签按天列出所有条目。每个月顶部可以看到当月的活跃天数、每日平均时长以及花费时间最多的类别。'
+          ],
+          tip: '如果您经常使用专注模式，记录就已经自动进来了。切换到"仅手动"筛选可以只查看您手动输入的内容，选择"仅自动"则可以专门回顾您的番茄钟和心流工作阶段。'
         },
         {
-          icon: 'check-circle', title: '习惯', desc: '追踪每日习惯并建立连续记录。添加永久性（每天）或计划性（特定天）习惯，通过可视化网格和图表监控进度。',
-          features: ['两种习惯类型：永久性（每日）和计划性（仅限特定天）', '今日跳过系统 — 不会中断连续记录', '🔥 连续天数计数器：显示连续完成的天数', '30天完成网格 — 每个习惯的可视化历史', '带完成百分比的每周甜甜圈图', '拖拽重新排列习惯列表'],
-          tip: '计划性习惯只在指定天显示 — 在其他天不会影响连续记录。'
+          icon: 'check-circle', title: '习惯', desc: '记录您每天想做的事情的页面。随着您完成习惯，您会建立连续记录，并可以直观地回顾自己的进步。您可以设置每天重复的习惯，也可以设置只在一周中特定日子出现的习惯。',
+          features: [
+            '两种习惯类型："每天"习惯每天早上都会出现在您的列表中。"特定日期"习惯只在您选择的日子显示——例如周一到周五——在其他日子完全不显示，因此那些日子不会影响您的连续记录。',
+            '添加习惯：输入名称，可选择添加表情符号和颜色，然后选择是每天还是特定日期的习惯。应用程序会根据您输入的内容自动推荐合适的表情符号。',
+            '每日列表分为三个部分：尚未完成的习惯在顶部，已完成的在中间，今天跳过的在底部。标题中的计数器（如"3 / 5"）显示您完成了多少项。',
+            '跳过按钮：点击任意习惯旁的小减号图标，即可将其标记为今天跳过。关键是：跳过不会中断连续记录。身体不适或确实没有时间的日子里可以放心使用。如果改变主意，点击循环箭头图标即可撤销跳过。',
+            '🔥 连续记录计数器：显示您连续完成某个习惯的天数。某天未完成则连续记录归零——但跳过的日子不计入其中。对于特定日期的习惯，只有指定的日子才会计入；其他日子完全不影响连续记录。',
+            '30天进度网格：以小方格的形式显示每个习惯过去三十天的情况。完成的日子用该习惯的颜色填充，未完成的日子保持空白。今天的方格有蓝色边框以突出显示。每行开头显示完成百分比。',
+            '每周图表：一周中每天都有一个小圆形图表，显示当天完成习惯的比例。旁边还有整周的汇总图表。',
+            '三个摘要卡片：今天完成了多少习惯、本周的平均完成率，以及所有习惯中最长的连续记录——显示在页面底部。',
+            '重新排列顺序：按住每日列表中的某个习惯并拖动到您想要的位置，新顺序会自动保存。',
+            '编辑和删除：点击右上角的"管理"按钮，弹出窗口列出所有习惯；点击铅笔图标可以编辑，点击垃圾桶图标可以删除。删除操作同时会删除该习惯的所有历史记录，且无法撤销。'
+          ],
+          tip: '保持连续记录不需要每天都做——使用"特定日期"类型，只追踪有意义的日子。如果某天真的无法完成，点击"跳过"而不是让它变成未完成：这样既保留了您的连续记录，也减少了一项未完成任务带来的压力。'
         },
         {
-          icon: 'dumbbell', title: '健身', desc: '训练日志。添加力量、有氧、柔韧等训练；记录组数/次数/重量或时长/距离。保存模板以便在多次训练中复用。',
-          features: ['训练类型：力量、有氧、柔韧、CrossFit、运动、其他', '力量：组数、次数、重量（kg/lb）和肌肉群', '有氧：时长（分钟）和距离（km）', '模板保存 — 复用最常用的练习组合', '身体测量追踪（胸围、腰围、臀围等）', '1次最大重量（1RM）自动计算', '每周训练量和每个练习的进度图表'],
-          tip: '使用右上角的单位切换在kg和lb之间切换 — 所有现有数据自动转换。'
+          icon: 'dumbbell', title: '健身', desc: '您的训练日记。每次锻炼后记录所做的内容，通过图表追踪随时间的进步，并让应用自动整理您的个人最佳记录。支持力量训练、有氧运动及其他所有类型的锻炼。',
+          features: [
+            '添加训练：点击"添加训练"。选择日期、持续时间（分钟）和训练类型。共有六种类型可选：力量、有氧、柔韧、CrossFit、运动和其他。您还可以添加备注和1到10的难度评级。',
+            '记录练习：在训练表单底部逐一添加每个练习。力量训练需填写练习名称、肌肉群、组数、次数和重量；有氧训练则填写时长和距离（千米）。表单会根据您选择的训练类型自动调整。',
+            '模板：如果您经常遵循相同的训练计划，只需保存一次，以后每次点击一下即可加载。填写好训练表单后，点击"另存为模板"并命名。下次从"加载模板"菜单中选择，所有练习将自动填入。',
+            '个人最佳记录面板：对于您曾经记录过的每一个练习，应用会自动追踪您举过的最重重量及日期。它还会根据您的组数和次数计算估算的单次最大重量。',
+            '身体测量：您可以按日期记录六项测量数据：体重、体脂率、腰围、胸围、手臂围和腿围。您的体重随时间的变化会以图表形式显示。',
+            '训练频率图：显示过去八周中每周进行了多少次训练。一眼便能看出您的训练是否规律，或者是否存在空缺。',
+            '训练量图：显示过去八周每周移动的总重量（组数 × 次数 × 重量）。帮助您了解训练强度是否随时间增长。',
+            '肌肉群图表和练习进步追踪：饼图显示您训练了哪些肌肉群以及各占多少比例。您还可以从菜单中选择特定练习，查看该练习重量随时间变化的曲线图。',
+            '训练历史卡片：您记录的每次训练都以卡片形式显示，包含日期、类型、时长和练习摘要。点击任意卡片即可打开并编辑。',
+            'kg / lb 切换：使用右上角的按钮在千克和磅之间切换。所有重量、图表和个人最佳记录将自动转换。',
+            '面板管理：点击右上角的网格图标，选择哪些面板可见。使用锁定图标可拖动面板以改变排列顺序或调整显示宽度。'
+          ],
+          tip: '对于固定的训练计划使用模板，这样就不必每次从头重新输入练习了。另外，经常查看个人最佳记录面板——看到上次的最重记录是设定下次目标的简单而有效的方式。'
         },
         {
-          icon: 'kanban', title: '计划', desc: '看板式任务管理器。在待办、进行中和已完成列中追踪任务。为每个任务添加支持拖拽排序的子任务。',
-          features: ['在看板（列）和列表（表格）视图之间切换', '子任务：复选框、多行文本、拖拽排序', '优先级：高（红色）、中（黄色）、低（蓝色）', '类别标签和截止日期，便于整理', '逾期任务显示红色警告', '在子任务文本中使用Shift+Enter创建新行'],
-          tip: '可在看板和列表视图之间切换 — 列表模式按截止日期排序显示所有任务，便于管理大量任务。'
+          icon: 'kanban', title: '计划', desc: '这是您追踪所有待办事项的任务管理页面。任务分为三个阶段进行管理——待办、进行中和已完成——让您随时掌握哪些事项待处理、哪些正在进行、哪些已经完成。',
+          features: [
+            '两种视图可选：看板视图将任务分三列并排显示（待办、进行中、已完成），让您一目了然地掌握整体工作量。列表视图则将所有任务按截止日期排成一张表格——任务较多时更便于查看截止日期。',
+            '添加任务：点击"添加任务"按钮并填写标题。您也可以设置截止日期、优先级、类别和备注，但这些都是可选的——仅填写标题也可以保存。',
+            '七个固定类别，按生活领域整理任务：工作、学习、个人、健康、财务、家庭和其他。每个类别都有专属颜色标签，一眼即可区分。',
+            '优先级颜色：高优先级任务标为红色，中等为黄色，低等为蓝色。当任务列表很长时，优先级帮助您决定先处理哪些事项。',
+            '推进任务：在看板视图中，您可以将任务卡片拖到下一列，也可以点击卡片上的箭头按钮使其前进一个阶段。在列表视图中，直接点击状态标签即可更改。',
+            '逾期任务：截止日期已过的任务会以红色突出显示，让您无需翻找即可快速发现需要立即处理的事项。',
+            '子任务：编辑任务时，可以在其中添加一系列小步骤，每个子任务都有自己的复选框。将大任务拆解为小步骤，不仅让任务更易于着手，也便于追踪部分进度。',
+            '编辑子任务：点击子任务文字即可直接在原处编辑。按回车保存，按Shift+回车可在同一子任务内换行。您也可以拖动子任务上下调整顺序。',
+            '页面顶部三张摘要卡片：总任务数、今日完成数和逾期数。无需翻阅完整列表，即可快速了解当前任务状态。',
+            '编辑与删除：点击任意任务的铅笔图标打开编辑表单，点击垃圾桶图标删除任务。删除操作不可恢复，应用会在删除前要求您确认。'
+          ],
+          tip: '任务较多时，切换到列表视图——所有任务按截止日期排列在一张表格中，更容易看清哪些事项即将到期。如果您想通过拖拽操作推进任务、直观查看工作流程，则使用看板视图更为合适。'
         },
         {
-          icon: 'star', title: '梦想与目标', desc: '用里程碑追踪您的梦想和目标。为每个目标分配进度百分比、目标日期、表情符号和颜色。随着截止日期临近显示剩余天数。',
-          features: ['里程碑清单 — 每次勾选自动更新进度百分比', '完成百分比根据里程碑比例自动计算', '显示剩余天数（少于30天时变为红色）', '为每个目标自定义表情符号和颜色', '在编辑模式下拖拽重新排列目标', '类别组：职业、旅行、健康、教育等'],
-          tip: '完成度达到100%时会触发彩纸动画和祝贺通知。'
+          icon: 'star', title: '梦想与目标', desc: '这是您追踪梦想和长期目标的页面。您可以一步一步地推进每个梦想，随时查看自己走了多远。将大目标拆解为小步骤，会让进步变得真实可感、更易实现。',
+          features: [
+            '点击"添加梦想"按钮并输入标题即可新建目标。描述、类别、目标日期、表情符号和颜色均为可选项——仅填写标题即可保存。',
+            '六个固定类别供您选择：职业、旅行、健康、教育、个人和财务。类别以彩色标签的形式显示在卡片上，让您一眼就能将相似的目标归类。',
+            '每个目标都可以设置一个表情符号，它会以较大的尺寸显示在卡片顶部，为您的梦想赋予视觉形象。您选择的颜色将应用于卡片边框、进度条和类别标签。',
+            '里程碑（步骤）：编辑目标时，可以在其中添加一系列小步骤，每个步骤都有自己的复选框。完成时逐一勾选——进度百分比会自动更新。',
+            '进度百分比完全自动计算。系统根据您已完成的里程碑数量占总数的比例来计算进度，无需手动输入任何数字。',
+            '要编辑里程碑的文字，直接点击文字进行修改。要调整里程碑的顺序，通过旁边的拖拽手柄上下拖动即可。',
+            '设置目标日期后，卡片上会显示剩余天数。若少于30天，该数字会变为红色，便于您快速发现需要重点关注的目标。',
+            '要调整目标顺序，点击右上角的锁定图标进入编辑模式，每张卡片上会出现拖拽手柄。将卡片拖到您喜欢的位置后，关闭锁定即可保存。',
+            '当所有里程碑全部勾选、进度达到100%时，屏幕上会出现祝贺通知。',
+            '点击卡片上的铅笔图标可编辑目标，点击垃圾桶图标可删除目标。删除操作不可恢复，应用会在删除前要求您确认。'
+          ],
+          tip: '如果一个大目标让您感到无从下手，可以先只填写标题将其添加进来，再打开编辑页面将其拆解为小步骤。随着每个步骤被逐一勾选，看着进度条慢慢填满，会带来意想不到的成就感与动力。'
         },
         {
-          icon: 'wallet', title: '预算', desc: '月度预算和支出追踪，三标签页布局。管理类别、设置预算限额，并查看包含完整收支明细的历史周期。',
-          features: ['3个标签页：概览（KPI和图表）、类别（预算结构）、交易记录（所有条目）', '概览标签页：净收入、总支出、支出分配饼图和面板排序', '类别标签页：创建收入/支出组和子类别，为每个分配预算限额', '交易记录：完整条目列表，支持文本搜索和日期/类别筛选', '周期系统：预算在每月设定日重置；所有历史周期自动归档', '历史周期弹窗：浏览以前的月份，查看每期收入、支出和净额摘要'],
-          tip: '使用交易选项卡中的"导入数据"按钮，可从完整备份中仅恢复预算数据。'
+          icon: 'wallet', title: '预算', desc: '这是您追踪每月收入和支出的页面。您可以清晰了解资金的来源与去向，以及是否有所结余。通过为每个类别设定支出限额，您能一眼判断自己是否在预算范围内消费。',
+          features: [
+            '页面分为三个标签页：概览（图表与摘要信息）、分类（收支结构管理）和交易记录（所有条目列表）。切换到任一标签页后，刷新页面时应用会记住您上次停留的位置。',
+            '概览标签页展示四张摘要卡片：总收入、总支出、净余额（收入减支出）和剩余可用预算。同时提供多个图表——支出分类饼图、每日支出折线图，以及各月净余额走势图。',
+            '分类标签页是搭建您收支结构的地方。首先创建一个分类组（例如"购物"或"工资"），然后在其下添加子类别。每个子类别都可以设定月度预算限额。',
+            '预算限额：为子类别设定限额后，页面会以百分比形式显示当月已使用的比例。超过75%时进度条变为黄色，超过100%则变为红色。应用不会阻止您继续消费，只提供视觉提醒。',
+            '交易记录标签页列出所有收入和支出条目。您可以通过日期、描述、类别和金额添加新记录，也可以对现有记录进行编辑或删除。',
+            '查找特定记录时，可在搜索框中输入描述或类别名称进行文字搜索，也可通过日期范围和类别组进行筛选。',
+            '周期系统：预算在您选定的每月某天自动重置（默认为每月1日）。新周期开始时，上一个月的数据会自动归档，不会被删除。',
+            '历史周期：点击右上角的历史按钮，即可查看以往每个月的数据。每个历史周期显示总收入、总支出和净差额。您还可以在历史周期中添加或编辑交易记录。',
+            '面板布局：概览标签页中的图表面板可以自由排列——点击铅笔图标进入编辑模式。您也可以通过右上角的面板管理器隐藏不常用的面板。',
+            '预算专属备份：交易记录标签页中的"导入数据"按钮可从备份文件中单独恢复预算数据，不会影响其他模块（习惯、计划、目标等）的内容。'
+          ],
+          tip: '入门时，建议先前往分类标签页创建收入和支出分类组。没有类别就无法添加交易记录。从简单的几个分类开始即可——例如"工资"和"购物"，足以迈出第一步。'
         },
         {
-          icon: 'trending-up', title: '投资', desc: '追踪您的投资组合。通过Alpha Vantage API自动获取股票、ETF和加密货币价格。支持实时汇率整合的多币种功能。',
-          features: ['资产类型：股票、ETF、加密货币、大宗商品、债券、现金', '通过Alpha Vantage API自动更新价格（24小时缓存）', '盈亏追踪：日/周/月/总计时间段选择', '人民币 ↔ 美元显示货币切换', '带百分比分配的投资组合饼图', '在设置中输入Alpha Vantage和汇率API密钥'],
-          tip: '没有API价格的资产（大宗商品、债券、现金）使用购买价格。您也可以手动覆盖任何资产的价格。'
+          icon: 'trending-up', title: '投资', desc: '这是您在一处追踪所有投资的页面——股票、加密货币、ETF等一应俱全。您可以查看投资组合总价值、盈亏情况以及各类资产的比例分布。银行储蓄账户也可以在此添加，每天自动计算利息增长。',
+          features: [
+            '支持六种资产类型：股票、ETF、加密货币、大宗商品（黄金、白银等）、债券和现金。添加每类资产时，需输入代码、名称、数量、买入价格和日期。',
+            '要添加新持仓，点击右上角的"买入/卖出"按钮，选择"新增"。之后，使用"继续买入"可加仓现有资产，使用"卖出"可记录部分或全部卖出操作。',
+            '自动价格更新：在设置中填入连接密钥（Alpha Vantage）后，美国上市的股票、ETF及加密货币价格将在后台每24小时自动更新一次。',
+            '对于不支持自动报价的资产——大宗商品、债券、现金或非美国上市股票——您可以点击投资组合表格中该资产行的铅笔图标，手动输入当前价格。',
+            '盈亏追踪：点击投资组合表格的列标题，可在日/周/月/总计盈亏视图之间切换，直观了解每项资产在所选时间段内的收益或亏损情况。',
+            '货币切换：通过右上角的TRY/USD按钮，随时以本地货币或美元查看整个投资组合。汇率自动更新，也可在顶栏的"1$="输入框中手动填写。',
+            '银行存款追踪：页面底部的"🏦 存款"面板可记录定期或活期储蓄账户。输入银行名称、本金、年利率和起始日期，应用将自动计算已累积利息、剩余天数以及到期时的最终收益。',
+            '存款视图：使用存款面板右上角的"卡片 / 表格"按钮，可在两种布局之间切换。卡片视图将每个账户以宽幅详情卡展示；表格视图则将所有信息整齐排列在并排的列中。应用会记住您上次的选择。',
+            '拖拽排序：投资组合表格和存款列表均支持拖拽排序。将鼠标悬停在某行上，按住左键向上或向下拖动，松开后新顺序自动保存。',
+            '交易记录标签同步："交易记录"板块分为"股票/ETF"和"存款"两个标签。点击"历史"按钮时，当前激活的标签会在历史窗口中直接显示。在历史窗口内可通过箭头按钮按月浏览。',
+            '每次卖出时，已实现的盈利或亏损会单独记录，并在交易记录中显示，同时反映在投资组合摘要卡片中。',
+            '连接密钥在设置 → 投资API密钥中填写。即使没有密钥，应用同样可以使用——只需手动更新价格即可。自动价格更新是额外的便捷功能，而非必要前提。'
+          ],
+          tip: '无需任何连接密钥即可开始使用：添加资产、输入买入价格，并在查看时手动更新当前价格。添加存款账户时，请以年利率形式输入利率（例如42%利率输入"42"）。应用会自动完成其余计算，包括每日利息和到期日期。'
         }
       ],
       es: [
         {
-          icon: 'settings', title: 'Configuración', desc: 'Centro de preferencias generales, apariencia y gestión de datos. Ábrelo desde el icono de engranaje en la parte inferior de la barra lateral en cualquier página. Los cambios se aplican instantáneamente.',
-          features: ['Idioma: TR / EN / ZH / ES / FR — toda la interfaz cambia inmediatamente', 'Moneda: ₺, $, €, £ y otras — controla el símbolo de visualización para todos los valores financieros', 'Tema: 12 temas (Dark, Midnight, Ocean, Forest, Sunset, Rose, Amber, Crimson, Nebula, Arctic, Neon, White)', 'Escala de UI: deslizador del 60%–140% — todos los tamaños rem escalan proporcionalmente', 'Modo privacidad: enmascara todos los valores de moneda con ••••; actívalo aquí o con el icono de ojo', 'Inicio de semana: Lunes o Domingo — afecta los gráficos de hábitos y seguimiento de tiempo', 'Claves API de inversión: Alpha Vantage (precios acciones/ETF/cripto) y Exchange Rates API', 'Exportar datos: descarga todos los datos lt_ como archivo JSON de respaldo', 'Importar datos: reemplaza todos los datos existentes con el contenido del archivo JSON (irreversible)', 'Eliminar todos los datos: dos opciones — 🔄 Restablecer datos semilla (todo se borra, la app reinicia con datos de ejemplo integrados); 💥 Borrar todo (borrado completo, sin recuperación posible)'],
-          tip: 'Importar sobreescribe todos los datos existentes — exporta una copia de seguridad antes. Si solo quieres empezar de nuevo, "Restablecer datos semilla" es una forma segura de reiniciar con contenido de ejemplo.'
+          icon: 'settings', title: 'Configuración', desc: 'Todos los ajustes de apariencia y comportamiento de la aplicación están aquí. Haz clic en el icono de engranaje en la parte inferior del menú izquierdo en cualquier página para abrirlo. Los cambios se aplican de inmediato.',
+          features: ['Idioma: Elige el idioma de la aplicación — turco, inglés, chino, español o francés. Todos los menús y textos aparecerán en el idioma que elijas.', 'Moneda: Elige qué símbolo de moneda se muestra en toda la aplicación — lira turca (₺), dólar ($), euro (€) y más.', 'Tema de color: Cambia el aspecto visual de la aplicación. Hay 12 temas de color disponibles — opciones oscuras, claras y coloridas.', 'Tamaño del texto y los elementos: Si la pantalla se ve recargada o el texto es difícil de leer, usa el deslizador para agrandar o reducir todo.', 'Modo privacidad: Cuando está activado, todos los importes de dinero se muestran como ••••. Muy útil cuando otras personas están cerca y no quieres que vean tus cifras.', 'Día de inicio de semana: Elige si tu semana empieza el lunes o el domingo. Esto cambia cómo se ven los gráficos de hábitos y seguimiento de tiempo.', 'Actualización de precios en tiempo real: Introduce aquí las claves de conexión para activar las actualizaciones automáticas de precios de acciones, criptomonedas y tipos de cambio. (Solo necesario si usas la sección de Inversiones.)', 'Copia de seguridad (Exportar): Guarda todos tus datos como un archivo en tu computadora. Te recomendamos hacerlo regularmente para mantener tus datos seguros.', 'Restaurar desde copia de seguridad (Importar): Carga un archivo de copia de seguridad que guardaste antes. Importante: esto reemplaza todos tus datos actuales y no se puede deshacer.', 'Eliminar datos — dos opciones: "Restablecer a datos de ejemplo" elimina tus datos personales y reinicia la aplicación con contenido de ejemplo listo para usar; "Borrar todo" elimina permanentemente todos los datos sin posibilidad de recuperación.', 'Ocultar secciones (pestaña Paneles): Puedes quitar del menú izquierdo las páginas que no uses. Tus datos no se eliminan — solo esa página deja de aparecer en el menú.'],
+          tip: 'Usa el botón "Exportar" regularmente para hacer copias de seguridad. Importar una copia reemplazará todos tus datos actuales — exporta siempre una copia primero. Si quieres empezar de cero, "Restablecer a datos de ejemplo" te da una aplicación limpia con contenido de ejemplo ya incluido.'
         },
         {
-          icon: 'layout-dashboard', title: 'Dashboard', desc: 'Vista general central de todos los módulos. Consulta métricas clave como patrimonio neto, gastos, tasa de hábitos y metas activas de un vistazo. Personaliza qué paneles se muestran y en qué orden.',
-          features: ['Selector de período Semanal / Mensual / Anual para análisis de tendencias', 'Arrastra y reorganiza paneles con el botón de bloqueo en la barra superior', 'Planes próximos con alertas de tareas vencidas', 'Gráfico de tarta del portafolio de inversiones y asignación de activos', 'Barras de progreso de metas y contadores de hitos', 'Entrenamientos recientes con detalles de ejercicios', 'Estado de gastos del presupuesto — barras de progreso por categoría'],
-          tip: 'Haz clic en el icono de candado en la barra superior para entrar en modo edición y arrastrar paneles. Usa el icono de ojo para ocultar los paneles que no necesitas.'
+          icon: 'layout-dashboard', title: 'Inicio', desc: 'La pantalla principal que muestra un resumen de todas las secciones en un solo lugar. Tus gastos, hábitos, metas, entrenamientos y más, todo visible de un vistazo. Tú decides qué secciones aparecen y en qué orden.',
+          features: [
+            'Cuatro tarjetas de resumen (en la parte superior): Tu patrimonio neto, el gasto total del período seleccionado, el porcentaje de hábitos completados y el número de metas activas — los datos más importantes te esperan nada más abrir la app.',
+            'Gráfico de tiempo: Muestra en minutos cuánto tiempo dedicaste a actividades durante la semana, mes o año seleccionado. Puedes identificar fácilmente tus días más productivos y los períodos más tranquilos.',
+            'Sección Pomodoro: Un breve resumen de tus sesiones de trabajo — cuántas sesiones completaste, cuántos minutos estuviste en concentración profunda y cuántos días seguidos llevas.',
+            'Sección Gimnasio: Lista tus dos últimos entrenamientos con fecha, tipo y duración. Haz clic en cualquier entrenamiento para desplegarlo y ver exactamente qué ejercicios hiciste.',
+            'Sección Presupuesto: Muestra cuánto has gastado de cada categoría mediante barras horizontales. Las categorías casi llenas destacan para que veas de un vistazo dónde va tu dinero.',
+            'Sección Inversiones: Muestra la distribución de tu cartera en dos gráficos circulares — uno con cada posición individual y otro agrupado por tipo: acciones, cripto, bonos, etc.',
+            'Sección Metas: Todas las metas sin terminar aparecen con barras de progreso para que veas de un vistazo cuánto has avanzado en cada una.',
+            'Sección Planes próximos: Las tareas con fecha límite en los próximos 7 días y cualquier asunto pendiente vencido aparecen aquí para que no se te escape nada.',
+            'Selector de período (esquina superior derecha): Cambia entre "Esta Semana", "Este Mes" y "Este Año" para ajustar el rango de tiempo que cubren las tarjetas y los gráficos.',
+            'Reorganizar secciones: Haz clic en el icono de candado (arriba a la derecha). Las secciones mostrarán un borde discontinuo — en este modo puedes arrastrar cualquier sección a donde quieras. Vuelve a hacer clic en el candado para guardar y salir.',
+            '¿Qué secciones se muestran? Ve a Configuración → pestaña Paneles para ocultar las secciones que no usas. Al ocultarlas, desaparecen del inicio y del menú izquierdo. Tus datos no se eliminan — se pueden volver a mostrar en cualquier momento.'
+          ],
+          tip: 'Mueve la información que consultas con más frecuencia hacia arriba. Si principalmente sigues el presupuesto y las metas, puedes ocultar las secciones de gimnasio y pomodoro para una vista más limpia. Puedes recuperarlas cuando quieras desde Configuración → Paneles.'
         },
         {
-          icon: 'timer', title: 'Pomodoro', desc: 'Temporizador de enfoque de tres modos. Usa ciclos clásicos Pomodoro (trabajo + descanso), modo Flow ilimitado o una cuenta regresiva personalizada. Cada sesión completada se registra automáticamente en la página de Seguimiento de Tiempo.',
-          features: ['Modos Pomodoro (25 min trabajo + descanso), Flow (ilimitado) y Cuenta regresiva', 'Vincula sesiones a una tarea — el nombre aparece en el encabezado; el uso de pomodoros es rastreado', 'Panel de subtareas — ve y marca subtareas mientras trabajas', 'Botón de marca: registra un punto de división mientras el temporizador corre; guarda tiempo y hora', 'Botón Reiniciar: 3 opciones — guardar hasta la última marca / retroceder / reinicio completo', 'Botón Finalizar: guarda el tiempo total o divide y guarda cada segmento por separado', 'Modo horas extra: continúa más allá del límite con +MM:SS; se cierra con el botón Finalizar', 'El temporizador se guarda automáticamente — recargar la pestaña reanuda desde donde quedaste (8h TTL)', 'Sincronización en tiempo real entre múltiples pestañas'],
-          tip: 'Ajusta las duraciones de trabajo, descanso corto y largo desde el panel de configuración en la parte superior de la página.'
+          icon: 'timer', title: 'Modo Concentración', desc: 'La página del temporizador que mide y registra tus sesiones de trabajo. Ofrece tres formas diferentes de trabajar: ciclos Pomodoro clásicos, un cronómetro libre sin límite de tiempo y una cuenta regresiva personalizada. Cada sesión completada se añade automáticamente a la página de Seguimiento de Tiempo.',
+          features: [
+            'Modo Pomodoro: Trabaja en intervalos de 25 minutos seguidos de 5 minutos de descanso corto. Tras cuatro sesiones, comienza un descanso largo de 15 minutos. Puedes cambiar todas estas duraciones desde el panel de ajustes en la parte superior de la página.',
+            'Modo Flow (flujo): Un cronómetro que cuenta hacia arriba desde cero sin límite de tiempo. Úsalo cuando quieras registrar cuánto trabajas sin estar limitado a un intervalo fijo.',
+            'Modo cuenta regresiva: Tú mismo introduces las horas, minutos y segundos. Cuando el tiempo se acaba, suena una alerta y el temporizador se reinicia.',
+            'Vincular a una tarea: Antes de empezar, puedes elegir una de las tareas de hoy de una lista. El nombre de la tarea aparece en la pantalla del temporizador y el tiempo que dediques quedará registrado en esa tarea.',
+            'Panel de subtareas: Los pasos de la tarea seleccionada aparecen en el lado izquierdo de la pantalla. Puedes marcarlos como completados uno a uno sin salir del temporizador. Al terminar la sesión, los pasos que queden se marcan como completados automáticamente.',
+            'Botón de marca: Pulsa la bandera mientras el temporizador corre para marcar el momento actual, como poner un marcador en el tiempo. Cada marca recuerda la hora exacta y el tiempo transcurrido. Después puedes guardar hasta esa marca o volver a ella.',
+            'Botón Reiniciar — tres opciones: (1) "Guardar hasta la última marca y parar" — se guarda todo hasta la última marca y se descarta el resto; (2) "Volver a la última marca y continuar" — el temporizador salta a tu última marca para que puedas seguir desde allí; (3) "Empezar de cero" — no se guarda nada y el temporizador vuelve al principio.',
+            'Botón Finalizar: Termina la sesión y guarda tu tiempo en la página de Seguimiento de Tiempo. Si pusiste marcas, también tienes la opción de guardar solo hasta la última.',
+            'Modo horas extra: Cuando el tiempo del Pomodoro se acaba, el temporizador no se detiene; sigue mostrando el tiempo extra como +01:23 en amarillo. Pulsa Finalizar cuando estés listo para terminar.',
+            'No se pierde si cierras la pestaña: Tu temporizador se guarda durante hasta 8 horas aunque cierres el navegador o la pestaña. Al volver, retoma justo donde lo dejaste.',
+            'Modo pantalla completa: Haz clic en el icono de la esquina superior derecha para ocultar el menú y la barra superior, dejando solo el temporizador en pantalla. Ideal para concentrarse al máximo. En pantalla completa también puedes abrir una pequeña barra de información en la parte inferior que muestra el tiempo total trabajado hoy y tu racha de días.'
+          ],
+          tip: 'Selecciona una tarea antes de empezar — así tu tiempo se vincula automáticamente a lo que estás haciendo. Usa el botón de marca como un punto de control a mitad de sesión: te permite marcar un momento sin parar, para luego guardar hasta allí o retroceder si lo necesitas.'
         },
         {
-          icon: 'clock', title: 'Seguimiento de Tiempo', desc: 'Registra actividades diarias por categoría y proyecto. Las sesiones Pomodoro se importan automáticamente; también puedes añadir entradas manuales. Analiza la distribución del tiempo con gráficos de barras de 30 días.',
-          features: ['Registro manual: fecha, categoría, proyecto, hora de inicio y fin', 'Las sesiones Pomodoro se importan automáticamente con fuente "pomodoro"', 'Filtro de fuente: Todo / Solo manual / Solo Pomodoro', 'Selector de rango de fechas para análisis histórico', 'Gráficos de barras de 30 días y semanales', 'Modal de historial mensual — totales diarios y semanales'],
-          tip: 'Las sesiones Pomodoro se importan automáticamente con la fuente "pomodoro". Usa el filtro de fuente para ver solo entradas Pomodoro o manuales por separado.'
+          icon: 'clock', title: 'Seguimiento de Tiempo', desc: 'La página donde registras cuánto tiempo dedicas a tus actividades del día. Las sesiones del Modo Concentración se añaden aquí de forma automática; también puedes introducir registros manualmente cuando quieras. Los gráficos diarios, semanales y mensuales te ayudan a ver con claridad en qué empleas tu tiempo.',
+          features: [
+            'Tres tarjetas de resumen en la parte superior: cuántos minutos registraste hoy, el total de la semana y el total del mes — los datos más importantes a la vista nada más entrar.',
+            'Añadir un registro manualmente: haz clic en el botón "Añadir registro" en la esquina superior derecha. Rellenas la fecha, una categoría (Trabajo, Aprendizaje, Ejercicio, Social, Sueño u Otros), un nombre de proyecto opcional, y la hora de inicio y fin. La duración se calcula sola.',
+            'Registros automáticos del Modo Concentración: cada vez que terminas una sesión Pomodoro o de flujo, se añade a esta página de forma automática. Estos registros aparecen en la tabla con una pequeña etiqueta "Automático" para distinguirlos de los manuales.',
+            'Filtrar registros: los botones encima de la tabla te permiten cambiar entre "Todos", "Solo manuales" y "Solo automáticos". El filtro que elijas se recuerda aunque cierres la página.',
+            'Filtro por rango de fechas: haz clic en el icono de calendario para elegir una fecha de inicio y fin y ver solo los registros de ese período. Borra el filtro para volver a la lista completa.',
+            'Gráfico de tendencia de 30 días: muestra cuántos minutos registraste en cada uno de los últimos treinta días. De un vistazo puedes distinguir tus días más activos y los momentos de menor actividad.',
+            'Gráfico de distribución semanal: compara los últimos siete días uno a uno. Una forma rápida de ver en qué días de la semana sueles rendir más.',
+            'Editar y eliminar registros: cada fila de la tabla tiene un icono de lápiz para editarla y uno de papelera para borrarla. Al eliminar se pide confirmación; si marcas "No preguntar más hoy", no volverá a aparecer el aviso durante el resto del día.',
+            'Historial mensual: haz clic en el botón "Historial" en la esquina superior derecha para explorar meses anteriores. Usa las flechas para moverte entre meses. La pestaña "Resumen" muestra un gráfico mensual y totales semanales; la pestaña "Registros" lista todas las entradas día a día. En la parte superior de cada mes puedes ver los días activos, tu promedio diario y la categoría a la que más tiempo dedicaste.'
+          ],
+          tip: 'Si usas el Modo Concentración con regularidad, tus registros ya llegan solos. Cambia al filtro "Solo manuales" para ver únicamente lo que introdujiste a mano, o elige "Solo automáticos" para revisar exclusivamente tus sesiones Pomodoro y de flujo.'
         },
         {
-          icon: 'check-circle', title: 'Hábitos', desc: 'Rastrea hábitos diarios y construye rachas. Añade hábitos permanentes (cada día) o programados (días específicos), y monitorea el progreso con cuadrículas visuales y gráficos.',
-          features: ['Dos tipos de hábito: Permanente (diario) y Programado (solo días seleccionados)', 'Sistema de omisión para hoy — no rompe tu racha', '🔥 Contador de racha: días consecutivos completados', 'Cuadrícula de finalización de 30 días — historial visual por hábito', 'Gráficos de rosquilla semanales con porcentaje de finalización', 'Arrastra para reordenar hábitos en la lista diaria'],
-          tip: 'Los hábitos programados solo aparecen en sus días asignados — no afectarán las rachas en otros días.'
+          icon: 'check-circle', title: 'Hábitos', desc: 'La página donde llevas el seguimiento de las cosas que quieres hacer cada día. A medida que completas hábitos construyes rachas y puedes revisar tu progreso visualmente. Puedes definir hábitos que se repiten todos los días o que solo aparecen ciertos días de la semana.',
+          features: [
+            'Dos tipos de hábito: los de "Todos los días" aparecen en tu lista cada mañana. Los de "Días específicos" solo se muestran en los días que elegiste — por ejemplo de lunes a viernes — y desaparecen completamente los demás días, sin afectar tu racha en absoluto.',
+            'Añadir un hábito: escribe un nombre, elige opcionalmente un emoji y un color, y luego selecciona si es de todos los días o de días específicos. La aplicación sugiere automáticamente un emoji adecuado según lo que escribas.',
+            'La lista diaria tiene tres secciones: los hábitos que aún no has hecho arriba, los completados en el medio y los que has omitido ese día abajo. Un contador como "3 / 5" en el encabezado muestra cuántos has terminado.',
+            'Botón de omitir: haz clic en el pequeño icono de menos junto a cualquier hábito para marcarlo como omitido hoy. Lo importante es que omitir no rompe tu racha. Úsalo sin preocupación los días que estés enfermo o que de verdad no puedas. Si cambias de opinión, haz clic en el icono de flecha circular para deshacer la omisión.',
+            '🔥 Contador de racha: muestra cuántos días seguidos has completado un hábito. Si fallas un día la racha se reinicia — pero los días que omitiste no cuentan en tu contra. En los hábitos de días específicos, solo se cuentan los días asignados; el resto de la semana no afecta la racha en absoluto.',
+            'Cuadrícula de progreso de 30 días: muestra los últimos treinta días como pequeños cuadrados para cada hábito. Los días completados se rellenan con el color de ese hábito; los días no completados quedan vacíos. El cuadrado de hoy tiene un borde azul para destacar. Al inicio de cada fila se muestra el porcentaje de cumplimiento.',
+            'Gráficos semanales: aparece un pequeño gráfico circular para cada día de la semana, mostrando qué proporción de tus hábitos completaste ese día. Junto a ellos hay un gráfico resumen de toda la semana.',
+            'Tres tarjetas de resumen: cuántos hábitos completaste hoy, tu porcentaje de cumplimiento promedio de la semana y la racha más larga entre todos tus hábitos — mostradas en la parte inferior de la página.',
+            'Reordenar: mantén pulsado un hábito en la lista diaria y arrástralo a donde quieras. El nuevo orden se guarda automáticamente.',
+            'Editar y eliminar: haz clic en el botón "Gestionar" en la esquina superior derecha. Una ventana lista todos tus hábitos; usa el icono de lápiz para editar o el de papelera para eliminar. Eliminar también borra todos los registros históricos de ese hábito y no se puede deshacer.'
+          ],
+          tip: 'No necesitas hacerlo todos los días para mantener una racha — usa el tipo "Días específicos" para rastrear solo los días que tienen sentido. Y si un día de verdad no puedes con un hábito, usa Omitir en lugar de dejarlo sin hacer: así mantienes tu racha intacta y eliminas la presión de tener una tarea pendiente.'
         },
         {
-          icon: 'dumbbell', title: 'Gimnasio', desc: 'Diario de entrenamientos. Añade sesiones de fuerza, cardio, flexibilidad y otros; registra ejercicios con series/repeticiones/peso o duración/distancia. Guarda plantillas para reutilizarlas.',
-          features: ['Tipos de entrenamiento: Fuerza, Cardio, Flexibilidad, CrossFit, Deporte, Otros', 'Fuerza: series, repeticiones, peso (kg/lb) y grupo muscular', 'Cardio: duración (min) y distancia (km)', 'Guardado de plantillas — reutiliza tus combinaciones de ejercicios más frecuentes', 'Seguimiento de medidas corporales (pecho, cintura, caderas, etc.)', 'Cálculo automático de 1 Repetición Máxima (1RM)', 'Gráficos de volumen semanal y progreso por ejercicio'],
-          tip: 'Usa el botón de cambio de unidad en la esquina superior derecha para cambiar entre kg y lb — todos los datos existentes se convierten automáticamente.'
+          icon: 'dumbbell', title: 'Gimnasio', desc: 'Tu diario de entrenamiento. Registra lo que haces después de cada sesión, sigue tu progreso a lo largo del tiempo con gráficas y deja que la aplicación lleve automáticamente un registro de tus mejores marcas personales. Compatible con entrenamiento de fuerza, cardio y cualquier otro tipo de ejercicio.',
+          features: [
+            'Añadir un entrenamiento: haz clic en "Añadir entrenamiento". Elige la fecha, cuánto duró en minutos y el tipo. Hay seis tipos disponibles: Fuerza, Cardio, Flexibilidad, CrossFit, Deporte y Otros. También puedes añadir notas y un nivel de dificultad del 1 al 10.',
+            'Registrar ejercicios: en la parte inferior del formulario añades cada ejercicio uno a uno. Para entrenamientos de fuerza introduces el nombre del ejercicio, el grupo muscular, cuántas series, cuántas repeticiones y cuánto peso. Para cardio introduces la duración y la distancia en kilómetros. El formulario se ajusta automáticamente según el tipo que hayas elegido.',
+            'Plantillas: si sigues el mismo plan de entrenamiento con frecuencia, guárdalo una vez y cárgalo con un solo clic cada vez. Rellena el formulario de entrenamiento, pulsa "Guardar como plantilla" y ponle un nombre. La próxima vez, selecciónala en el menú "Cargar plantilla" y todos tus ejercicios se rellenarán solos.',
+            'Panel de marcas personales: para cada ejercicio que hayas registrado, la aplicación lleva automáticamente el seguimiento del mayor peso que hayas levantado y la fecha en que lo hiciste. También calcula tu estimación de una repetición máxima — el mayor peso que teóricamente podrías levantar una sola vez — basándose en tus series y repeticiones.',
+            'Medidas corporales: puedes registrar seis medidas con fecha: peso corporal, porcentaje de grasa corporal, cintura, pecho, brazo y pierna. El cambio de tu peso corporal a lo largo del tiempo se muestra como una gráfica.',
+            'Gráfica de frecuencia de entrenamientos: muestra cuántas sesiones hiciste en cada una de las últimas ocho semanas. Un vistazo rápido para ver si estás entrenando de forma constante o si hay semanas sin actividad.',
+            'Gráfica de volumen: muestra el peso total que moviste cada semana durante las últimas ocho semanas (series × repeticiones × peso). Te ayuda a ver si la intensidad de tu entrenamiento está aumentando con el tiempo.',
+            'Gráfica de grupos musculares y progreso por ejercicio: un gráfico circular muestra qué grupos musculares has trabajado y cuánto. También puedes elegir un ejercicio concreto del menú para ver una gráfica de cómo ha aumentado tu peso en ese ejercicio a lo largo del tiempo.',
+            'Historial de entrenamientos: cada entrenamiento registrado aparece como una tarjeta con la fecha, el tipo, la duración y un resumen de ejercicios. Haz clic en cualquier tarjeta para abrirla y editarla.',
+            'Cambio de unidades kg / lb: usa el botón en la esquina superior derecha para cambiar entre kilogramos y libras. Todos los pesos, gráficas y marcas personales se convierten automáticamente.',
+            'Gestión de paneles: haz clic en el icono de cuadrícula en la esquina superior derecha para elegir qué paneles son visibles. Usa el icono de candado para arrastrar paneles a un orden diferente o ajustar su ancho en pantalla.'
+          ],
+          tip: 'Usa las plantillas para tus sesiones habituales y así no tendrás que volver a introducir los mismos ejercicios desde cero. Además, consulta el panel de marcas personales con frecuencia — ver tu récord anterior de peso es una forma sencilla y efectiva de fijarte un objetivo para la próxima sesión.'
         },
         {
-          icon: 'kanban', title: 'Planes', desc: 'Gestor de tareas estilo Kanban. Rastrea tareas en columnas Pendiente, En Progreso y Completado. Añade subtareas con soporte de arrastrar y soltar para reordenar.',
-          features: ['Cambia entre vistas Kanban (columnas) y Lista (tabla)', 'Subtareas: casillas de verificación, texto multilínea, reordenamiento drag-and-drop', 'Niveles de prioridad: Alta (rojo), Media (amarillo), Baja (azul)', 'Etiquetas de categoría y fechas de vencimiento para organización', 'Alerta de vencimiento roja en tareas atrasadas', 'Shift+Enter en texto de subtarea crea una nueva línea'],
-          tip: 'Cambia entre vistas Kanban y Lista — la vista Lista muestra todas las tareas ordenadas por fecha de vencimiento en una sola tabla, ideal para gestionar muchas tareas a la vez.'
+          icon: 'kanban', title: 'Planes', desc: 'Esta es tu página de gestión de tareas donde puedes llevar el seguimiento de todo lo que necesitas hacer. Las tareas avanzan por tres etapas — Pendiente, En Progreso y Completado — para que siempre sepas qué está pendiente, en qué estás trabajando y qué ya terminaste.',
+          features: [
+            'Dos vistas a elegir: la vista Kanban organiza tus tareas en tres columnas (Pendiente, En Progreso, Completado), lo que te permite ver tu carga de trabajo de un vistazo. La vista Lista muestra todo en una única tabla ordenada por fecha de vencimiento — mejor cuando tienes muchas tareas y quieres ver los plazos.',
+            'Añadir una tarea: haz clic en el botón "Añadir Tarea" y escribe el título. También puedes definir una fecha de vencimiento, nivel de prioridad, categoría y notas. Ninguno de estos campos adicionales es obligatorio — incluso solo el título es suficiente para guardar.',
+            'Siete categorías fijas para organizar tus tareas por área de vida: Trabajo, Aprendizaje, Personal, Salud, Finanzas, Hogar y Otros. Cada una tiene su propia etiqueta de color para distinguirlas fácilmente.',
+            'Colores de prioridad: las tareas de alta prioridad se marcan en rojo, las de prioridad media en amarillo y las de baja en azul. Usa la prioridad para decidir qué abordar primero cuando la lista sea larga.',
+            'Avanzar una tarea: en la vista Kanban puedes arrastrar una tarjeta de tarea a la siguiente columna, o hacer clic en el botón de flecha de la tarjeta para avanzarla una etapa. En la vista Lista, haz clic directamente en la etiqueta de estado para cambiarlo.',
+            'Tareas vencidas: cualquier tarea cuya fecha de vencimiento haya pasado se resalta en rojo. Esto te permite identificar al instante lo que necesita atención inmediata sin tener que revisar toda la lista.',
+            'Subtareas: al editar una tarea, puedes añadir una lista de pasos más pequeños dentro de ella. Cada subtarea tiene su propia casilla de verificación. Dividir una tarea grande en pasos la hace menos intimidante y te ayuda a seguir el progreso parcial.',
+            'Editar subtareas: haz clic en el texto de una subtarea para editarla directamente. Presiona Intro para guardar, o Mayús+Intro para añadir una nueva línea dentro de la misma subtarea. También puedes arrastrar las subtareas hacia arriba o abajo para reordenarlas.',
+            'Tres tarjetas de resumen en la parte superior: Total de tareas, Completadas hoy y Vencidas. Te dan una visión instantánea del estado sin necesidad de desplazarte por la lista completa.',
+            'Editar y eliminar: haz clic en el icono de lápiz de cualquier tarea para abrir el formulario de edición, o en el icono de papelera para eliminarla. Las tareas eliminadas no se pueden recuperar, por lo que la aplicación pide confirmación antes de borrar.'
+          ],
+          tip: 'Si tienes muchas tareas, cambia a la vista Lista — muestra todas las tareas en una sola tabla ordenada por fecha de vencimiento, lo que facilita ver qué viene a continuación. Usa la vista Kanban cuando quieras arrastrar tareas entre etapas y visualizar tu flujo de trabajo.'
         },
         {
-          icon: 'star', title: 'Sueños y Metas', desc: 'Rastrea tus sueños y metas con hitos. Asigna porcentaje de progreso, fecha objetivo, emoji y color a cada meta. Se muestra los días restantes conforme se acerca el plazo.',
-          features: ['Lista de hitos — cada marca actualiza automáticamente el porcentaje de progreso', 'El % de finalización se calcula automáticamente a partir de la proporción de hitos', 'Días restantes mostrados (rojo cuando quedan menos de 30 días)', 'Personalización de emoji y color para cada meta', 'Arrastra para reordenar metas en modo edición', 'Grupos de categorías: Carrera, Viajes, Salud, Educación y más'],
-          tip: 'Alcanzar el 100% activa una animación de confeti y una notificación de felicitación.'
+          icon: 'star', title: 'Sueños y Metas', desc: 'Esta es la página donde llevas el seguimiento de tus sueños y metas a largo plazo. Puedes avanzar en cada sueño paso a paso y ver cuánto camino has recorrido. Dividir una meta grande en pequeños pasos hace que el progreso se sienta real y alcanzable.',
+          features: [
+            'Para añadir un sueño, haz clic en el botón "Añadir Sueño" y escribe un título. La descripción, categoría, fecha objetivo, emoji y color son todos opcionales — con solo el título es suficiente para guardar.',
+            'Seis categorías fijas para elegir: Carrera, Viajes, Salud, Educación, Personal y Financiero. La categoría aparece como una etiqueta de color en la tarjeta para que puedas agrupar metas similares de un vistazo.',
+            'Cada meta puede tener un emoji, que aparece en grande en la parte superior de la tarjeta y le da una identidad visual a tu sueño. El color elegido se aplica al borde de la tarjeta, la barra de progreso y la etiqueta de categoría.',
+            'Hitos (pasos): al editar una meta, puedes añadir una lista de pequeños pasos dentro de ella. Cada paso tiene su propia casilla de verificación. Márcalos conforme los completes — el porcentaje de progreso se actualiza automáticamente.',
+            'El porcentaje de progreso es completamente automático. La aplicación lo calcula en función de cuántos hitos has completado del total. No necesitas introducir ningún porcentaje manualmente.',
+            'Para editar el texto de un hito, haz clic en él y escribe el nuevo texto. Para reordenar los hitos, arrástralos hacia arriba o abajo usando el controlador que aparece junto a cada uno.',
+            'Cuando estableces una fecha objetivo, la tarjeta muestra cuántos días quedan. Si quedan menos de 30 días, ese número se vuelve rojo — así puedes identificar fácilmente las metas que necesitan atención pronto.',
+            'Para reordenar tus metas, haz clic en el ícono de candado en la esquina superior derecha — esto abre el modo de edición y cada tarjeta obtiene un controlador de arrastre. Mueve las tarjetas al orden que prefieras y luego cierra el candado.',
+            'Cuando todos los hitos están marcados y el progreso llega al 100%, aparece una notificación de felicitación en pantalla.',
+            'Para editar una meta, haz clic en el ícono de lápiz de su tarjeta. Para eliminarla, haz clic en el ícono de papelera. La eliminación es permanente, así que la aplicación pedirá confirmación antes de borrar.'
+          ],
+          tip: 'Si una meta grande te parece abrumadora, añádela primero con solo un título y luego ábrela para dividirla en pasos más pequeños. Ver cómo se llena la barra de progreso al marcar cada paso es sorprendentemente motivador.'
         },
         {
-          icon: 'wallet', title: 'Presupuesto', desc: 'Seguimiento de presupuesto y gastos mensuales con diseño de 3 pestañas. Gestiona categorías, establece límites y revisa ciclos históricos con desgloses completos.',
-          features: ['3 pestañas: Resumen (KPIs y gráficos), Categorías (estructura), Transacciones (todos los registros)', 'Pestaña Resumen: ingreso neto, gastos totales, gráfico circular de distribución y reordenamiento de paneles', 'Pestaña Categorías: crea grupos y subcategorías de ingresos/gastos, asigna límites a cada uno', 'Pestaña Transacciones: lista completa con búsqueda de texto y filtros de fecha/categoría', 'Sistema de ciclos: el presupuesto se reinicia en el día elegido cada mes; todos los períodos se archivan', 'Modal de ciclos pasados: navega por meses anteriores con resumen de ingresos, gastos y neto por período'],
-          tip: 'Usa el botón "Importar datos" en la pestaña Transacciones para restaurar solo datos de presupuesto desde una copia de seguridad completa.'
+          icon: 'wallet', title: 'Presupuesto', desc: 'Esta es la página donde llevas el seguimiento de tus ingresos y gastos mensuales. Puedes ver cuánto dinero entra, a dónde va y si estás ahorrando o gastando de más. Al establecer límites de gasto por categoría, puedes saber de un vistazo si te estás manteniendo dentro de tu presupuesto.',
+          features: [
+            'La página se divide en tres pestañas: Resumen (gráficos e información resumida), Categorías (tu estructura de ingresos y gastos) y Transacciones (lista completa de todos los registros). La aplicación recuerda en qué pestaña estabas al volver.',
+            'La pestaña Resumen muestra cuatro tarjetas de resumen: ingresos totales, gastos totales, saldo neto (ingresos menos gastos) y cuánto presupuesto queda. También incluye gráficos — un gráfico circular de distribución de gastos, un gráfico de líneas de gasto diario y una tendencia de saldo neto por meses.',
+            'La pestaña Categorías es donde configuras tu estructura de gastos. Primero crea un grupo (por ejemplo "Alimentación" o "Sueldo"), luego añade subcategorías dentro de él. Cada subcategoría puede tener un límite de presupuesto mensual.',
+            'Límites de presupuesto: cuando estableces un límite para una subcategoría, la página muestra qué porcentaje has usado. Por encima del 75% la barra se vuelve amarilla; por encima del 100% se vuelve roja. La aplicación no te impide gastar más — solo te da una advertencia visual.',
+            'La pestaña Transacciones lista todos tus registros de ingresos y gastos. Puedes añadir una nueva entrada con fecha, descripción, categoría e importe. Los registros existentes se pueden editar o eliminar.',
+            'Para encontrar registros específicos, usa el cuadro de búsqueda de texto para buscar por descripción o nombre de categoría. También puedes filtrar por rango de fechas y por grupo de categoría.',
+            'El sistema de ciclos: el presupuesto se reinicia cada mes en el día que elijas (por defecto el día 1). Cuando comienza un nuevo ciclo, los datos del mes anterior se archivan automáticamente — nada se elimina.',
+            'Ciclos pasados: haz clic en el botón de historial en la esquina superior derecha para revisar meses anteriores. Cada período pasado muestra sus ingresos totales, gastos y resultado neto. También puedes añadir o editar transacciones en ciclos anteriores.',
+            'Diseño de paneles: los gráficos de la pestaña Resumen se pueden reorganizar — haz clic en el icono de lápiz para entrar en modo edición. También puedes ocultar paneles que no uses abriendo el gestor de paneles en la esquina superior derecha.',
+            'Copia de seguridad específica del presupuesto: el botón "Importar datos" en la pestaña Transacciones te permite restaurar solo tus datos de presupuesto desde un archivo de copia de seguridad, sin afectar a ningún otro módulo.'
+          ],
+          tip: 'Empieza yendo a la pestaña Categorías y creando tus grupos de ingresos y gastos. No puedes añadir transacciones hasta tener al menos una categoría configurada. Unos pocos grupos simples — como "Sueldo" y "Alimentación" — son suficientes para comenzar.'
         },
         {
-          icon: 'trending-up', title: 'Inversiones', desc: 'Rastrea tu portafolio de inversiones. Obtén precios automáticos de acciones, ETFs y criptomonedas mediante la API Alpha Vantage. Soporte multi-divisa con integración de tipos de cambio en tiempo real.',
-          features: ['Tipos de activos: Acciones, ETF, Criptomonedas, Materias primas, Bonos, Efectivo', 'Actualizaciones automáticas de precios via Alpha Vantage API (caché de 24 horas)', 'Seguimiento de P&G: selector de período Diario / Semanal / Mensual / Total', 'Cambio de divisa de visualización entre moneda local ↔ USD', 'Gráfico de tarta de asignación del portafolio con desglose porcentual', 'Introduce las claves API de Alpha Vantage y tipo de cambio en Configuración'],
-          tip: 'Los activos sin precios de API (Materias primas, Bonos, Efectivo) usan el precio de compra. También puedes anular manualmente el precio de cualquier activo.'
+          icon: 'trending-up', title: 'Inversiones', desc: 'Esta página te permite seguir todas tus inversiones en un solo lugar — acciones, criptomonedas, ETFs y más. Puedes ver el valor total de tu cartera, las ganancias o pérdidas y cómo están distribuidos tus activos. Las cuentas de ahorro bancarias también se pueden añadir aquí para ver los intereses acumulados día a día.',
+          features: [
+            'Se admiten seis tipos de activos: Acciones, ETF, Criptomonedas, Materias primas (oro, plata, etc.), Bonos y Efectivo. Para cada activo introduces un símbolo, nombre, cantidad, precio de compra y fecha.',
+            'Para añadir una nueva posición, haz clic en el botón "Comprar/Vender" en la esquina superior derecha y elige "Añadir nuevo". Luego usa "Comprar más" para aumentar una posición existente, o "Vender" para registrar una venta parcial o total.',
+            'Actualización automática de precios: una vez que introduces una clave de conexión (Alpha Vantage) en Configuración, los precios de acciones, ETFs y criptomonedas listados en EE.UU. se actualizarán automáticamente en segundo plano cada 24 horas.',
+            'Para activos sin precio automático — Materias primas, Bonos, Efectivo o acciones no cotizadas en EE.UU. — puedes introducir manualmente el precio actual haciendo clic en el icono de lápiz en la fila de ese activo en la tabla.',
+            'Seguimiento de ganancias y pérdidas: haz clic en el encabezado de la columna en la tabla para cambiar entre vistas de ganancia/pérdida Diaria, Semanal, Mensual o Total. Cada activo muestra cuánto ha ganado o perdido en el período seleccionado.',
+            'Cambio de divisa: usa el botón TRY/USD en la esquina superior derecha para ver toda tu cartera en moneda local o en dólares. El tipo de cambio se actualiza automáticamente; también puedes escribirlo a mano en el campo "1$=" de la barra superior.',
+            'Seguimiento de depósitos bancarios: el panel "🏦 Depósitos" en la parte inferior de la página te permite registrar cuentas de ahorro a plazo o flexibles. Introduce el nombre del banco, el capital, la tasa de interés anual y la fecha de inicio — la aplicación calcula automáticamente los intereses acumulados, los días que quedan y el total que recibirás al vencimiento.',
+            'Vista de depósitos: usa los botones "Tarjetas / Tabla" en la esquina superior derecha del panel de depósitos para alternar entre dos formatos. La vista Tarjetas muestra cada cuenta como una tarjeta amplia con todos sus detalles; la vista Tabla alinea todos los datos en columnas una al lado de la otra. La aplicación recuerda tu última preferencia.',
+            'Reordenación con arrastrar y soltar: tanto la tabla de cartera como la lista de depósitos admiten arrastrar y soltar. Pasa el cursor sobre una fila, mantén pulsado el botón izquierdo del ratón y arrástrala hacia arriba o hacia abajo. El nuevo orden se guarda automáticamente.',
+            'Sincronización de pestañas en el historial: la sección "Historial de operaciones" tiene dos pestañas — "Bolsa/ETF" y "Depósitos". La pestaña que esté activa cuando pulses el botón "Historial" se abrirá directamente en la ventana de historial. Dentro puedes navegar entre meses con los botones de flecha.',
+            'Cuando vendes un activo, la ganancia o pérdida realizada se registra por separado. Estos resultados aparecen en el historial de operaciones y se reflejan en las tarjetas de resumen del portafolio.',
+            'Las claves de conexión se introducen en Configuración → Claves API de Inversiones. La aplicación funciona sin claves — simplemente necesitas actualizar los precios manualmente. Las actualizaciones automáticas son una función extra, no un requisito.'
+          ],
+          tip: 'Puedes usar la aplicación sin ninguna clave de conexión: añade tus activos, introduce los precios de compra y actualiza los precios actuales manualmente cuando los consultes. Para los depósitos, introduce la tasa de interés como cifra anual — por ejemplo, escribe "42" para un 42%. La aplicación se encarga del resto, incluido el cálculo diario de intereses.'
         }
       ],
       fr: [
         {
-          icon: 'settings', title: 'Paramètres', desc: 'Centre de préférences générales, d\'apparence et de gestion des données. Ouvrez-le depuis l\'icône d\'engrenage en bas de la barre latérale sur n\'importe quelle page. Les modifications s\'appliquent instantanément.',
-          features: ['Langue : TR / EN / ZH / ES / FR — toute l\'interface bascule immédiatement', 'Devise : ₺, $, €, £ et autres — contrôle le symbole d\'affichage pour toutes les valeurs financières', 'Thème : 12 thèmes (Dark, Midnight, Ocean, Forest, Sunset, Rose, Amber, Crimson, Nebula, Arctic, Neon, White)', 'Échelle UI : curseur 60%–140% — toutes les tailles rem s\'adaptent proportionnellement', 'Mode confidentialité : masque toutes les valeurs monétaires avec •••• ; activez ici ou via l\'icône œil', 'Début de semaine : Lundi ou Dimanche — affecte les graphiques habitudes et suivi du temps', 'Clés API Investissements : Alpha Vantage (prix actions/ETF/crypto) et Exchange Rates API', 'Exporter les données : télécharge toutes les données lt_ dans un fichier JSON de sauvegarde', 'Importer les données : remplace toutes les données existantes par le contenu du fichier JSON (irréversible)', 'Supprimer toutes les données : deux options — 🔄 Réinitialiser aux données initiales (tout effacé, l\'app repart avec des données d\'exemple intégrées) ; 💥 Tout supprimer (suppression complète, aucune récupération possible)'],
-          tip: 'Importer écrase toutes les données existantes — exportez une sauvegarde avant. Si vous souhaitez simplement repartir à zéro, "Réinitialiser aux données initiales" permet un redémarrage sûr avec du contenu d\'exemple.'
+          icon: 'settings', title: 'Paramètres', desc: 'Tous les réglages d\'apparence et de comportement de l\'application se trouvent ici. Cliquez sur l\'icône d\'engrenage en bas du menu gauche sur n\'importe quelle page pour l\'ouvrir. Les modifications prennent effet immédiatement.',
+          features: ['Langue : Choisissez la langue de l\'application — turc, anglais, chinois, espagnol ou français. Tous les menus et textes s\'afficheront dans la langue choisie.', 'Devise : Choisissez quel symbole monétaire est affiché dans toute l\'application — lire turque (₺), dollar ($), euro (€) et plus.', 'Thème de couleur : Changez l\'apparence visuelle de l\'application. 12 thèmes de couleur sont disponibles — options sombres, claires et colorées.', 'Taille du texte et des éléments : Si l\'écran semble encombré ou le texte est difficile à lire, utilisez le curseur pour tout agrandir ou réduire.', 'Mode confidentialité : Lorsqu\'il est activé, tous les montants d\'argent s\'affichent sous forme de ••••. Pratique quand d\'autres personnes sont à côté et que vous ne souhaitez pas qu\'elles voient vos chiffres.', 'Jour de début de semaine : Choisissez si votre semaine commence le lundi ou le dimanche. Cela modifie l\'affichage des graphiques d\'habitudes et de suivi du temps.', 'Mises à jour de prix en temps réel : Entrez ici les clés de connexion pour activer les mises à jour automatiques des prix des actions, cryptomonnaies et taux de change. (Uniquement nécessaire si vous utilisez la section Investissements.)', 'Sauvegarde (Exporter) : Enregistre toutes vos données sous forme de fichier sur votre ordinateur. Nous vous recommandons de le faire régulièrement pour sécuriser vos données.', 'Restaurer depuis une sauvegarde (Importer) : Charge un fichier de sauvegarde enregistré précédemment. Important : cela remplace toutes vos données actuelles et ne peut pas être annulé.', 'Supprimer des données — deux options : "Réinitialiser aux données d\'exemple" supprime vos données personnelles et redémarre l\'application avec du contenu d\'exemple prêt à l\'emploi ; "Tout effacer" supprime définitivement toutes les données sans possibilité de récupération.', 'Masquer des sections (onglet Panneaux) : Vous pouvez retirer du menu gauche les pages que vous n\'utilisez pas. Vos données ne sont pas supprimées — seule cette page disparaît du menu.'],
+          tip: 'Utilisez régulièrement le bouton "Exporter" pour sauvegarder vos données. Importer une sauvegarde remplacera toutes vos données actuelles — exportez toujours une sauvegarde en premier. Si vous souhaitez repartir de zéro, "Réinitialiser aux données d\'exemple" vous donne une application propre avec du contenu d\'exemple déjà rempli.'
         },
         {
-          icon: 'layout-dashboard', title: 'Tableau de bord', desc: 'Vue d\'ensemble centrale de tous les modules. Consultez les métriques clés comme la valeur nette, les dépenses, le taux de complétion des habitudes et les objectifs actifs en un coup d\'œil. Personnalisez les panneaux affichés et leur ordre.',
-          features: ['Sélecteur de période Semaine / Mois / Année pour l\'analyse des tendances', 'Glissez-déposez les panneaux via le bouton verrou dans la barre supérieure', 'Plans à venir avec alertes de tâches en retard', 'Graphique circulaire du portefeuille et répartition des actifs', 'Barres de progression des objectifs et compteurs de jalons', 'Entraînements récents avec détails des exercices', 'État des dépenses du budget — barres de progression par catégorie'],
-          tip: 'Cliquez sur l\'icône verrou dans la barre supérieure pour entrer en mode édition et faire glisser les panneaux. Utilisez l\'icône œil pour masquer les panneaux inutiles.'
+          icon: 'layout-dashboard', title: 'Accueil', desc: 'L\'écran principal qui affiche un résumé de toutes les sections au même endroit. Vos dépenses, habitudes, objectifs, séances de sport et bien plus encore sont visibles d\'un coup d\'œil. Vous choisissez quelles sections apparaissent et dans quel ordre.',
+          features: [
+            'Quatre cartes de résumé (tout en haut) : Votre valeur nette, les dépenses totales de la période sélectionnée, le pourcentage d\'habitudes complétées et le nombre d\'objectifs actifs — les données les plus importantes vous accueillent dès l\'ouverture de l\'application.',
+            'Graphique de temps : Affiche en minutes le temps passé sur vos activités pendant la semaine, le mois ou l\'année sélectionnée, sous forme de courbe. Vous repérez facilement vos journées les plus productives et les périodes plus calmes.',
+            'Section Pomodoro : Un bref résumé de vos sessions de travail — combien de sessions vous avez terminées, combien de minutes vous avez passé en concentration profonde et votre série de jours consécutifs.',
+            'Section Sport : Liste vos deux dernières séances d\'entraînement avec la date, le type et la durée. Cliquez sur une séance pour la déplier et voir exactement quels exercices vous avez faits.',
+            'Section Budget : Affiche via des barres horizontales la proportion de chaque catégorie de dépenses déjà utilisée. Les catégories presque pleines ressortent clairement pour vous montrer où va votre argent.',
+            'Section Investissements : Présente la répartition de votre portefeuille en deux graphiques circulaires — l\'un par position individuelle, l\'autre regroupé par type : actions, cryptos, obligations, etc.',
+            'Section Rêves et Objectifs : Tous les objectifs en cours sont listés avec des barres de progression pour voir d\'un coup d\'œil votre avancement sur chacun.',
+            'Section Plans à venir : Les tâches dont la date limite tombe dans les 7 prochains jours et les tâches en retard sont affichées ici pour ne rien laisser passer.',
+            'Sélecteur de période (coin supérieur droit) : Basculez entre "Cette Semaine", "Ce Mois" et "Cette Année" pour changer la plage de temps couverte par les cartes et les graphiques.',
+            'Réorganiser les sections : Cliquez sur l\'icône de cadenas (en haut à droite). Les sections affichent alors un contour pointillé — dans ce mode, vous pouvez attraper n\'importe quelle section et la glisser où vous le souhaitez. Recliquez sur le cadenas pour enregistrer et quitter.',
+            'Quelles sections apparaissent ? Allez dans Paramètres → onglet Panneaux pour masquer les sections que vous n\'utilisez pas. En les masquant, elles disparaissent de l\'accueil et du menu gauche. Vos données ne sont pas supprimées — vous pouvez les réafficher à tout moment.'
+          ],
+          tip: 'Déplacez les informations que vous consultez le plus souvent vers le haut. Si vous suivez principalement votre budget et vos objectifs, vous pouvez masquer les sections sport et pomodoro pour une vue plus épurée. Vous pouvez les récupérer à tout moment depuis Paramètres → Panneaux.'
         },
         {
-          icon: 'timer', title: 'Pomodoro', desc: 'Minuteur de concentration à trois modes. Utilisez les cycles Pomodoro classiques (travail + pause), le mode Flow illimité ou un compte à rebours personnalisé. Chaque session terminée est automatiquement enregistrée dans le Suivi du temps.',
-          features: ['Modes Pomodoro (25 min travail + pause), Flow (illimité) et Compte à rebours', 'Liez les sessions à une tâche — le nom s\'affiche dans l\'en-tête ; l\'utilisation des pomodoros est suivie', 'Panneau de sous-tâches — consultez et cochez les sous-tâches en travaillant', 'Bouton Drapeau : marque un point de découpe pendant la course ; enregistre le temps écoulé et l\'heure', 'Bouton Réinitialiser : 3 options — sauvegarder jusqu\'au dernier drapeau / revenir / réinitialisation complète', 'Bouton Terminer : sauvegarder le temps total ou découper par drapeaux et sauvegarder chaque segment', 'Mode heures supp. : continue au-delà de la limite avec +MM:SS ; clôturé via le bouton Terminer', 'L\'état du minuteur est sauvegardé — recharger l\'onglet reprend depuis l\'endroit quitté (TTL 8h)', 'Synchronisation en temps réel entre plusieurs onglets'],
-          tip: 'Ajustez les durées de travail, de courte pause et de longue pause depuis le panneau de réglages en haut de la page.'
+          icon: 'timer', title: 'Mode Concentration', desc: 'La page minuteur qui mesure et enregistre vos sessions de travail. Elle propose trois façons différentes de travailler : les cycles Pomodoro classiques, un chronomètre libre sans limite de temps, et un compte à rebours personnalisé. Chaque session terminée est automatiquement ajoutée à la page de Suivi du temps.',
+          features: [
+            'Mode Pomodoro : Travaillez par tranches de 25 minutes suivies d\'une courte pause de 5 minutes. Au bout de quatre sessions, une longue pause de 15 minutes commence automatiquement. Vous pouvez modifier toutes ces durées depuis le panneau de réglages en haut de la page.',
+            'Mode Flow (flux) : Un chronomètre qui compte à la hausse depuis zéro, sans limite de temps. Utilisez-le quand vous voulez noter combien de temps vous travaillez sans être contraint à un intervalle fixe.',
+            'Mode compte à rebours : Vous entrez vous-même les heures, minutes et secondes souhaitées. À la fin du temps, une alerte sonore retentit et le minuteur se réinitialise.',
+            'Associer à une tâche : Avant de démarrer, vous pouvez choisir l\'une des tâches du jour dans une liste. Le nom de la tâche s\'affiche sur l\'écran du minuteur et le temps passé sera enregistré sous cette tâche.',
+            'Panneau de sous-tâches : Les étapes de la tâche sélectionnée s\'affichent sur le côté gauche de l\'écran. Vous pouvez les cocher une à une sans quitter le minuteur. En terminant la session, les étapes restantes sont automatiquement marquées comme accomplies.',
+            'Bouton drapeau : Appuyez sur le drapeau pendant que le minuteur tourne pour marquer ce moment précis, comme poser un signet dans le temps. Chaque drapeau mémorise l\'heure exacte et le temps écoulé. Vous pourrez ensuite sauvegarder jusqu\'à ce drapeau ou y revenir.',
+            'Bouton Réinitialiser — trois choix : (1) "Sauvegarder jusqu\'au dernier drapeau et arrêter" — tout ce qui précède le dernier drapeau est sauvegardé, le reste est supprimé ; (2) "Revenir au dernier drapeau et continuer" — le minuteur saute à votre dernier drapeau pour reprendre depuis là ; (3) "Tout recommencer" — rien n\'est sauvegardé et le minuteur repart depuis le début.',
+            'Bouton Terminer : Met fin à la session et enregistre votre temps dans la page de Suivi du temps. Si vous avez posé des drapeaux, vous avez aussi l\'option de sauvegarder uniquement jusqu\'au dernier.',
+            'Mode heures supplémentaires : Quand le temps du Pomodoro s\'écoule, le minuteur ne s\'arrête pas ; il continue à afficher le temps supplémentaire comme +01:23 en jaune. Appuyez sur Terminer quand vous êtes prêt à conclure.',
+            'Ne se perd pas si vous fermez l\'onglet : Votre minuteur est sauvegardé pendant 8 heures même si vous fermez le navigateur ou l\'onglet. À votre retour, il reprend exactement là où vous en étiez.',
+            'Mode plein écran : Cliquez sur l\'icône en haut à droite pour masquer le menu et la barre d\'outils, ne laissant que le minuteur à l\'écran. Idéal pour une concentration maximale. En plein écran, vous pouvez également ouvrir une petite barre d\'informations en bas qui affiche le temps total travaillé aujourd\'hui et votre série de jours consécutifs.'
+          ],
+          tip: 'Sélectionnez une tâche avant de commencer — ainsi votre temps est automatiquement lié à ce que vous faites. Utilisez le bouton drapeau comme un point de contrôle en cours de session : il vous permet de marquer un instant sans vous arrêter, pour ensuite sauvegarder jusqu\'à ce point ou y revenir si nécessaire.'
         },
         {
-          icon: 'clock', title: 'Suivi du temps', desc: 'Enregistrez les activités quotidiennes par catégorie et projet. Les sessions Pomodoro s\'importent automatiquement ; vous pouvez aussi ajouter des entrées manuelles. Analysez la répartition du temps avec des graphiques en barres sur 30 jours.',
-          features: ['Saisie manuelle : date, catégorie, projet, heure de début et fin', 'Les sessions Pomodoro s\'importent avec la source "pomodoro"', 'Filtre de source : Tout / Manuel uniquement / Pomodoro uniquement', 'Sélecteur de plage de dates pour l\'analyse historique', 'Graphiques en barres sur 30 jours et hebdomadaires', 'Modal d\'historique mensuel — totaux quotidiens et hebdomadaires'],
-          tip: 'Les sessions Pomodoro sont auto-importées avec la source "pomodoro". Utilisez le filtre de source pour afficher séparément les entrées Pomodoro ou manuelles.'
+          icon: 'clock', title: 'Suivi du temps', desc: 'La page où vous enregistrez combien de temps vous consacrez à vos activités quotidiennes. Les sessions du Mode Concentration sont ajoutées ici automatiquement ; vous pouvez aussi saisir des entrées manuellement quand vous le souhaitez. Des graphiques journaliers, hebdomadaires et mensuels vous aident à voir clairement où passe votre temps.',
+          features: [
+            'Trois cartes de résumé en haut : combien de minutes vous avez enregistrées aujourd\'hui, le total de la semaine et celui du mois — les données les plus importantes visibles dès l\'ouverture.',
+            'Ajouter une entrée manuellement : cliquez sur le bouton "Ajouter un enregistrement" en haut à droite. Renseignez la date, une catégorie (Travail, Apprentissage, Exercice, Social, Sommeil ou Autre), un nom de projet facultatif, puis l\'heure de début et de fin. La durée est calculée automatiquement.',
+            'Entrées automatiques du Mode Concentration : chaque fois que vous terminez une session Pomodoro ou de flux, elle est ajoutée à cette page automatiquement. Ces entrées apparaissent dans le tableau avec une petite étiquette "Automatique" pour les distinguer des saisies manuelles.',
+            'Filtrer les entrées : les boutons au-dessus du tableau vous permettent de basculer entre "Tout", "Manuel uniquement" et "Automatique uniquement". Le filtre choisi est mémorisé même après avoir fermé la page.',
+            'Filtre par plage de dates : cliquez sur l\'icône de calendrier pour choisir une date de début et de fin et n\'afficher que les entrées de cette période. Effacez le filtre pour revenir à la liste complète.',
+            'Graphique de tendance sur 30 jours : affiche combien de minutes vous avez enregistrées chacun des trente derniers jours. Vos journées les plus actives et les périodes plus calmes ressortent immédiatement.',
+            'Graphique de répartition hebdomadaire : compare les sept derniers jours côte à côte. Un moyen rapide de voir quels jours de la semaine vous êtes habituellement le plus productif.',
+            'Modifier et supprimer des entrées : chaque ligne du tableau dispose d\'une icône crayon pour la modifier et d\'une icône corbeille pour la supprimer. La suppression demande une confirmation ; cochez "Ne plus demander aujourd\'hui" et la fenêtre de confirmation ne réapparaîtra plus pour le reste de la journée.',
+            'Historique mensuel : cliquez sur le bouton "Historique" en haut à droite pour parcourir les mois précédents. Utilisez les flèches pour naviguer entre les mois. L\'onglet "Résumé" affiche un graphique mensuel et les totaux hebdomadaires ; l\'onglet "Enregistrements" liste toutes les entrées jour par jour. En haut de chaque mois, vous pouvez voir le nombre de jours actifs, votre moyenne quotidienne et la catégorie à laquelle vous avez consacré le plus de temps.'
+          ],
+          tip: 'Si vous utilisez régulièrement le Mode Concentration, vos entrées arrivent déjà automatiquement. Passez au filtre "Manuel uniquement" pour ne voir que ce que vous avez saisi vous-même, ou choisissez "Automatique uniquement" pour revoir uniquement vos sessions Pomodoro et de flux.'
         },
         {
-          icon: 'check-circle', title: 'Habitudes', desc: 'Suivez vos habitudes quotidiennes et construisez des séries. Ajoutez des habitudes permanentes (chaque jour) ou planifiées (jours spécifiques), et surveillez les progrès avec des grilles visuelles et des graphiques.',
-          features: ['Deux types d\'habitude : Permanente (quotidienne) et Planifiée (jours sélectionnés uniquement)', 'Système de saut pour aujourd\'hui — ne brise pas votre série', '🔥 Compteur de série : jours consécutifs complétés', 'Grille de complétion sur 30 jours — historique visuel par habitude', 'Graphiques en donut hebdomadaires avec pourcentage de complétion', 'Glissez pour réorganiser les habitudes dans la liste quotidienne'],
-          tip: 'Les habitudes planifiées n\'apparaissent que leurs jours assignés — elles n\'affecteront pas les séries les autres jours.'
+          icon: 'check-circle', title: 'Habitudes', desc: 'La page où vous suivez les choses que vous voulez faire chaque jour. Au fil de vos habitudes complétées, vous construisez des séries et pouvez regarder vos progrès visuellement. Vous pouvez définir des habitudes qui se répètent tous les jours, ou qui n\'apparaissent que certains jours de la semaine.',
+          features: [
+            'Deux types d\'habitude : les habitudes "Chaque jour" apparaissent dans votre liste chaque matin. Les habitudes "Jours spécifiques" ne s\'affichent que les jours que vous avez choisis — par exemple du lundi au vendredi — et disparaissent complètement les autres jours, sans affecter votre série du tout.',
+            'Ajouter une habitude : saisissez un nom, choisissez éventuellement un emoji et une couleur, puis sélectionnez si c\'est une habitude quotidienne ou à jours spécifiques. L\'application suggère automatiquement un emoji adapté selon ce que vous tapez.',
+            'La liste quotidienne comporte trois sections : les habitudes pas encore faites en haut, les habitudes complétées au milieu, et celles que vous avez passées ce jour en bas. Un compteur comme "3 / 5" dans l\'en-tête indique combien vous en avez terminé.',
+            'Bouton Passer : cliquez sur la petite icône moins à côté d\'une habitude pour la marquer comme passée aujourd\'hui. L\'essentiel : passer ne brise pas votre série. Utilisez-le sans hésiter les jours où vous êtes malade ou où vous n\'avez vraiment pas le temps. Si vous changez d\'avis, cliquez sur l\'icône de flèche circulaire pour annuler.',
+            '🔥 Compteur de série : indique combien de jours de suite vous avez accompli une habitude. Manquer un jour remet le compteur à zéro — mais les jours où vous avez passé ne comptent pas contre vous. Pour les habitudes à jours spécifiques, seuls les jours assignés sont pris en compte ; le reste de la semaine n\'affecte pas la série du tout.',
+            'Grille de progression sur 30 jours : affiche les trente derniers jours sous forme de petits carrés pour chaque habitude. Les jours complétés sont remplis avec la couleur de cette habitude ; les jours non complétés restent vides. Le carré d\'aujourd\'hui a un bord bleu pour se distinguer. Le pourcentage de réussite est indiqué au début de chaque ligne.',
+            'Graphiques hebdomadaires : un petit graphique circulaire apparaît pour chaque jour de la semaine, montrant la proportion de vos habitudes accomplies ce jour-là. Un graphique récapitulatif de toute la semaine est affiché à côté.',
+            'Trois cartes de résumé : combien d\'habitudes vous avez accomplies aujourd\'hui, votre taux de complétion moyen pour la semaine et la plus longue série parmi toutes vos habitudes — affichées en bas de la page.',
+            'Réorganiser : appuyez longuement sur une habitude dans la liste quotidienne et faites-la glisser là où vous le souhaitez. Le nouvel ordre est sauvegardé automatiquement.',
+            'Modifier et supprimer : cliquez sur le bouton "Gérer" en haut à droite. Une fenêtre liste toutes vos habitudes ; utilisez l\'icône crayon pour modifier ou l\'icône corbeille pour supprimer. La suppression efface également tout l\'historique de cette habitude et ne peut pas être annulée.'
+          ],
+          tip: 'Vous n\'avez pas besoin de le faire tous les jours pour construire une série — utilisez le type "Jours spécifiques" pour ne suivre que les jours qui ont du sens. Et si un jour vous ne pouvez vraiment pas faire une habitude, appuyez sur Passer plutôt que de la laisser en suspens : cela préserve votre série et supprime la pression d\'une tâche non accomplie.'
         },
         {
-          icon: 'dumbbell', title: 'Salle de sport', desc: 'Journal d\'entraînement. Ajoutez des séances de musculation, cardio, flexibilité et autres ; enregistrez les exercices avec séries/répétitions/poids ou durée/distance. Sauvegardez des modèles pour les réutiliser.',
-          features: ['Types d\'entraînement : Musculation, Cardio, Flexibilité, CrossFit, Sport, Autre', 'Musculation : séries, répétitions, poids (kg/lb) et groupe musculaire', 'Cardio : durée (min) et distance (km)', 'Sauvegarde de modèles — réutilisez vos combinaisons d\'exercices favorites', 'Suivi des mesures corporelles (poitrine, taille, hanches, etc.)', 'Calcul automatique du 1 Répétition Maximum (1RM)', 'Graphiques de volume hebdomadaire et de progression par exercice'],
-          tip: 'Utilisez le bouton de changement d\'unité en haut à droite pour basculer entre kg et lb — toutes les données existantes sont converties automatiquement.'
+          icon: 'dumbbell', title: 'Sport', desc: 'Votre journal d\'entraînement. Enregistrez ce que vous faites après chaque séance, suivez vos progrès dans le temps avec des graphiques et laissez l\'application tenir automatiquement la liste de vos meilleures performances. Compatible avec la musculation, le cardio et tous les autres types d\'exercice.',
+          features: [
+            'Ajouter un entraînement : cliquez sur "Ajouter un entraînement". Choisissez la date, la durée en minutes et le type. Six types sont disponibles : Musculation, Cardio, Flexibilité, CrossFit, Sport et Autre. Vous pouvez aussi ajouter des notes et un niveau de difficulté de 1 à 10.',
+            'Enregistrer les exercices : en bas du formulaire, vous ajoutez chaque exercice un par un. Pour la musculation, vous saisissez le nom de l\'exercice, le groupe musculaire, le nombre de séries, de répétitions et le poids. Pour le cardio, vous entrez la durée et la distance en kilomètres. Le formulaire s\'adapte automatiquement selon le type d\'entraînement choisi.',
+            'Modèles : si vous suivez régulièrement le même programme, enregistrez-le une fois et chargez-le en un clic à chaque fois. Remplissez le formulaire d\'entraînement, cliquez sur "Enregistrer comme modèle" et donnez-lui un nom. La prochaine fois, sélectionnez-le dans le menu "Charger un modèle" et tous vos exercices se remplissent automatiquement.',
+            'Panneau des records personnels : pour chaque exercice que vous avez déjà enregistré, l\'application suit automatiquement le poids le plus lourd soulevé et la date. Elle calcule aussi votre estimation de répétition maximale — le poids le plus lourd que vous pourriez théoriquement soulever une seule fois — à partir de vos séries et répétitions.',
+            'Mesures corporelles : vous pouvez enregistrer six mesures avec une date : poids corporel, pourcentage de graisse, tour de taille, tour de poitrine, tour de bras et tour de cuisse. L\'évolution de votre poids dans le temps est affichée sous forme de graphique.',
+            'Graphique de fréquence des entraînements : montre combien de séances vous avez faites chacune des huit dernières semaines. Un coup d\'œil suffit pour voir si vous vous entraînez régulièrement ou s\'il y a des semaines sans activité.',
+            'Graphique de volume : montre le poids total déplacé chaque semaine sur les huit dernières semaines (séries × répétitions × poids). Vous aide à voir si l\'intensité de vos entraînements augmente avec le temps.',
+            'Graphique des groupes musculaires et progression par exercice : un graphique circulaire montre quels groupes musculaires vous avez travaillés et dans quelle proportion. Vous pouvez aussi choisir un exercice spécifique dans un menu pour voir un graphique de la progression de votre charge sur cet exercice au fil du temps.',
+            'Historique des entraînements : chaque entraînement enregistré apparaît sous forme de carte avec la date, le type, la durée et un résumé des exercices. Cliquez sur n\'importe quelle carte pour l\'ouvrir et la modifier.',
+            'Basculement kg / lb : utilisez le bouton en haut à droite pour passer entre kilogrammes et livres. Tous les poids, graphiques et records personnels sont convertis automatiquement.',
+            'Gestion des panneaux : cliquez sur l\'icône de grille en haut à droite pour choisir quels panneaux sont visibles. Utilisez l\'icône de cadenas pour faire glisser les panneaux dans un ordre différent ou ajuster leur largeur à l\'écran.'
+          ],
+          tip: 'Utilisez les modèles pour vos séances habituelles afin de ne jamais avoir à ressaisir les mêmes exercices depuis le début. Consultez aussi régulièrement le panneau des records personnels — voir votre précédent record de poids est un moyen simple et efficace de vous fixer un objectif pour la prochaine séance.'
         },
         {
-          icon: 'kanban', title: 'Plans', desc: 'Gestionnaire de tâches style Kanban. Suivez les tâches dans les colonnes À faire, En cours et Terminé. Ajoutez des sous-tâches avec support glisser-déposer pour réorganiser.',
-          features: ['Basculez entre les vues Kanban (colonnes) et Liste (tableau)', 'Sous-tâches : cases à cocher, texte multiligne, réorganisation par glisser-déposer', 'Niveaux de priorité : Haute (rouge), Moyenne (jaune), Basse (bleu)', 'Étiquettes de catégorie et dates d\'échéance pour s\'organiser', 'Alerte rouge sur les tâches en retard', 'Shift+Entrée dans le texte de sous-tâche crée une nouvelle ligne'],
-          tip: 'Basculez entre les vues Kanban et Liste — la vue Liste affiche toutes les tâches triées par échéance dans un seul tableau, idéale pour gérer de nombreuses tâches à la fois.'
+          icon: 'kanban', title: 'Plans', desc: 'C\'est votre page de gestion des tâches où vous suivez tout ce que vous avez à faire. Les tâches progressent à travers trois étapes — À faire, En cours et Terminé — pour que vous sachiez toujours ce qui est en attente, ce sur quoi vous travaillez et ce qui est achevé.',
+          features: [
+            'Deux vues au choix : la vue Kanban organise vos tâches en trois colonnes côte à côte (À faire, En cours, Terminé), ce qui vous permet de visualiser votre charge de travail en un coup d\'œil. La vue Liste affiche tout dans un seul tableau trié par date d\'échéance — pratique quand vous avez beaucoup de tâches et souhaitez voir les délais.',
+            'Ajouter une tâche : cliquez sur le bouton "Ajouter une tâche" et saisissez le titre. Vous pouvez aussi définir une date d\'échéance, un niveau de priorité, une catégorie et des notes. Ces champs supplémentaires sont tous facultatifs — même un simple titre suffit pour enregistrer.',
+            'Sept catégories fixes pour organiser vos tâches par domaine de vie : Travail, Apprentissage, Personnel, Santé, Finance, Maison et Autre. Chacune a sa propre étiquette de couleur pour les distinguer facilement.',
+            'Couleurs de priorité : les tâches haute priorité sont marquées en rouge, les priorités moyennes en jaune et les basses en bleu. Utilisez la priorité pour décider ce qu\'il faut traiter en premier quand la liste est longue.',
+            'Faire avancer une tâche : en vue Kanban, vous pouvez faire glisser une carte de tâche vers la colonne suivante, ou cliquer sur le bouton flèche de la carte pour la faire avancer d\'une étape. En vue Liste, cliquez directement sur l\'étiquette de statut pour la modifier.',
+            'Tâches en retard : toute tâche dont la date d\'échéance est dépassée est mise en évidence en rouge. Cela vous permet de repérer immédiatement ce qui nécessite votre attention sans parcourir toute la liste.',
+            'Sous-tâches : lors de la modification d\'une tâche, vous pouvez y ajouter une liste de petites étapes. Chaque sous-tâche a sa propre case à cocher. Décomposer une grande tâche en étapes la rend moins intimidante et vous aide à suivre la progression partielle.',
+            'Modifier les sous-tâches : cliquez sur le texte d\'une sous-tâche pour la modifier directement sur place. Appuyez sur Entrée pour sauvegarder, ou Maj+Entrée pour ajouter une nouvelle ligne dans la même sous-tâche. Vous pouvez aussi faire glisser les sous-tâches vers le haut ou le bas pour les réorganiser.',
+            'Trois cartes de résumé en haut de la page : Total des tâches, Complétées aujourd\'hui et En retard. Elles vous donnent un aperçu immédiat de la situation sans faire défiler toute la liste.',
+            'Modifier et supprimer : cliquez sur l\'icône crayon d\'une tâche pour ouvrir le formulaire de modification, ou sur l\'icône corbeille pour la supprimer. Les tâches supprimées ne peuvent pas être récupérées, aussi l\'application demande une confirmation avant de les effacer.'
+          ],
+          tip: 'Si vous avez beaucoup de tâches, passez à la vue Liste — elle affiche toutes les tâches dans un seul tableau trié par date d\'échéance, ce qui facilite la visibilité de ce qui arrive prochainement. Utilisez la vue Kanban quand vous voulez faire glisser les tâches entre les étapes et visualiser votre flux de travail.'
         },
         {
-          icon: 'star', title: 'Rêves et Objectifs', desc: 'Suivez vos rêves et objectifs avec des jalons. Attribuez un pourcentage de progression, une date cible, un emoji et une couleur à chaque objectif. Les jours restants s\'affichent à l\'approche de l\'échéance.',
-          features: ['Liste de jalons — chaque coche met automatiquement à jour le pourcentage de progression', 'Le % de complétion est calculé automatiquement à partir du ratio de jalons', 'Jours restants affichés (rouge quand moins de 30 jours)', 'Personnalisation emoji et couleur pour chaque objectif', 'Glissez pour réorganiser les objectifs en mode édition', 'Groupes de catégories : Carrière, Voyage, Santé, Éducation et plus'],
-          tip: 'Atteindre 100% déclenche une animation de confettis et une notification de félicitations.'
+          icon: 'star', title: 'Rêves et Objectifs', desc: 'C\'est la page où vous suivez vos rêves et objectifs à long terme. Vous pouvez faire avancer chaque rêve étape par étape et voir le chemin parcouru. Diviser un grand objectif en petites étapes rend les progrès concrets et atteignables.',
+          features: [
+            'Pour ajouter un rêve, cliquez sur le bouton "Ajouter un rêve" et saisissez un titre. La description, la catégorie, la date cible, l\'emoji et la couleur sont tous facultatifs — un simple titre suffit pour sauvegarder.',
+            'Six catégories fixes au choix : Carrière, Voyage, Santé, Éducation, Personnel et Finance. La catégorie apparaît sous forme d\'étiquette colorée sur la carte pour regrouper les objectifs similaires d\'un coup d\'œil.',
+            'Chaque objectif peut avoir un emoji, qui s\'affiche en grand en haut de la carte et donne une identité visuelle à votre rêve. La couleur choisie s\'applique à la bordure de la carte, à la barre de progression et à l\'étiquette de catégorie.',
+            'Jalons (étapes) : lors de la modification d\'un objectif, vous pouvez y ajouter une liste de petites étapes. Chaque étape a sa propre case à cocher. Cochez-les au fur et à mesure — le pourcentage de progression se met à jour automatiquement.',
+            'Le pourcentage de progression est entièrement automatique. L\'application le calcule en fonction du nombre de jalons complétés par rapport au total. Vous n\'avez jamais besoin d\'entrer un pourcentage manuellement.',
+            'Pour modifier le texte d\'un jalon, cliquez dessus et tapez le nouveau texte. Pour réorganiser les jalons, faites-les glisser vers le haut ou le bas à l\'aide de la poignée qui apparaît à côté de chacun.',
+            'Lorsque vous définissez une date cible, la carte affiche le nombre de jours restants. Si moins de 30 jours restent, ce nombre devient rouge — vous permettant de repérer facilement les objectifs qui demandent une attention prochaine.',
+            'Pour réorganiser vos objectifs, cliquez sur l\'icône cadenas en haut à droite — cela ouvre le mode édition et chaque carte obtient une poignée de glissement. Déplacez les cartes dans l\'ordre souhaité, puis fermez le cadenas.',
+            'Lorsque tous les jalons sont cochés et que la progression atteint 100%, une notification de félicitations s\'affiche à l\'écran.',
+            'Pour modifier un objectif, cliquez sur l\'icône crayon de sa carte. Pour le supprimer, cliquez sur l\'icône corbeille. La suppression est définitive, aussi l\'application demande une confirmation avant d\'effacer.'
+          ],
+          tip: 'Si un grand objectif vous semble insurmontable, ajoutez-le d\'abord avec juste un titre, puis ouvrez-le pour le diviser en petites étapes. Regarder la barre de progression se remplir au fur et à mesure que vous cochez chaque étape est étonnamment motivant.'
         },
         {
-          icon: 'wallet', title: 'Budget', desc: 'Suivi du budget et des dépenses mensuelles avec une disposition à 3 onglets. Gérez les catégories, définissez des limites et consultez les cycles historiques avec détails complets.',
-          features: ['3 onglets : Vue d\'ensemble (KPIs et graphiques), Catégories (structure), Transactions (tous les enregistrements)', 'Onglet Vue d\'ensemble : revenu net, dépenses totales, graphique circulaire d\'allocation et réorganisation des panneaux', 'Onglet Catégories : créez des groupes et sous-catégories revenus/dépenses, attribuez des limites à chacun', 'Onglet Transactions : liste complète avec recherche textuelle et filtres date/catégorie', 'Système de cycles : le budget se réinitialise le jour choisi chaque mois ; toutes les périodes sont archivées', 'Modal des cycles passés : parcourez les mois précédents avec résumé revenu, dépenses et net par période'],
-          tip: 'Utilisez le bouton "Importer données" dans l\'onglet Transactions pour restaurer uniquement les données de budget depuis une sauvegarde complète.'
+          icon: 'wallet', title: 'Budget', desc: 'C\'est la page où vous suivez vos revenus et dépenses mensuels. Vous pouvez voir combien d\'argent entre, où il va et si vous épargnez ou dépensez trop. En fixant des limites par catégorie, vous savez d\'un coup d\'œil si vous respectez votre budget.',
+          features: [
+            'La page est divisée en trois onglets : Vue d\'ensemble (graphiques et résumé), Catégories (votre structure de revenus et dépenses) et Transactions (la liste complète de chaque entrée). L\'application se souvient de l\'onglet sur lequel vous étiez lorsque vous revenez.',
+            'L\'onglet Vue d\'ensemble affiche quatre cartes de résumé : revenus totaux, dépenses totales, solde net (revenus moins dépenses) et budget restant. Il comprend aussi des graphiques — un diagramme circulaire de répartition des dépenses, un graphique de dépenses journalières et une tendance du solde net par mois.',
+            'L\'onglet Catégories est l\'endroit où vous organisez votre structure de dépenses. Créez d\'abord un groupe (par exemple "Courses" ou "Salaire"), puis ajoutez des sous-catégories à l\'intérieur. Chaque sous-catégorie peut avoir une limite de budget mensuelle.',
+            'Limites de budget : une fois une limite définie pour une sous-catégorie, la page affiche le pourcentage utilisé. Au-dessus de 75%, la barre devient jaune ; au-dessus de 100%, elle devient rouge. L\'application ne vous bloque pas — elle vous avertit simplement visuellement.',
+            'L\'onglet Transactions liste tous vos enregistrements de revenus et dépenses. Vous pouvez ajouter une nouvelle entrée avec une date, une description, une catégorie et un montant. Les entrées existantes peuvent être modifiées ou supprimées.',
+            'Pour trouver des entrées spécifiques, utilisez la zone de recherche pour chercher par description ou nom de catégorie. Vous pouvez aussi filtrer par plage de dates et par groupe de catégorie.',
+            'Le système de cycles : le budget se réinitialise chaque mois à la date que vous choisissez (par défaut le 1er). Quand un nouveau cycle commence, les données du mois précédent sont archivées automatiquement — rien n\'est supprimé.',
+            'Cycles passés : cliquez sur le bouton historique en haut à droite pour consulter les mois précédents. Chaque période affiche ses revenus totaux, dépenses et résultat net. Vous pouvez aussi ajouter ou modifier des transactions dans les cycles passés.',
+            'Disposition des panneaux : les graphiques de l\'onglet Vue d\'ensemble peuvent être réorganisés — cliquez sur l\'icône crayon pour entrer en mode édition. Vous pouvez aussi masquer les panneaux inutilisés via le gestionnaire de panneaux en haut à droite.',
+            'Sauvegarde spécifique au budget : le bouton "Importer données" dans l\'onglet Transactions vous permet de restaurer uniquement vos données de budget depuis un fichier de sauvegarde, sans toucher aux autres modules.'
+          ],
+          tip: 'Commencez par aller dans l\'onglet Catégories et créez vos groupes de revenus et dépenses. Vous ne pouvez pas ajouter de transactions sans au moins une catégorie configurée. Quelques groupes simples — comme "Salaire" et "Courses" — suffisent pour démarrer.'
         },
         {
-          icon: 'trending-up', title: 'Investissements', desc: 'Suivez votre portefeuille d\'investissements. Obtenez automatiquement les prix des actions, ETF et cryptomonnaies via l\'API Alpha Vantage. Support multi-devises avec intégration des taux de change en temps réel.',
-          features: ['Types d\'actifs : Actions, ETF, Cryptomonnaies, Matières premières, Obligations, Liquidités', 'Mises à jour automatiques des prix via Alpha Vantage API (cache 24h)', 'Suivi P&G : sélecteur de période Quotidien / Hebdomadaire / Mensuel / Total', 'Basculement de devise d\'affichage devise locale ↔ USD', 'Graphique circulaire d\'allocation du portefeuille avec répartition en pourcentage', 'Saisissez les clés API Alpha Vantage et taux de change dans Paramètres'],
-          tip: 'Les actifs sans prix API (Matières premières, Obligations, Liquidités) utilisent le prix d\'achat. Vous pouvez aussi remplacer manuellement le prix de n\'importe quel actif.'
+          icon: 'trending-up', title: 'Investissements', desc: 'Cette page vous permet de suivre tous vos investissements en un seul endroit — actions, cryptomonnaies, ETF et plus. Vous pouvez voir la valeur totale de votre portefeuille, les gains ou pertes et la répartition de vos actifs. Les comptes d\'épargne bancaires peuvent aussi être ajoutés ici pour voir les intérêts s\'accumuler jour après jour.',
+          features: [
+            'Six types d\'actifs sont pris en charge : Actions, ETF, Cryptomonnaies, Matières premières (or, argent, etc.), Obligations et Liquidités. Pour chaque actif vous saisissez un symbole, un nom, une quantité, un prix d\'achat et une date.',
+            'Pour ajouter une nouvelle position, cliquez sur le bouton "Acheter/Vendre" en haut à droite et choisissez "Ajouter". Ensuite, utilisez "Acheter plus" pour renforcer une position existante, ou "Vendre" pour enregistrer une vente partielle ou totale.',
+            'Mise à jour automatique des prix : une fois une clé de connexion (Alpha Vantage) saisie dans Paramètres, les prix des actions, ETF et cryptomonnaies cotés aux États-Unis se mettront à jour automatiquement en arrière-plan toutes les 24 heures.',
+            'Pour les actifs sans prix automatique — Matières premières, Obligations, Liquidités ou actions non cotées aux États-Unis — vous pouvez saisir manuellement le prix actuel en cliquant sur l\'icône crayon dans la ligne de cet actif dans le tableau.',
+            'Suivi des gains et pertes : cliquez sur l\'en-tête de colonne dans le tableau pour basculer entre les vues Quotidien, Hebdomadaire, Mensuel ou Total. Chaque actif montre combien il a gagné ou perdu sur la période sélectionnée.',
+            'Changement de devise : utilisez le bouton TRY/USD en haut à droite pour afficher tout votre portefeuille en devise locale ou en dollars. Le taux de change se met à jour automatiquement ; vous pouvez aussi le saisir manuellement dans le champ "1$=" de la barre supérieure.',
+            'Suivi des dépôts bancaires : le panneau "🏦 Dépôts" en bas de la page vous permet d\'enregistrer des comptes d\'épargne à terme ou à taux libre. Saisissez le nom de la banque, le capital, le taux d\'intérêt annuel et la date de début — l\'application calcule automatiquement les intérêts accumulés, les jours restants et le montant total perçu à l\'échéance.',
+            'Vue des dépôts : utilisez les boutons "Cartes / Tableau" en haut à droite du panneau Dépôts pour basculer entre deux formats. La vue Cartes affiche chaque compte sous forme d\'une large fiche détaillée ; la vue Tableau aligne toutes les informations dans des colonnes côte à côte. L\'application se souvient de votre dernier choix.',
+            'Réorganisation par glisser-déposer : le tableau de portefeuille et la liste des dépôts prennent tous deux en charge le glisser-déposer. Survolez une ligne, maintenez le bouton gauche de la souris enfoncé et faites-la glisser vers le haut ou le bas. Le nouvel ordre est sauvegardé automatiquement.',
+            'Synchronisation des onglets dans l\'historique : la section "Historique des opérations" comporte deux onglets — "Bourse/ETF" et "Dépôts". L\'onglet actif lorsque vous cliquez sur le bouton "Historique" s\'ouvre directement dans la fenêtre d\'historique. À l\'intérieur, naviguez entre les mois avec les boutons fléchés.',
+            'Lorsque vous vendez un actif, le gain ou la perte réalisé est enregistré séparément. Ces résultats apparaissent dans l\'historique des opérations et se reflètent dans les cartes de résumé du portefeuille.',
+            'Les clés de connexion se saisissent dans Paramètres → Clés API Investissements. L\'application fonctionne sans clés — vous devez simplement mettre à jour les prix manuellement. Les mises à jour automatiques sont une fonction pratique, pas une obligation.'
+          ],
+          tip: 'Vous pouvez utiliser l\'application sans aucune clé de connexion : ajoutez vos actifs, saisissez les prix d\'achat et mettez à jour les prix actuels manuellement lorsque vous les vérifiez. Pour les dépôts, saisissez le taux d\'intérêt en valeur annuelle — par exemple, tapez "42" pour un taux de 42 %. L\'application s\'occupe du reste, y compris le calcul quotidien des intérêts.'
         }
       ]
     };
@@ -5608,7 +6447,7 @@ const UI = {
         confirmDanger: true,
         onConfirm: () => {
           Object.keys(localStorage).filter(k => k.startsWith('lt_')).forEach(k => localStorage.removeItem(k));
-          ['gym', 'time', 'habits', 'plans', 'inv', 'goals', 'budget', 'pomo'].forEach(m => localStorage.setItem('lt_' + m + '_seeded', 'true'));
+          ['gym', 'time', 'habits', 'plans', 'inv', 'goals', 'budget', 'pomo', 'todos', 'deposits'].forEach(m => localStorage.setItem('lt_' + m + '_seeded', 'true'));
           this.toast(this.t('settings_delete_wipe_ok'), 'success');
           setTimeout(() => location.reload(), 800);
         },
@@ -6110,11 +6949,16 @@ const UI = {
     this.applyHiddenModules();
   },
 
+  _sidebarToggling: false,
+
   toggleSidebar() {
+    if (this._sidebarToggling) return;
     const sidebar = document.querySelector('.sidebar');
     if (!sidebar) return;
+    this._sidebarToggling = true;
     const isCollapsed = sidebar.classList.toggle('collapsed');
     Store.set('lt_sidebar_collapsed', isCollapsed);
+    setTimeout(() => { this._sidebarToggling = false; }, 260);
   },
 
   // ── Mobile menu ──────────────────────────────────────────
@@ -6183,7 +7027,7 @@ const UI = {
   _hasSeedData() {
     if (!Store.get('seed_active')) return false;
     // Auto-clear seed_active if user has deleted all seeded modules' data.
-    const keys = ['gym_seeded', 'time_seeded', 'habits_seeded', 'plans_seeded', 'inv_seeded', 'goals_seeded', 'budget_seeded', 'pomo_seeded'];
+    const keys = ['gym_seeded', 'time_seeded', 'habits_seeded', 'plans_seeded', 'inv_seeded', 'goals_seeded', 'budget_seeded', 'pomo_seeded', 'deposits_seeded'];
     if (!keys.some(k => !!Store.get(k))) {
       Store.set('seed_active', null);
       return false;
@@ -6203,8 +7047,8 @@ const UI = {
     badge.innerHTML = `
       <svg class="swb-icon" data-lucide="alert-triangle"></svg>
       <div class="swb-content">
-        <span class="swb-label">${this.t('seed_warning_label')}</span>
-        <span class="swb-sub">${this.t('seed_warning_desc')}</span>
+        <span class="swb-label" data-i18n="seed_warning_label">${this.t('seed_warning_label')}</span>
+        <span class="swb-sub" data-i18n="seed_warning_desc">${this.t('seed_warning_desc')}</span>
       </div>
     `;
 

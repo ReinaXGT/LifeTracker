@@ -36,6 +36,27 @@
   border-color: var(--accent); color:var(--accent);
   box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 30%, transparent);
 }
+.dep-view-btn {
+  display:flex; align-items:center; gap:6px; padding:0 12px; height:100%;
+  border:none; cursor:pointer; white-space:nowrap;
+  font-family:var(--font-body); font-size:0.8125rem; font-weight:600;
+  border-radius:calc(var(--radius-sm) - 1px);
+  transition:background .15s, color .15s, box-shadow .15s;
+}
+.dep-view-btn.active {
+  background:color-mix(in srgb,var(--accent) 20%,transparent);
+  color:var(--accent);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 45%,transparent),
+             0 0 8px color-mix(in srgb,var(--accent) 22%,transparent);
+}
+.dep-view-btn.active svg { color:var(--accent); }
+.dep-view-btn:not(.active) { background:transparent; color:var(--text-muted); }
+.dep-view-btn:not(.active) svg { color:var(--text-muted); }
+.dep-view-btn:not(.active):hover {
+  background:color-mix(in srgb,var(--accent) 10%,transparent);
+  color:var(--text-secondary);
+}
+.dep-view-btn:not(.active):hover svg { color:var(--text-secondary); }
 /* ── Investments page-specific ─────────────────────────── */
 .state-screen {
   display: flex;
@@ -141,6 +162,22 @@
 .inv-asset-row.inv-dragging { opacity: 0.35; cursor: grabbing; }
 .inv-asset-row.inv-drag-over-top { box-shadow: inset 0 2px 0 var(--accent); }
 .inv-asset-row.inv-drag-over-bot { box-shadow: inset 0 -2px 0 var(--accent); }
+/* ── Deposit panel title alignment ──────────────────────── */
+#dep-list .panel-header { padding-left: 1.25rem; }
+/* ── Deposit row hover ───────────────────────────────────── */
+.dep-dep-row:hover { background: var(--bg-elevated); }
+/* ── Deposit row drag & drop ─────────────────────────────── */
+.dep-dep-row { cursor: grab; }
+.dep-dep-row button { cursor: pointer; }
+.dep-dep-row.dep-dragging { opacity: 0.35; cursor: grabbing; }
+.dep-dep-row.dep-drag-over-top {
+  box-shadow: inset 0 3px 0 var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+.dep-dep-row.dep-drag-over-bot {
+  box-shadow: inset 0 -3px 0 var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
 /* ── Trade action option cards ── */
 .inv-trade-option {
   display:flex; flex-direction:column; gap:0.3125rem;
@@ -265,7 +302,7 @@
       <div class="topbar-right" style="display:flex;gap:8px;align-items:center">
         <!-- Exchange rate display + manual override -->
         <div id="exchangeRateSection" style="display:flex;align-items:center;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px 10px 0;height:34px;box-sizing:border-box;white-space:nowrap;gap:0">
-          <span style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);font-weight:500;margin-right:3px;line-height:1;align-self:center">1$=</span>
+          <span style="font-size:13px;color:var(--text-muted);font-family:var(--font-mono);font-weight:600;margin-right:3px;line-height:1;align-self:center">1$=</span>
           <input id="exchangeRateInput" type="number" min="0.01" step="0.1"
                  style="width:4.5ch;background:transparent;border:none;outline:none;font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--text-primary);padding:0;margin:0;text-align:left;flex-shrink:0;box-sizing:border-box;line-height:1;align-self:center;height:22px"
                  placeholder="45.9" data-tooltip="inv_rate_input_title" data-tooltip-i18n
@@ -273,12 +310,6 @@
           <span id="rateCurrencySymbol" style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--accent);margin-left:2px;line-height:1;align-self:center">₺</span>
           <span id="rateUpdateInfo" style="font-size:11px;color:var(--text-muted);white-space:nowrap;margin-left:7px;padding-left:7px;border-left:1px solid var(--border);line-height:1;align-self:center"></span>
         </div>
-        <!-- Privacy toggle — trades view position (before currency toggle) -->
-        <button class="btn btn-icon btn-secondary privacy-toggle-btn" id="privacy-toggle-btn-trades"
-                onclick="UI.togglePrivacy()" data-tooltip="privacy_hide" data-tooltip-i18n
-                style="display:none;color:var(--text-secondary);width:34px;height:34px">
-          <svg data-lucide="eye"></svg>
-        </button>
         <!-- Currency toggle -->
         <div id="currencyToggleSection" style="display:flex;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);padding:2px;gap:2px;height:34px;box-sizing:border-box">
           <button id="toggleUSER" class="btn btn-primary"
@@ -327,21 +358,16 @@
         <!-- Allocation chart + type summary -->
         <div class="content-grid grid-2" style="margin-bottom:1.25rem">
           <div class="panel" style="display:flex;flex-direction:column">
-            <div class="panel-header"><span class="panel-title" data-i18n="inv_dist_panel">Varlık Dağılımı</span></div>
-            <div class="panel-body" style="flex:1;display:flex;align-items:center;justify-content:center">
-              <div style="display:inline-flex;gap:1.75rem;align-items:center">
-                <div class="chart-doughnut">
-                  <canvas id="allocChart"></canvas>
-                  <div id="alloc-center" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;gap:0.125rem"></div>
-                </div>
-                <div id="alloc-legend" class="chart-legend" style="flex-direction:column;gap:0.5rem;width:200px"></div>
-              </div>
-            </div>
+            <div class="panel-header"><span class="panel-title" data-i18n="inv_perf_panel">Getiri Analizi</span></div>
+            <div class="panel-body" id="perf-panel" style="padding:0;flex:1"></div>
           </div>
 
-          <div class="panel">
-            <div class="panel-header"><span class="panel-title" data-i18n="inv_perf_panel">Getiri Analizi</span></div>
-            <div class="panel-body" id="perf-panel" style="padding:0"></div>
+          <div class="panel" style="display:flex;flex-direction:column">
+            <div class="panel-header"><span class="panel-title" data-i18n="inv_dist_panel">Varlık Dağılımı</span></div>
+            <div class="panel-body" style="flex:1;display:flex;flex-direction:column">
+              <div id="inv-pie-container" style="flex:1;display:flex"></div>
+              <div id="alloc-performers"></div>
+            </div>
           </div>
         </div>
 
@@ -376,15 +402,31 @@
           </div>
         </div>
 
+        <!-- Deposit panel -->
+        <div class="panel" id="dep-panel" style="overflow:visible;margin-top:1.5rem">
+          <div id="dep-list"></div>
+        </div>
+
       </div><!-- /#view-portfolio -->
 
       <div id="view-trades" style="display:none">
 
-        <!-- Trade history panel -->
+        <!-- Stocks/ETF trade history panel -->
+        <div id="trades-inv-panel">
         <div class="panel">
           <div class="panel-header">
-            <span class="panel-title" data-i18n="inv_trade_history">İşlem Geçmişi</span>
+            <span class="panel-title" style="font-size:1.0625rem" data-i18n="inv_tab_hist">İşlem Geçmişi</span>
             <div style="display:flex;gap:0.5rem;align-items:center">
+              <div style="display:flex;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);padding:2px;gap:2px;height:1.875rem;box-sizing:border-box">
+                <button id="tradeSubViewInv" class="btn btn-primary"
+                        onclick="Investments.setTradeSubView('inv')"
+                        style="border-radius:5px;border:none;padding:0 10px;font-size:0.75rem;font-weight:600;height:100%;white-space:nowrap"
+                        data-i18n="inv_sub_stocks">Borsa / ETF</button>
+                <button id="tradeSubViewDep" class="btn btn-secondary"
+                        onclick="Investments.setTradeSubView('dep')"
+                        style="border-radius:5px;border:none;padding:0 10px;font-size:0.75rem;font-weight:600;height:100%;white-space:nowrap"
+                        data-i18n="inv_tab_deposits">Mevduat</button>
+              </div>
               <div class="search-wrap" style="min-width:12.5rem">
                 <svg data-lucide="search"></svg>
                 <input class="form-control" id="tradeSearch" oninput="Investments.onTradeSearch()"
@@ -419,6 +461,10 @@
             </table>
           </div>
         </div>
+        </div><!-- /#trades-inv-panel -->
+
+        <!-- Deposit history panel -->
+        <div id="trades-dep-panel" style="display:none"></div>
 
       </div><!-- /#view-trades -->
 
@@ -438,6 +484,7 @@
 <script src="js/checkbox-core.js"></script>
 <script src="js/tooltip-core.js"></script>
 <script src="js/charts.js"></script>
+<script src="js/inv-pie-charts.js"></script>
 <script src="js/investments.js"></script>
 <script src="js/focus-widget.js"></script>
 <script>

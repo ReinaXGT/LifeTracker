@@ -23,36 +23,74 @@
 
 ### Dashboard
 ![Dashboard](assets/screenshots/dashboard.png)
+<details>
+<summary>More Dashboard views</summary>
+
+![Dashboard 2](assets/screenshots/Dashboard-2.png)
+</details>
 
 ### Focus Mode (Pomodoro)
-![Pomodoro](assets/screenshots/pomodoro.png)
+![Focus Mode](assets/screenshots/FocusMode.png)
 <details>
-<summary>More Pomodoro views</summary>
+<summary>More Focus Mode views</summary>
 
-![Pomodoro 2](assets/screenshots/pomodoro-2.png)
-![Pomodoro 3](assets/screenshots/pomodoro-3.png)
+![Focus Mode 2](assets/screenshots/FocusMode-2.png)
 </details>
 
 ### Time Tracking
-![Time Tracking](assets/screenshots/time-tracking.png)
+![Time Tracking](assets/screenshots/TimeTracking.png)
+<details>
+<summary>More Time Tracking views</summary>
+
+![Time Tracking 2](assets/screenshots/TimeTracking-2.png)
+</details>
 
 ### Habits
 ![Habits](assets/screenshots/habits.png)
+<details>
+<summary>More Habits views</summary>
+
+![Habits 2](assets/screenshots/Habits-2.png)
+</details>
 
 ### Gym
 ![Gym](assets/screenshots/gym.png)
+<details>
+<summary>More Gym views</summary>
+
+![Gym 2](assets/screenshots/Gym-2.png)
+</details>
 
 ### Plans
 ![Plans](assets/screenshots/plans.png)
 
-### Goals
-![Goals](assets/screenshots/goals.png)
+### Dreams & Goals
+![Dreams & Goals](assets/screenshots/DreamsGoals.png)
 
 ### Budget
 ![Budget](assets/screenshots/budget.png)
+<details>
+<summary>More Budget views</summary>
+
+![Budget 2](assets/screenshots/Budget-2.png)
+![Budget 3](assets/screenshots/Budget-3.png)
+![Budget 4](assets/screenshots/Budget-4.png)
+![Budget 5](assets/screenshots/Budget-5.png)
+</details>
 
 ### Investments
 ![Investments](assets/screenshots/investments.png)
+<details>
+<summary>More Investments views</summary>
+
+![Investments 2](assets/screenshots/investments-2.png)
+</details>
+
+### User Guide
+![User Guide](assets/screenshots/User%20Guide.png)
+
+### System Settings
+![System Settings](assets/screenshots/System%20Settings.png)
 
 ---
 
@@ -68,7 +106,7 @@
 | **Plans** | `plans.html` | Kanban board (To-Do / In Progress / Done) with multi-line sub-tasks |
 | **Goals** | `goals.html` | Dream and milestone management with category tags and progress bars |
 | **Budget** | `budget.html` | Income/expense categories, budget cycles, draggable/resizable panels |
-| **Investments** | `investments.html` | Portfolio tracker — stocks, ETFs, crypto, commodities with live prices |
+| **Investments** | `investments.html` | Portfolio tracker — stocks, ETFs, crypto, commodities with live prices; deposit (term & demand) tracking with accrued interest |
 
 ---
 
@@ -131,13 +169,16 @@ Most productivity apps require an account, phone number, or monthly subscription
 
 ### Investments
 - Asset types: Stock, ETF, Crypto, Commodity, Bond, Cash
+- **Deposit tracking** — Term (fixed-day simple interest) and Demand (daily compound interest) bank deposits; shows accrued interest, daily gain, maturity date; card / table view toggle
 - Live price feeds via **Alpha Vantage API** (24-hour cache)
 - Exchange rate via **Exchange Rates API** (2-hour cache)
 - **Trade system** — Buy More and Sell actions with weighted average cost updates and realized P&L tracking
-- **Trade history** — filterable log of all buy/sell transactions with per-trade P&L column; each row has edit and delete actions
+- **Trade history** — filterable log of all buy/sell transactions with per-trade P&L column; each row has edit and delete actions; separate Deposits tab in the history modal
 - **Trade edit** — update date, type, quantity, or price of any recorded trade directly from the history table
+- **Best / Worst Performers** — top 5 gainers and losers by total P&L % in the Allocation panel
 - P&L by period: total, daily (close-to-close), weekly, monthly (includes realized trades)
 - USD / local currency display toggle
+- Deposits included in Portfolio Value KPI and Allocation pie chart
 
 ---
 
@@ -219,6 +260,7 @@ LifeTracker/
     ├── store.js            ← All localStorage read/write (lt_ prefix)
     ├── ui.js               ← Shared helpers: modal, toast, i18n, themes
     ├── charts.js           ← Chart.js wrappers
+    ├── inv-pie-charts.js   ← Shared dual pie-chart renderer (by symbol + by type)
     ├── focus-widget.js     ← Cross-page Pomodoro widget + tab title
     └── [page].js           ← One module per page
 ```

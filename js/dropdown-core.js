@@ -151,7 +151,16 @@
       } else {
         const wrapper = document.createElement('div');
         wrapper.className = 'dd-wrapper';
-        wrapper.style.cssText = 'display:inline-flex;flex-shrink:0;overflow:visible;position:relative;';
+        // Buttons with width:100% (form fields) need a block wrapper so the button
+        // stays full-width after selection. Inline buttons (topbar icons, etc.) use
+        // inline-flex with min-width locked to the current rendered size.
+        if (btn.style.width === '100%') {
+          wrapper.style.cssText = 'display:flex;width:100%;flex-shrink:0;overflow:visible;position:relative;';
+        } else {
+          const w = btn.offsetWidth;
+          wrapper.style.cssText = 'display:inline-flex;flex-shrink:0;overflow:visible;position:relative;';
+          if (w > 0) wrapper.style.minWidth = w + 'px';
+        }
         btn.parentNode.insertBefore(wrapper, btn);
         wrapper.appendChild(btn);
         this._wrapper = wrapper;
@@ -185,7 +194,6 @@
     _positionMenu() {
       const rect     = this._btn.getBoundingClientRect();
       const approxH  = Math.min(this._maxHeight, this._items.length * 40 + 8);
-      const minW     = this._minWidth ? Math.max(this._minWidth, rect.width) : rect.width;
 
       // Aşağıda yer yok ve yukarıda yer varsa yukarı aç
       const spaceBelow = window.innerHeight - rect.bottom;
@@ -193,7 +201,11 @@
 
       this._menu.style.position = 'fixed';
       this._menu.style.zIndex   = '1100'; // modal (1000) üstünde, toast (2000) altında
-      this._menu.style.minWidth = minW + 'px';
+      // width:max-content → tarayıcı öğe içeriğini (flex items dahil) tam olarak ölçer.
+      // minWidth → buton genişliğinden dar olamaz (CSS min-width:100%'i de ezer).
+      // maxWidth → viewport dışına taşamaz.
+      this._menu.style.width    = 'max-content';
+      this._menu.style.minWidth = rect.width + 'px';
 
       if (openUpward) {
         this._menu.classList.add('dd-align-top');
@@ -206,13 +218,14 @@
       }
 
       if (this._align === 'right') {
-        this._menu.style.left  = 'auto';
-        this._menu.style.right = Math.max(4, window.innerWidth - rect.right) + 'px';
+        this._menu.style.left     = 'auto';
+        this._menu.style.right    = Math.max(4, window.innerWidth - rect.right) + 'px';
+        this._menu.style.maxWidth = (rect.right - 4) + 'px';
       } else {
-        // Sağa taşmayı önlemek için viewport sınırına yakıştır
-        const left = Math.max(4, Math.min(rect.left, window.innerWidth - minW - 4));
-        this._menu.style.left  = left + 'px';
-        this._menu.style.right = 'auto';
+        this._menu.style.left     = rect.left + 'px';
+        this._menu.style.right    = 'auto';
+        // Sağa taşmayı önle: butonun sol kenarından viewport sağ kenarına kadar
+        this._menu.style.maxWidth = (window.innerWidth - rect.left - 4) + 'px';
       }
     }
 
