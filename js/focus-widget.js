@@ -242,6 +242,10 @@ const FocusWidget = (() => {
         <a class="ftw-btn ftw-btn-open" href="focusmode.html" data-tooltip="">
           <svg data-lucide="external-link" style="width:0.8125rem;height:0.8125rem"></svg>
         </a>
+        <span class="ftw-mobile-sep" style="display:none;color:var(--text-muted);font-size:10px;opacity:.5;margin:0 1px">|</span>
+        <button class="ftw-btn ftw-btn-close" onclick="(function(w){w.dataset.userClosed='1';w.style.display='none';document.body.classList.remove('ftw-topbar-on');})(document.getElementById('focus-topbar-widget'))" style="display:none">
+          <svg data-lucide="x" style="width:0.8125rem;height:0.8125rem"></svg>
+        </button>
       </div>`;
     right.insertBefore(el, right.firstChild);
 
@@ -262,8 +266,10 @@ const FocusWidget = (() => {
     const w = document.getElementById('focus-topbar-widget');
     if (!w) return;
 
-    if (!state || (typeof UI !== 'undefined' && UI.isModuleHidden('focusmode'))) { w.style.display = 'none'; return; }
+    if (!state || (typeof UI !== 'undefined' && UI.isModuleHidden('focusmode'))) { w.style.display = 'none'; document.body.classList.remove('ftw-topbar-on'); return; }
+    if (w.dataset.userClosed === '1') return;
     w.style.display = 'flex';
+    document.body.classList.add('ftw-topbar-on');
 
     const col   = _color(state);
     const time  = _fmt(state);

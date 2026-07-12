@@ -645,8 +645,7 @@ const Habits = {
       const schedBadge = h.type === 'scheduled' ? `<span class="hg-sched-badge">${UI.t('habits_time_badge')}</span>` : '';
 
       return `<tr class="hg-row">
-        <td class="hg-name-td"><span class="hg-icon">${h.icon || '✓'}</span><span class="hg-habit-name">${h.name}${schedBadge}</span></td>
-        <td class="hg-pct-td"><span class="hg-pct" style="color:${h.color}">%${pct}</span></td>
+        <td class="hg-frozen-td"><div class="hg-frozen-inner"><div class="hg-fn"><span class="hg-icon">${h.icon || '✓'}</span><span class="hg-habit-name">${h.name}${schedBadge}</span></div><div class="hg-fp"><span class="hg-pct" style="color:${h.color}">%${pct}</span></div></div></td>
         ${cells}
       </tr>`;
     }).join('');
@@ -660,18 +659,15 @@ const Habits = {
         <table class="hg-table">
           <thead>
             <tr class="hg-week-row">
-              <th class="hg-name-th">${UI.t('habits_habit_col')}</th>
-              <th class="hg-pct-th" style="border-right:1px solid var(--border)">${UI.t('habits_pct_col')}</th>
+              <th class="hg-frozen-th"><div class="hg-frozen-inner"><span class="hg-fn">${UI.t('habits_habit_col')}</span><span class="hg-fp">${UI.t('habits_pct_col')}</span></div></th>
               ${weekHeaders}
             </tr>
             <tr>
-              <th class="hg-name-th"></th>
-              <th class="hg-pct-th" style="border-right:1px solid var(--border)"></th>
+              <th class="hg-frozen-th"><div class="hg-frozen-inner"><span class="hg-fn"></span><span class="hg-fp"></span></div></th>
               ${dayAbbrs}
             </tr>
             <tr>
-              <th class="hg-name-th"></th>
-              <th class="hg-pct-th" style="border-right:1px solid var(--border)"></th>
+              <th class="hg-frozen-th"><div class="hg-frozen-inner"><span class="hg-fn"></span><span class="hg-fp"></span></div></th>
               ${dayNums}
             </tr>
           </thead>

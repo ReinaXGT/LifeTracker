@@ -1,5 +1,5 @@
 const UI = {
-  VERSION: 'v2.0',
+  VERSION: 'v2.1',
 
   MONTHS_SHORT: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
   MONTHS_LONG: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'],
@@ -68,6 +68,9 @@ const UI = {
       settings_delete_ok: 'Tüm veriler silindi.',
       seed_warning_label: 'Demo Veri Aktif',
       seed_warning_desc: 'Sisteme geçici örnek veriler yüklü — Ayarlar\'dan temizleyip kendi verilerinizi girin',
+      seed_modal_title: 'Demo Veri Nedir?',
+      seed_modal_body: 'LifeTracker, uygulamanın nasıl çalıştığını göstermek için tüm modüllere örnek veriler yükledi. Bu kayıtlar gerçek değildir — bütçe, alışkanlık, spor, plan, yatırım ve hedef verilerin tamamı demo amaçlıdır.\n\nKendi verilerinize geçmek için aşağıdaki butona tıklayarak Ayarlar → Veri Yönetimi bölümünden demo verilerini temizleyebilirsiniz.',
+      seed_modal_btn_settings: 'Ayarlara Git',
       settings_delete_choice_title: 'Veri Sil',
       settings_delete_choice_subtitle: 'Nasıl sıfırlamak istediğinizi seçin:',
       settings_delete_reset_label: 'Demo\'ya Sıfırla',
@@ -386,6 +389,7 @@ const UI = {
       inv_trade_opt_new_desc: 'Portföyde olmayan yeni bir varlık ekle',
       inv_trade_opt_buy_desc: 'Mevcut varlıktan daha fazla al, ortalama maliyet güncellenir',
       inv_trade_opt_sell_desc: 'Mevcut varlığının bir kısmını veya tamamını sat',
+      inv_trade_opt_dep_desc: 'Banka mevduatı ekle, faiz getirisini otomatik takip et',
       inv_mins_ago: '{0} dk önce',
       inv_hours_ago: '{0} sa önce',
       inv_days_ago: '{0} g önce',
@@ -898,16 +902,16 @@ const UI = {
       inv_dep_no_deposits: 'Henüz mevduat hesabı yok',
       inv_dep_confirm_delete: 'Bu mevduatı silmek istediğinden emin misin?',
       inv_dep_skip_confirm: 'Bugün tekrar sorma',
-      inv_sub_stocks:       'Borsa / ETF',
-      inv_dep_status:       'Durum',
+      inv_sub_stocks: 'Borsa / ETF',
+      inv_dep_status: 'Durum',
       inv_dep_deleted: 'Mevduat silindi',
-      inv_dep_view_cards:   'Kartlar',
-      inv_dep_view_table:   'Tablo',
+      inv_dep_view_cards: 'Kartlar',
+      inv_dep_view_table: 'Tablo',
       inv_dep_maturity_interest: 'Vade Faizi',
       inv_dep_total_return: 'Vade Sonu',
       inv_dep_status_active: 'Aktif',
-      inv_dep_search_ph:    'Banka ara...',
-      inv_tab_hist:         'İşlem Geçmişi',
+      inv_dep_search_ph: 'Banka ara...',
+      inv_tab_hist: 'İşlem Geçmişi',
       inv_dep_saved: 'Mevduat kaydedildi',
       inv_dep_free_note: 'Serbest hesap: günlük bileşik faiz, vade yok.',
       inv_dep_term_note: 'Vadeli hesap: vade sonunda basit faiz ödenir.',
@@ -1090,6 +1094,9 @@ const UI = {
       settings_delete_ok: 'All data deleted.',
       seed_warning_label: 'Demo Data Active',
       seed_warning_desc: 'Sample data is loaded — clear it in Settings and enter your own data',
+      seed_modal_title: 'What is Demo Data?',
+      seed_modal_body: 'LifeTracker loaded sample data across all modules so you can see how the app works. These records are not real — all budget, habit, gym, plan, investment and goal entries are for demonstration purposes only.\n\nTo switch to your own data, click the button below to go to Settings → Data Management and clear the demo data.',
+      seed_modal_btn_settings: 'Open Settings',
       settings_delete_choice_title: 'Delete Data',
       settings_delete_choice_subtitle: 'Choose how you want to reset:',
       settings_delete_reset_label: 'Reset to Demo',
@@ -1412,6 +1419,7 @@ const UI = {
       inv_trade_opt_new_desc: 'Add a new asset not yet in your portfolio',
       inv_trade_opt_buy_desc: 'Buy more of an existing asset, average cost updates',
       inv_trade_opt_sell_desc: 'Sell part or all of an existing asset',
+      inv_trade_opt_dep_desc: 'Add a bank deposit and track interest earnings automatically',
       inv_mins_ago: '{0} min ago',
       inv_hours_ago: '{0} hr ago',
       inv_days_ago: '{0} d ago',
@@ -1917,16 +1925,16 @@ const UI = {
       inv_dep_no_deposits: 'No deposit accounts yet',
       inv_dep_confirm_delete: 'Are you sure you want to delete this deposit?',
       inv_dep_skip_confirm: "Don't ask again today",
-      inv_sub_stocks:       'Stocks / ETF',
-      inv_dep_status:       'Status',
+      inv_sub_stocks: 'Stocks / ETF',
+      inv_dep_status: 'Status',
       inv_dep_deleted: 'Deposit deleted',
-      inv_dep_view_cards:   'Cards',
-      inv_dep_view_table:   'Table',
+      inv_dep_view_cards: 'Cards',
+      inv_dep_view_table: 'Table',
       inv_dep_maturity_interest: 'Maturity Interest',
       inv_dep_total_return: 'At Maturity',
       inv_dep_status_active: 'Active',
-      inv_dep_search_ph:    'Search bank...',
-      inv_tab_hist:         'Transaction History',
+      inv_dep_search_ph: 'Search bank...',
+      inv_tab_hist: 'Transaction History',
       inv_dep_saved: 'Deposit saved',
       inv_dep_free_note: 'Flexible account: daily compound interest, no fixed term.',
       inv_dep_term_note: 'Term deposit: simple interest paid at maturity.',
@@ -2109,6 +2117,9 @@ const UI = {
       settings_delete_ok: '所有数据已删除。',
       seed_warning_label: '演示数据已启用',
       seed_warning_desc: '系统已加载示例数据 — 请前往设置清除并输入您自己的数据',
+      seed_modal_title: '什么是演示数据？',
+      seed_modal_body: 'LifeTracker 已向所有模块加载示例数据，以便您了解应用的工作方式。这些记录并非真实数据——所有预算、习惯、健身、计划、投资和目标条目仅供演示使用。\n\n要切换到您自己的数据，请点击下方按钮前往 设置 → 数据管理 清除演示数据。',
+      seed_modal_btn_settings: '打开设置',
       settings_delete_choice_title: '删除数据',
       settings_delete_choice_subtitle: '选择重置方式：',
       settings_delete_reset_label: '重置为演示',
@@ -2431,6 +2442,7 @@ const UI = {
       inv_trade_opt_new_desc: '添加投资组合中尚未存在的新资产',
       inv_trade_opt_buy_desc: '买入更多现有资产，平均成本自动更新',
       inv_trade_opt_sell_desc: '卖出现有资产的部分或全部',
+      inv_trade_opt_dep_desc: '添加新的定期或活期存款账户',
       inv_mins_ago: '{0} 分钟前',
       inv_hours_ago: '{0} 小时前',
       inv_days_ago: '{0} 天前',
@@ -2936,15 +2948,15 @@ const UI = {
       inv_dep_no_deposits: '暂无存款账户',
       inv_dep_confirm_delete: '确定要删除此存款吗？',
       inv_dep_skip_confirm: '今天不再询问',
-      inv_sub_stocks:       '股票/ETF',
-      inv_dep_view_cards:   '卡片',
-      inv_dep_view_table:   '表格',
+      inv_sub_stocks: '股票/ETF',
+      inv_dep_view_cards: '卡片',
+      inv_dep_view_table: '表格',
       inv_dep_maturity_interest: '到期利息',
       inv_dep_total_return: '到期价值',
       inv_dep_status_active: '活跃',
-      inv_dep_search_ph:    '搜索银行...',
-      inv_tab_hist:         '交易历史',
-      inv_dep_status:       '状态',
+      inv_dep_search_ph: '搜索银行...',
+      inv_tab_hist: '交易历史',
+      inv_dep_status: '状态',
       inv_dep_deleted: '存款已删除',
       inv_dep_saved: '存款已保存',
       inv_dep_free_note: '活期账户：每日复利，无固定期限。',
@@ -3128,6 +3140,9 @@ const UI = {
       settings_delete_ok: 'Todos los datos eliminados.',
       seed_warning_label: 'Datos Demo Activos',
       seed_warning_desc: 'Datos de muestra cargados — bórrelos en Configuración e ingrese sus propios datos',
+      seed_modal_title: '¿Qué son los datos demo?',
+      seed_modal_body: 'LifeTracker cargó datos de muestra en todos los módulos para que puedas ver cómo funciona la aplicación. Estos registros no son reales: todas las entradas de presupuesto, hábitos, gimnasio, planes, inversiones y objetivos son solo para demostración.\n\nPara empezar con tus propios datos, haz clic en el botón de abajo para ir a Configuración → Gestión de datos y eliminar los datos demo.',
+      seed_modal_btn_settings: 'Abrir configuración',
       settings_delete_choice_title: 'Eliminar datos',
       settings_delete_choice_subtitle: 'Elige cómo quieres reiniciar:',
       settings_delete_reset_label: 'Restablecer a Demo',
@@ -3450,6 +3465,7 @@ const UI = {
       inv_trade_opt_new_desc: 'Añadir un nuevo activo que no está en tu cartera',
       inv_trade_opt_buy_desc: 'Comprar más de un activo existente, se actualiza el coste medio',
       inv_trade_opt_sell_desc: 'Vender parte o todo de un activo existente',
+      inv_trade_opt_dep_desc: 'Añadir una nueva cuenta de depósito a plazo fijo o a la vista',
       inv_mins_ago: 'hace {0} min',
       inv_hours_ago: 'hace {0} h',
       inv_days_ago: 'hace {0} d',
@@ -3955,15 +3971,15 @@ const UI = {
       inv_dep_no_deposits: 'No hay cuentas de depósito aún',
       inv_dep_confirm_delete: '¿Estás seguro de que deseas eliminar este depósito?',
       inv_dep_skip_confirm: 'No preguntar hoy',
-      inv_sub_stocks:       'Acciones / ETF',
-      inv_dep_view_cards:   'Tarjetas',
-      inv_dep_view_table:   'Tabla',
+      inv_sub_stocks: 'Acciones / ETF',
+      inv_dep_view_cards: 'Tarjetas',
+      inv_dep_view_table: 'Tabla',
       inv_dep_maturity_interest: 'Interés al Vencimiento',
       inv_dep_total_return: 'Al Vencimiento',
       inv_dep_status_active: 'Activo',
-      inv_dep_search_ph:    'Buscar banco...',
-      inv_tab_hist:         'Historial de Transacciones',
-      inv_dep_status:       'Estado',
+      inv_dep_search_ph: 'Buscar banco...',
+      inv_tab_hist: 'Historial de Transacciones',
+      inv_dep_status: 'Estado',
       inv_dep_deleted: 'Depósito eliminado',
       inv_dep_saved: 'Depósito guardado',
       inv_dep_free_note: 'Cuenta flexible: interés compuesto diario, sin plazo fijo.',
@@ -4147,6 +4163,9 @@ const UI = {
       settings_delete_ok: 'Toutes les données supprimées.',
       seed_warning_label: 'Données Démo Actives',
       seed_warning_desc: 'Données de démonstration chargées — effacez-les dans Paramètres et entrez vos propres données',
+      seed_modal_title: 'Qu\'est-ce que les données démo ?',
+      seed_modal_body: 'LifeTracker a chargé des données d\'exemple dans tous les modules pour vous montrer comment fonctionne l\'application. Ces enregistrements ne sont pas réels — toutes les entrées de budget, habitudes, sport, plans, investissements et objectifs sont uniquement à des fins de démonstration.\n\nPour commencer avec vos propres données, cliquez sur le bouton ci-dessous pour aller dans Paramètres → Gestion des données et supprimer les données démo.',
+      seed_modal_btn_settings: 'Ouvrir les paramètres',
       settings_delete_choice_title: 'Supprimer les données',
       settings_delete_choice_subtitle: 'Choisissez comment réinitialiser :',
       settings_delete_reset_label: 'Réinitialiser en démo',
@@ -4469,6 +4488,7 @@ const UI = {
       inv_trade_opt_new_desc: 'Ajouter un nouvel actif absent de votre portefeuille',
       inv_trade_opt_buy_desc: 'Acheter davantage d\'un actif existant, le coût moyen se met à jour',
       inv_trade_opt_sell_desc: 'Vendre une partie ou la totalité d\'un actif existant',
+      inv_trade_opt_dep_desc: 'Ajouter un nouveau compte de dépôt à terme ou à vue',
       inv_mins_ago: 'il y a {0} min',
       inv_hours_ago: 'il y a {0} h',
       inv_days_ago: 'il y a {0} j',
@@ -4974,15 +4994,15 @@ const UI = {
       inv_dep_no_deposits: 'Aucun compte de dépôt pour le moment',
       inv_dep_confirm_delete: 'Êtes-vous sûr de vouloir supprimer ce dépôt ?',
       inv_dep_skip_confirm: 'Ne plus demander aujourd\'hui',
-      inv_sub_stocks:       'Actions / ETF',
-      inv_dep_view_cards:   'Cartes',
-      inv_dep_view_table:   'Tableau',
+      inv_sub_stocks: 'Actions / ETF',
+      inv_dep_view_cards: 'Cartes',
+      inv_dep_view_table: 'Tableau',
       inv_dep_maturity_interest: "Intérêt à l'Échéance",
       inv_dep_total_return: "À l'Échéance",
       inv_dep_status_active: 'Actif',
-      inv_dep_search_ph:    'Rechercher une banque...',
-      inv_tab_hist:         "Historique des Transactions",
-      inv_dep_status:       'Statut',
+      inv_dep_search_ph: 'Rechercher une banque...',
+      inv_tab_hist: "Historique des Transactions",
+      inv_dep_status: 'Statut',
       inv_dep_deleted: 'Dépôt supprimé',
       inv_dep_saved: 'Dépôt enregistré',
       inv_dep_free_note: 'Compte flexible : intérêts composés quotidiens, sans durée fixe.',
@@ -7044,15 +7064,10 @@ const UI = {
     const badge = document.createElement('div');
     badge.id = 'seed-warning-badge';
     badge.className = 'seed-warning-badge';
-    badge.innerHTML = `
-      <svg class="swb-icon" data-lucide="alert-triangle"></svg>
-      <div class="swb-content">
-        <span class="swb-label" data-i18n="seed_warning_label">${this.t('seed_warning_label')}</span>
-        <span class="swb-sub" data-i18n="seed_warning_desc">${this.t('seed_warning_desc')}</span>
-      </div>
-    `;
+    badge.style.cursor = 'pointer';
+    badge.innerHTML = `<svg class="swb-icon" data-lucide="alert-triangle"></svg><div class="swb-content"><span class="swb-label" data-i18n="seed_warning_label">${this.t('seed_warning_label')}</span><span class="swb-sub" data-i18n="seed_warning_desc">${this.t('seed_warning_desc')}</span></div>`;
 
-    badge.addEventListener('click', () => UI.openSettings());
+    badge.addEventListener('click', () => UI._openSeedModal());
 
     // Insert as flex child before topbar-right so it stays centered
     // between the title and the right-side buttons without overlapping the focus widget.
@@ -7061,6 +7076,34 @@ const UI = {
     else header.appendChild(badge);
 
     lucide.createIcons({ nodes: [badge] });
+  },
+
+  _openSeedModal() {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);animation:lt-fade-in 140ms ease';
+    const bodyLines = this.t('seed_modal_body').split('\n\n').map(p => `<p style="margin:0 0 0.75rem;font-size:0.8125rem;color:var(--text-secondary);line-height:1.6">${p}</p>`).join('');
+    overlay.innerHTML = `
+      <div style="background:var(--bg-surface);border:1px solid rgba(248,113,113,.35);border-radius:var(--radius-lg);max-width:440px;width:calc(100% - 32px);box-shadow:0 24px 64px rgba(0,0,0,.45);animation:lt-slide-up 180ms cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden">
+        <div style="padding:20px 28px 16px;background:rgba(248,113,113,.07);border-bottom:1px solid rgba(248,113,113,.18);display:flex;align-items:center;gap:10px">
+          <svg data-lucide="alert-triangle" style="width:18px;height:18px;color:#F87171;flex-shrink:0"></svg>
+          <span style="font-size:1rem;font-weight:700;color:var(--text-primary);flex:1">${this.t('seed_modal_title')}</span>
+          <button id="_swm-x" style="width:28px;height:28px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);color:var(--text-muted);flex-shrink:0">
+            <svg data-lucide="x" style="width:16px;height:16px"></svg>
+          </button>
+        </div>
+        <div style="padding:20px 28px 0">${bodyLines}</div>
+        <div style="padding:4px 28px 24px">
+          <button id="_swm-delete" class="btn" style="width:100%;display:flex;align-items:center;justify-content:center;gap:0.375rem;font-size:0.8125rem;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.3);color:#F87171;height:36px">
+            <svg data-lucide="trash-2" style="width:0.875rem;height:0.875rem;flex-shrink:0"></svg>${this.t('settings_delete_btn')}
+          </button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    lucide.createIcons({ nodes: [overlay] });
+    const close = () => overlay.remove();
+    overlay.querySelector('#_swm-x').addEventListener('click', close);
+    overlay.querySelector('#_swm-delete').addEventListener('click', () => { close(); UI._deleteAllData(); });
+    overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
   },
 
   // ── Topbar init ──────────────────────────────────────────

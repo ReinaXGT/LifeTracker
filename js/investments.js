@@ -905,13 +905,14 @@ const Investments = (() => {
     for (const [i, asset] of stale.entries()) {
       if (_avRateLimited) break;
       if (i > 0) await _sleep(AV_DELAY);
-      await _fetchOnePrice(asset);
+      await _fetchOnePrice(asset, false);
     }
 
+    _load();
     _setPriceStatus('done');
   }
 
-  async function _fetchOnePrice(asset) {
+  async function _fetchOnePrice(asset, reloadAfter = true) {
     const { avKey } = _getApiKeys();
     if (!avKey) return;
     try {
@@ -927,7 +928,7 @@ const Investments = (() => {
           const prices = _getPrices();
           prices[asset.symbol] = { price, fetchedAt: Date.now() };
           _setPrices(prices);
-          _load();
+          if (reloadAfter) _load();
         }
       } else {
         // TIME_SERIES_DAILY: one call gives current price + 100-day history
@@ -954,7 +955,7 @@ const Investments = (() => {
         hist[asset.symbol] = { series: compact, fetchedAt: Date.now() };
         _setHistory(hist);
 
-        _load();
+        if (reloadAfter) _load();
       }
     } catch { /* skip, continue loop */ }
   }
@@ -1676,6 +1677,10 @@ const Investments = (() => {
           <span class="opt-title">${UI.t('inv_sell_title')}</span>
           <span class="opt-desc">${UI.t('inv_trade_opt_sell_desc')}</span>
         </button>
+        <button class="inv-trade-option opt-dep" onclick="Investments._tradeActionPick('deposit')">
+          <span class="opt-title">${UI.t('inv_dep_add')}</span>
+          <span class="opt-desc">${UI.t('inv_trade_opt_dep_desc')}</span>
+        </button>
       </div>`,
     });
     _tradeActionModal.open();
@@ -1683,9 +1688,10 @@ const Investments = (() => {
 
   function _tradeActionPick(action) {
     _tradeActionModal?.close();
-    if (action === 'add')  { setTimeout(() => _openAddAsset(),        80); }
-    if (action === 'buy')  { setTimeout(() => _openBuyAsset(null),    80); }
-    if (action === 'sell') { setTimeout(() => _openSellAsset(null),   80); }
+    if (action === 'add')     { setTimeout(() => _openAddAsset(),        80); }
+    if (action === 'buy')     { setTimeout(() => _openBuyAsset(null),    80); }
+    if (action === 'sell')    { setTimeout(() => _openSellAsset(null),   80); }
+    if (action === 'deposit') { setTimeout(() => _openAddDeposit(),      80); }
   }
 
   // ── trade history ─────────────────────────────────────────
@@ -2931,16 +2937,12 @@ const Investments = (() => {
     const curSym = _currency === 'USD' ? '$' : cur;
 
     const toggle = _depViewToggleHTML();
-    const addBtn = `<button class="acc-action-btn" onclick="Investments.openAddDeposit()">
-      <svg data-lucide="plus" style="width:15px;height:15px;flex-shrink:0"></svg>
-      <span>${UI.t('inv_dep_add')}</span>
-    </button>`;
 
     if (!deposits.length) {
       container.innerHTML = `
         <div class="panel-header">
           <span class="panel-title">${UI.t('inv_tab_deposits')}</span>
-          <div style="display:flex;align-items:center;gap:0.75rem">${toggle}${addBtn}</div>
+          <div style="display:flex;align-items:center;gap:0.75rem">${toggle}</div>
         </div>
         <div style="padding:2.5rem 0;text-align:center">
           ${UI.emptyState(UI.t('inv_dep_no_deposits'), 'landmark')}
@@ -2984,12 +2986,31 @@ const Investments = (() => {
             </div>
           </div>
           ${toggle}
-          ${addBtn}
         </div>
       </div>
       ${content}`;
     lucide.createIcons({ nodes: [container] });
     _initDepDrag();
+    _syncDepScroll();
+  }
+
+  function _syncDepScroll() {
+    const list = document.getElementById('dep-list');
+    if (!list) return;
+    const header    = list.querySelector('.panel-header');
+    const tableWrap = list.querySelector('[style*="overflow-x"]');
+    if (!header || !tableWrap) return;
+    let _lock = false;
+    header.addEventListener('scroll', () => {
+      if (_lock) return; _lock = true;
+      tableWrap.scrollLeft = header.scrollLeft;
+      _lock = false;
+    });
+    tableWrap.addEventListener('scroll', () => {
+      if (_lock) return; _lock = true;
+      header.scrollLeft = tableWrap.scrollLeft;
+      _lock = false;
+    });
   }
 
   function _depFormHtml(dep) {
@@ -3306,8 +3327,8 @@ const Investments = (() => {
 
   function setView(v) {
     _currentView = v;
-    document.getElementById('view-portfolio').style.display = v === 'portfolio' ? '' : 'none';
-    document.getElementById('view-trades').style.display   = v === 'trades'    ? '' : 'none';
+    document.getElementById('view-portfolio').classList.toggle('inv-view-hidden', v !== 'portfolio');
+    document.getElementById('view-trades').classList.toggle('inv-view-hidden', v !== 'trades');
     document.getElementById('tab-portfolio').classList.toggle('active', v === 'portfolio');
     document.getElementById('tab-trades').classList.toggle('active', v === 'trades');
     _applyViewTopbar(v);

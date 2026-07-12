@@ -228,6 +228,7 @@
 <script>
   lucide.createIcons();
   Dashboard.init();
+  if (window.innerWidth <= 768) window.dispatchEvent(new Event('resize'));
 </script>
 </body>
 </html>

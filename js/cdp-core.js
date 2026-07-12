@@ -281,6 +281,25 @@ class CustomDatePicker {
         pick.style.right = 'auto';
         pick.style.left  = `${rect.left}px`;
       }
+
+      // Mobil: picker'ın sol veya sağ kenardan taşmasını önle
+      if (window.innerWidth <= 768) {
+        const pickW = pick.offsetWidth || 280;
+        const margin = 8;
+        if (this._align === 'right') {
+          const leftEdge = rect.right - pickW;
+          if (leftEdge < margin) {
+            pick.style.right = 'auto';
+            pick.style.left  = `${margin}px`;
+          }
+        } else {
+          const rightEdge = rect.left + pickW;
+          if (rightEdge > window.innerWidth - margin) {
+            pick.style.left  = 'auto';
+            pick.style.right = `${margin}px`;
+          }
+        }
+      }
     };
     _applyDirection();
 

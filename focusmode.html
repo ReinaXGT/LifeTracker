@@ -369,6 +369,22 @@ body.pomo-fullscreen .pomo-time      { font-size:6.25rem !important; }
 }
 body.pomo-fullscreen .pomo-cd-seg,
 body.pomo-fullscreen .pomo-cd-colon { font-size:3.75rem !important; }
+
+@media (max-width: 768px) {
+  #pomo-fs-controls {
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    top: 108px !important;
+    right: 0.75rem !important;
+    gap: 0.375rem !important;
+  }
+  #pomo-fs-controls .btn span { display:none !important; }
+  #pomo-fs-controls .btn {
+    width:34px !important; height:34px !important;
+    min-width:0 !important; padding:0 !important;
+    justify-content:center !important;
+  }
+}
 </style>
 </head>
 <body>

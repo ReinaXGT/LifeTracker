@@ -122,12 +122,12 @@
   _updateTopbarActions() {
     const el = document.getElementById('topbar-actions');
     const cfgBtn    = `<button class="btn btn-icon btn-secondary" onclick="Budget.openCycleSettings()" data-tooltip="${UI.t('bud_cycle_settings_title')}" style="width:34px;height:34px;min-width:34px;padding:0"><svg data-lucide="settings-2"></svg></button>`;
-    const importBtn = `<button class="btn btn-secondary" onclick="Budget._triggerBudgetImport()" style="display:flex;align-items:center;gap:6px;height:34px"><svg data-lucide="upload"></svg>${UI.t('bud_import_budget_btn')}</button>`;
-    const histBtn   = `<button class="btn btn-secondary" onclick="Budget.openCycleHistory()" style="display:flex;align-items:center;gap:6px;height:34px"><svg data-lucide="history"></svg>${UI.t('bud_history_btn')}</button>`;
+    const importBtn = `<button class="btn btn-secondary" onclick="Budget._triggerBudgetImport()" style="display:flex;align-items:center;gap:6px;height:34px"><svg data-lucide="upload"></svg><span>${UI.t('bud_import_budget_btn')}</span></button>`;
+    const histBtn   = `<button id="bud-hist-btn" class="btn btn-secondary" onclick="Budget.openCycleHistory()" style="display:flex;align-items:center;gap:6px;height:34px"><svg data-lucide="history"></svg><span>${UI.t('bud_history_btn')}</span></button>`;
     if (this.activeView === 'transactions') {
-      el.innerHTML = `${cfgBtn}${histBtn}${importBtn}<button class="btn btn-primary" style="height:34px;display:flex;align-items:center;gap:6px" onclick="Budget.openAddTx()"><svg data-lucide="plus"></svg>${UI.t('bud_add_tx_btn')}</button>`;
+      el.innerHTML = `${cfgBtn}${histBtn}${importBtn}<button id="bud-add-tx-btn" class="btn btn-primary" style="height:34px;display:flex;align-items:center;gap:6px" onclick="Budget.openAddTx()"><svg data-lucide="plus"></svg><span>${UI.t('bud_add_tx_btn')}</span></button>`;
     } else if (this.activeView === 'categories') {
-      el.innerHTML = `${cfgBtn}${histBtn}${importBtn}<button class="btn btn-secondary" style="height:34px;display:flex;align-items:center;gap:6px" onclick="Budget.openAddGroup()"><svg data-lucide="folder-plus"></svg>${UI.t('bud_add_group_btn')}</button>`;
+      el.innerHTML = `${cfgBtn}${histBtn}${importBtn}<button class="btn btn-secondary" style="height:34px;display:flex;align-items:center;gap:6px" onclick="Budget.openAddGroup()"><svg data-lucide="folder-plus"></svg><span>${UI.t('bud_add_group_btn')}</span></button>`;
     } else {
       const lockBtn = `<button class="btn btn-icon ${this._editMode ? 'btn-primary' : 'btn-secondary'}" onclick="Budget.toggleEditMode()" data-tooltip="${this._editMode ? UI.t('bud_edit_close') : UI.t('bud_edit_open')}" style="width:34px;height:34px;min-width:34px;padding:0"><svg data-lucide="${this._editMode ? 'lock-open' : 'lock'}"></svg></button>`;
       el.innerHTML = `${lockBtn}${cfgBtn}${histBtn}${importBtn}`;
@@ -372,7 +372,7 @@
       const dateLabelColor = (dfFrom || dfTo) ? 'var(--text-primary)' : 'var(--text-secondary)';
 
       const filterBarHtml = `
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+        <div id="hist-filter-bar" style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
           <div class="search-wrap" style="min-width:160px;flex:1">
             <svg data-lucide="search"></svg>
             <input class="form-control" id="histFilterSearch" value="${this._histFilterQ.replace(/"/g,'&quot;')}"
@@ -441,7 +441,7 @@
 
     const addBtnHtml = (txs !== undefined && txs !== null) ? `
       <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
-        <button class="btn btn-primary" onclick="Budget._histAddTx(${idx})" style="display:flex;align-items:center;gap:6px;height:2.125rem">
+        <button id="hist-add-tx-btn" class="btn btn-primary" onclick="Budget._histAddTx(${idx})" style="display:flex;align-items:center;gap:6px;height:2.125rem">
           <svg data-lucide="plus"></svg>${UI.t('bud_history_add_tx')}
         </button>
       </div>` : '';
@@ -683,8 +683,9 @@
       width:   480,
       zIndex:  1100,
       buttons: [
-        { label: UI.t('btn_cancel'), variant: 'secondary', onClick: m => m.close() },
-        { label: UI.t('btn_add'),    variant: 'primary',   onClick: () => this._histSaveAddTx(cycleIdx) },
+        { label: UI.t('btn_cancel'),       variant: 'secondary', onClick: m => m.close() },
+        { label: UI.t('bud_add_continue'), variant: 'secondary', onClick: () => this._histSaveAddTxAndContinue(cycleIdx) },
+        { label: UI.t('btn_add'),          variant: 'primary',   onClick: () => this._histSaveAddTx(cycleIdx) },
       ],
     });
     this._histAddTxModal.open();
@@ -715,6 +716,34 @@
     this._histRecalc(cycles, cycleIdx);
 
     this._histAddTxModal.close();
+    UI.toast(UI.t('bud_trans_added'), 'success');
+    this._renderCycleHistory();
+    this.renderNetHistoryChart();
+  },
+
+  _histSaveAddTxAndContinue(cycleIdx) {
+    const date   = document.getElementById('histAddTxDateInput')?.value;
+    const amount = parseFloat(document.getElementById('histAddTxAmount')?.value);
+    const desc   = document.getElementById('histAddTxDesc')?.value.trim() || '';
+    const subId  = document.getElementById('histAddTxSubHidden')?.value;
+    if (!date || !subId || !amount || isNaN(amount)) return;
+
+    const { groups } = Store.getBudget();
+    const g       = groups.find(g => g.subs.some(s => s.id === subId));
+    const groupId = g?.id || '';
+    const type    = g?.type === 'income' ? 'income' : 'expense';
+
+    const cycles = Store.get('budget_cycles') || [];
+    if (!cycles[cycleIdx]) return;
+    if (!cycles[cycleIdx].transactions) cycles[cycleIdx].transactions = [];
+    cycles[cycleIdx].transactions.unshift({ id: Store._id(), date, desc, groupId, subId, amount, type });
+    this._histRecalc(cycles, cycleIdx);
+
+    const amountEl = document.getElementById('histAddTxAmount');
+    const descEl   = document.getElementById('histAddTxDesc');
+    if (amountEl) { amountEl.value = ''; amountEl.focus(); }
+    if (descEl)   descEl.value = '';
+
     UI.toast(UI.t('bud_trans_added'), 'success');
     this._renderCycleHistory();
     this.renderNetHistoryChart();
@@ -2578,12 +2607,17 @@
 
   toggleDetails(panel, toggleEl) {
     const wasOpen = !!this._detailsOpen[panel];
+    const isMobile = window.innerWidth <= 768;
 
     // Close all details first
     ['daily', 'subcats'].forEach(p => {
       this._detailsOpen[p] = false;
       const icon = document.getElementById(`${p}-toggle-icon`);
       if (icon) { icon.setAttribute('data-lucide', 'chevron-down'); lucide.createIcons({ nodes: [icon.parentElement] }); }
+      if (isMobile) {
+        const tbl = document.getElementById(`budget-${p}-table`);
+        if (tbl) tbl.style.display = 'none';
+      }
     });
     this._hideDetailsOverlay();
 
@@ -2591,7 +2625,12 @@
       this._detailsOpen[panel] = true;
       const iconEl = document.getElementById(`${panel}-toggle-icon`);
       if (iconEl) { iconEl.setAttribute('data-lucide', 'chevron-up'); lucide.createIcons({ nodes: [iconEl.parentElement] }); }
-      this._showDetailsOverlay(panel, toggleEl);
+      if (isMobile) {
+        const tbl = document.getElementById(`budget-${panel}-table`);
+        if (tbl) tbl.style.display = 'block';
+      } else {
+        this._showDetailsOverlay(panel, toggleEl);
+      }
     }
   },
 
@@ -2614,17 +2653,24 @@
     const overlayH  = overlay.offsetHeight || 300;
     const sidebar   = document.querySelector('.sidebar');
     const topbar    = document.querySelector('.topbar');
-    const sidebarW  = sidebar?.offsetWidth  || 240;
-    const topbarH   = topbar?.offsetHeight  || 64;
+    const isMobile  = window.innerWidth <= 768;
+    const sidebarW  = isMobile ? 0 : (sidebar?.offsetWidth || 240);
+    const topbarH   = topbar?.offsetHeight || 64;
 
     // All coordinates are viewport-relative (position:fixed)
     const rect      = anchorEl ? anchorEl.getBoundingClientRect() : { bottom: topbarH + 100, left: sidebarW };
     const panelEl   = anchorEl ? anchorEl.parentElement : null;
     const panelRect = panelEl  ? panelEl.getBoundingClientRect() : null;
 
-    const maxW    = panelRect ? Math.round(panelRect.width) : Math.min(720, window.innerWidth - sidebarW - 16);
-    const rawLeft = panelRect ? Math.round(panelRect.left)  : Math.round(rect.left);
-    const left    = Math.max(sidebarW, Math.min(rawLeft, window.innerWidth - maxW));
+    let maxW, left;
+    if (isMobile) {
+      maxW = window.innerWidth - 16;
+      left = 8;
+    } else {
+      maxW    = panelRect ? Math.round(panelRect.width) : Math.min(720, window.innerWidth - sidebarW - 16);
+      const rawLeft = panelRect ? Math.round(panelRect.left) : Math.round(rect.left);
+      left    = Math.max(sidebarW, Math.min(rawLeft, window.innerWidth - maxW));
+    }
 
     const spaceBelow = window.innerHeight - rect.bottom;
     const openUp     = spaceBelow < overlayH + 16 && rect.top - topbarH > overlayH + 16;
@@ -2662,7 +2708,8 @@
 
     document.addEventListener('mousemove', e => {
       if (!dragging) return;
-      const sidebarW = document.querySelector('.sidebar')?.offsetWidth  || 240;
+      const isMobile = window.innerWidth <= 768;
+      const sidebarW = isMobile ? 0 : (document.querySelector('.sidebar')?.offsetWidth || 240);
       const topbarH  = document.querySelector('.topbar')?.offsetHeight  || 64;
       const newLeft  = Math.max(sidebarW, Math.min(ox + e.clientX - sx, window.innerWidth  - overlay.offsetWidth));
       const newTop   = Math.max(topbarH,  Math.min(oy + e.clientY - sy, window.innerHeight - overlay.offsetHeight));
@@ -2683,14 +2730,17 @@
       this._detailsOpen[p] = false;
       const icon = document.getElementById(`${p}-toggle-icon`);
       if (icon) { icon.setAttribute('data-lucide', 'chevron-down'); lucide.createIcons({ nodes: [icon.parentElement] }); }
+      const tbl = document.getElementById(`budget-${p}-table`);
+      if (tbl) tbl.style.display = 'none';
     });
     this._hideDetailsOverlay();
   },
 
   _refreshOverlayIfOpen(panel) {
+    if (!this._detailsOpen[panel]) return;
+    if (window.innerWidth <= 768) return; // inline tablo zaten güncel
     const overlay = document.getElementById('budget-details-overlay');
     if (!overlay || overlay.style.display === 'none') return;
-    if (!this._detailsOpen[panel]) return;
     const tableEl = document.getElementById(`budget-${panel}-table`);
     if (tableEl) overlay.querySelector('.bdo-body').innerHTML = tableEl.innerHTML;
   },

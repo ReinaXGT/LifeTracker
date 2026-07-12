@@ -2132,7 +2132,7 @@
       let timeBadge = '';
       if (isCompleted) {
         if (t.spentMinutes) {
-          timeBadge = `<span style="font-family:var(--font-mono);font-size:0.6875rem;font-weight:700;color:var(--green);flex-shrink:0;white-space:nowrap">⏱ ${t.spentMinutes}${UI.t('mins_suffix')}</span>`;
+          timeBadge = `<span style="font-family:var(--font-mono);font-size:0.6875rem;font-weight:700;color:var(--green);flex-shrink:0;white-space:nowrap">⏱ ${Math.round(t.spentMinutes)}${UI.t('mins_suffix')}</span>`;
         }
         if (t.pomodoros) {
           const pd = Math.round((t.pomoDone || 0) * 10) / 10;

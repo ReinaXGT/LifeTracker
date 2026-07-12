@@ -245,6 +245,10 @@
 <script src="js/charts.js"></script>
 <script src="js/budget.js"></script>
 <script src="js/focus-widget.js"></script>
-<script>lucide.createIcons(); Budget.init();</script>
+<script>
+  lucide.createIcons();
+  Budget.init();
+  if (window.innerWidth <= 768) window.dispatchEvent(new Event('resize'));
+</script>
 </body>
 </html>

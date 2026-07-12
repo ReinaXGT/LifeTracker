@@ -32,7 +32,38 @@
 
 /* ─── 768px ve altı ─────────────────────────────────────────── */
 @media (max-width: 768px) {
+  :root { --topbar-height: 56px; }
+
+  /* Yatay taşmayı kapat
+     body'ye overflow-x:hidden vermiyoruz — iOS Safari'de position:fixed
+     elementlerin (tooltip, modal) pozisyonu bozuluyor.
+     Bunun yerine main-content ve page-content kısıtlanır. */
   body { min-width: 0; }
+  .main-content { overflow-x: clip; }
+  .page-content { overflow-x: clip; }
+
+  /* Tüm panel yapısı: ekran genişliğine kilitli */
+  .panel,
+  .panel-header,
+  .panel-body,
+  .dash-panel-wrap,
+  .kpi-card,
+  .kpi-grid,
+  .content-grid,
+  #dash-panels-grid { max-width: 100%; box-sizing: border-box; overflow-x: clip; }
+
+  /* CDP picker: her zaman ortaya hizala, ekran dışına taşmasın */
+  .cdp-pick {
+    max-width: calc(100vw - 16px) !important;
+  }
+
+  /* Grafik kapları ve canvas: taşmayı önle */
+  .chart-container { width: 100%; max-width: 100%; overflow: hidden; }
+  canvas { max-width: 100% !important; box-sizing: border-box; }
+
+  /* Tablolar: sadece kendi içinde yatay scroll */
+  .data-table { min-width: 0; }
+  .table-container { overflow-x: auto; max-width: 100%; }
 
   /* Hamburger göster */
   .mobile-menu-btn { display: flex; }
@@ -87,33 +118,762 @@
     display: flex !important;
   }
 
-  /* Daralt butonu mobilde gizle */
+  /* Daralt butonu ve sidebar logo içindeki toggle butonu mobilde gizle */
   #sidebar-collapse-btn { display: none !important; }
+  #sidebar-toggle-btn   { display: none !important; }
 
   /* Main content: tam genişlik */
   .main-content { left: 0 !important; }
 
-  /* Topbar */
+  /* ── Topbar: 3-sütun grid
+     Col 1 : hamburger
+     Col 2 : başlık + tarih  (1fr — her zaman görünür)
+     Col 3 : seed badge (üst satır) + butonlar (alt satır)
+     Seed badge yoksa → tek satır; varsa → otomatik 2 satır genişler.
+     Hamburger + başlık her iki satırı kapsar, dikey ortalanır.     ─── */
   .topbar {
-    padding: 0 12px;
-    height: 60px;
-    z-index: 160; /* backdrop(150) üstünde, sidebar(200) altında — hamburger tıklanabilir kalır */
+    display: grid !important;
+    grid-template-columns: 44px 1fr 220px;
+    grid-template-rows: auto;
+    height: auto !important;
+    min-height: 56px;
+    padding: 6px 8px 6px 0;
+    column-gap: 4px;
+    row-gap: 4px;
+    z-index: 160;
+    align-items: center;
   }
+
+  /* Hamburger — col 1, başlangıçta tek satır */
+  .mobile-menu-btn {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: center;
+    justify-self: center;
+    margin-right: 0 !important;
+    height: auto !important;
+  }
+
+  /* Başlık + tarih — col 2, başlangıçta tek satır */
   .topbar-left {
-    flex: 1;
+    grid-column: 2;
+    grid-row: 1;
+    flex: unset;
     min-width: 0;
+    padding: 0;
+    align-self: center;
   }
   .topbar-title {
-    font-size: 18px;
+    font-size: 15px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .topbar-subtitle { display: none; }
-  .topbar-right { gap: 6px; }
+  .topbar-subtitle {
+    display: block !important;
+    font-size: 9.5px;
+    margin-top: 2px;
+    white-space: normal;
+    overflow: visible;
+    line-height: 1.3;
+  }
 
-  /* Sayfa içeriği padding */
-  .page-content { padding: 14px 12px; }
+  /* Seed badge — col 3, satır 1 (butonların üstü); sağa hizalı */
+  .seed-warning-badge {
+    display: flex !important;
+    grid-column: 3;
+    grid-row: 1;
+    position: static !important;
+    justify-self: end;
+    align-self: center;
+    box-sizing: border-box;
+    margin: 0 !important;
+    border-radius: var(--radius-sm) !important;
+    padding: 5px 8px !important;
+    gap: 5px !important;
+    overflow: hidden !important;
+    min-width: 0 !important;
+    max-width: 100%;
+  }
+  .seed-warning-badge .swb-sub { display: none; }
+  .seed-warning-badge .swb-label { font-size: 9.5px; white-space: nowrap; }
+  .seed-warning-badge .swb-icon { width: 12px !important; height: 12px !important; }
+  .seed-warning-badge .swb-content { flex-direction: row; align-items: center; gap: 4px; }
+
+  /* Butonlar — col 3, seed badge yokken satır 1, varken satır 2'ye taşınır */
+  .topbar-right {
+    grid-column: 3;
+    grid-row: 1;
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 3px;
+    justify-content: flex-end;
+    align-items: center;
+    align-content: center;
+    align-self: center;
+    padding: 0;
+  }
+
+  /* ── Seed badge varsa: otomatik 2 satır genişleme ──────────────────────
+     Hamburger + başlık her iki satırı kaplar → toplam yüksekliğe göre
+     dikey ortalanır. Seed badge üst, butonlar alt satırda hizalanır.  */
+  .topbar:has(.seed-warning-badge) {
+    grid-template-rows: auto auto;
+    align-items: start;
+  }
+  .topbar:has(.seed-warning-badge) .mobile-menu-btn {
+    grid-row: 1 / 3;
+    align-self: center;
+  }
+  .topbar:has(.seed-warning-badge) .topbar-left {
+    grid-row: 1 / 3;
+    align-self: center;
+  }
+  .topbar:has(.seed-warning-badge) .seed-warning-badge {
+    grid-row: 1;
+    align-self: end;
+    padding-bottom: 2px !important;
+  }
+  .topbar:has(.seed-warning-badge) .topbar-right {
+    grid-row: 2;
+    align-self: start;
+    padding-top: 2px;
+  }
+
+  /* Topbar butonları: hepsi 30px ikon-only */
+  .topbar-right .btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    flex-shrink: 0;
+    overflow: visible !important;
+    /* Referans: acc-action-btn çerçeve yapısı — switch butonları hariç */
+    background: transparent !important;
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent) !important;
+    border-radius: var(--radius-sm) !important;
+    box-shadow: none !important;
+  }
+  /* TRY/USD switch: dep-view-toggle referansıyla aynı yapı */
+  #currencyToggleSection {
+    height: 30px !important;
+    padding: 3px !important;
+    gap: 2px !important;
+    flex-shrink: 0 !important;
+    background: var(--bg-elevated) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-sm) !important;
+    box-sizing: border-box !important;
+  }
+  #currencyToggleSection .btn {
+    width: auto !important;
+    min-width: auto !important;
+    height: 100% !important;
+    padding: 0 8px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    border: none !important;
+    border-radius: calc(var(--radius-sm) - 1px) !important;
+    box-sizing: border-box !important;
+    white-space: nowrap !important;
+  }
+  /* Aktif (seçili para birimi) — dep-view-btn.active ile özdeş */
+  #currencyToggleSection .btn.btn-primary {
+    background: color-mix(in srgb, var(--accent) 20%, transparent) !important;
+    color: var(--accent) !important;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent),
+                0 0 8px color-mix(in srgb, var(--accent) 22%, transparent) !important;
+  }
+  /* Pasif — dep-view-btn:not(.active) ile özdeş */
+  #currencyToggleSection .btn.btn-secondary {
+    background: transparent !important;
+    color: var(--text-muted) !important;
+    box-shadow: none !important;
+  }
+  /* SVG ikonları sabit boyut + beyaz renk */
+  .topbar-right .btn svg,
+  .topbar-right .btn-icon svg {
+    width: 16px !important;
+    height: 16px !important;
+    flex-shrink: 0;
+    display: block;
+    color: var(--text-primary) !important;
+    stroke: var(--text-primary) !important;
+  }
+  /* Dark temada tüm topbar buton ikonları beyaz — swb-icon (demo uyarı animasyonu) hariç */
+  html:not([data-theme]) .topbar svg:not(.swb-icon) {
+    color: var(--text-primary) !important;
+    stroke: var(--text-primary) !important;
+  }
+  /* Metin span'larını gizle — svg ikonlar kalır */
+  .topbar-right .btn > span {
+    display: none !important;
+  }
+  /* İşlem ekle butonu: btn-primary'den icon-button'a dönüştür */
+  #bud-add-tx-btn {
+    background: var(--bg-elevated) !important;
+    border-color: var(--border) !important;
+    color: var(--text-primary) !important;
+    box-shadow: none !important;
+  }
+  /* Period dropdown özel: wrapper + button 30px, metin + chevron korunuyor */
+  .topbar-right > div:has(#periodDDBtn) {
+    height: 30px !important;
+  }
+  #periodDDBtn {
+    width: auto !important;
+    height: 30px !important;
+    padding: 0 8px !important;
+    gap: 4px !important;
+    box-sizing: border-box !important;
+  }
+  #periodDDBtn > span { display: inline !important; }
+  /* Btn-icon ve inject edilen global butonlar */
+  .topbar .btn-icon,
+  #privacy-toggle-btn,
+  #panel-manager-btn {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+  }
+
+  /* Layout-lock ve az kullanılan butonları gizle */
+  #dashLayoutLockBtn { display: none !important; }
+  #gym-edit-btn      { display: none !important; }
+  #gym-add-body-btn  { display: none !important; }
+  #goalLockBtn       { display: none !important; }
+  #apiKeyBtn         { display: none !important; }
+  #tradeHistBtn      { display: none !important; }
+
+  /* Widget on: widget üst satır (compact, sağa dayalı), butonlar alt satır */
+  body.ftw-topbar-on .topbar-right {
+    align-content: center;
+    row-gap: 5px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+  body.ftw-topbar-on .topbar-right #focus-topbar-widget {
+    order: -1 !important;
+    flex-basis: auto !important;
+    margin-left: auto;
+  }
+  body.ftw-topbar-on .topbar-right::after {
+    content: '';
+    display: block;
+    flex-basis: 100%;
+    height: 0;
+    order: 0;
+  }
+  body.ftw-topbar-on .topbar-right > *:not(#focus-topbar-widget) {
+    order: 1 !important;
+  }
+
+  /* Focus widget topbar: compact dot+time, kendi satırında butonların üstünde */
+  .topbar-right .ftw {
+    flex-basis: auto !important;
+    flex-shrink: 0 !important;
+    height: 30px !important;
+    padding: 0 6px !important;
+    gap: 2px !important;
+    border-radius: var(--radius-sm) !important;
+    box-sizing: border-box !important;
+    align-items: center !important;
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent) !important;
+  }
+  .topbar-right #ftw-flag { display: none !important; }
+  .topbar-right .ftw .ftw-sep { width: 1px !important; height: 16px !important; opacity: .35; flex-shrink: 0; }
+  .topbar-right #ftw-pause,
+  .topbar-right #ftw-stop {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 20px !important;
+    height: 20px !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
+  }
+  .topbar-right #ftw-pause svg,
+  .topbar-right #ftw-stop svg { width: 11px !important; height: 11px !important; }
+  .topbar-right .ftw .ftw-info { display: flex !important; align-items: center !important; gap: 4px !important; }
+  .topbar-right .ftw .ftw-dot  { width: 6px !important; height: 6px !important; flex-shrink: 0; }
+  .topbar-right .ftw .ftw-time { font-size: 12px !important; font-weight: 600; line-height: 1 !important; white-space: nowrap; }
+  /* Mobilde: focusmode linki + ayırıcı + kapat butonu göster */
+  .topbar-right .ftw .ftw-btn-open,
+  .topbar-right .ftw .ftw-btn-close {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 20px !important;
+    height: 20px !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
+  }
+  .topbar-right .ftw .ftw-btn-open svg,
+  .topbar-right .ftw .ftw-btn-close svg {
+    width: 12px !important;
+    height: 12px !important;
+    color: var(--text-muted) !important;
+    stroke: var(--text-muted) !important;
+  }
+  .topbar-right .ftw .ftw-mobile-sep { display: inline !important; }
+
+  /* topbar-right tüm doğrudan çocukları: aynı hizaya zorla */
+  .topbar-right > * {
+    align-self: center !important;
+  }
+
+  /* topbar-actions: inline gap + yükseklik normalize */
+  #topbar-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 3px !important;
+    height: auto !important;
+    align-self: center !important;
+  }
+  /* topbar-actions içindeki her eleman da aynı hiza */
+  #topbar-actions > * {
+    align-self: center !important;
+  }
+
+  /* Investments topbar: col-3 auto, rate üstte / butonlar altta (2 satır) */
+  body:has(#exchangeRateSection) .topbar {
+    grid-template-columns: 44px 1fr 195px !important;
+  }
+  body:has(#exchangeRateSection) .topbar-right {
+    flex-wrap: wrap !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    gap: 4px !important;
+  }
+  /* Görünmez satır sonu: rate (order:-1) üst satır, butonlar (order:1) alt satır */
+  body:has(#exchangeRateSection) .topbar-right::after {
+    content: '' !important;
+    display: block !important;
+    flex-basis: 100% !important;
+    height: 0 !important;
+    order: 0 !important;
+  }
+  /* Rate + TRY/USD → üst satır; diğer butonlar → alt satır */
+  #exchangeRateSection    { order: -1 !important; }
+  #currencyToggleSection  { order: -1 !important; }
+  body:has(#exchangeRateSection) .topbar-right > *:not(#exchangeRateSection):not(#currencyToggleSection) { order: 1 !important; }
+  /* Gizlenmiş butonları yatırım sayfasında alt satırda göster */
+  body:has(#exchangeRateSection) #inv-tb-import { display: flex !important; }
+  body:has(#exchangeRateSection) #tradeHistBtn  { display: flex !important; }
+
+  /* Investments: döviz kuru — boşluksuz, kompakt */
+  #exchangeRateSection {
+    height: 30px !important;
+    padding: 0 8px !important;
+    gap: 0 !important;
+    flex-shrink: 0 !important;
+    min-width: 0 !important;
+  }
+  #rateCurrencySymbol { margin-left: 0 !important; }
+  #exchangeRateSection span { font-size: 11px !important; }
+  #exchangeRateInput { font-size: 11px !important; }
+  #exchangeRateSection #rateUpdateInfo {
+    font-size: 9px !important;
+    padding-left: 4px !important;
+    margin-left: 4px !important;
+  }
+
+  /* Investments: Varlık Al/Sat butonu (acc-action-btn sınıfı) ikon-only */
+  #tradeActionBtn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    max-width: 30px !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    flex-shrink: 0;
+  }
+  #tradeActionBtn > span { display: none !important; }
+  #tradeActionBtn > svg { width: 16px !important; height: 16px !important; flex-shrink: 0; }
+
+  /* ── Yatırım: Panel sırası — Portföy Detayı üstte, Mevduat ortada, Getiri+Dağılım altta */
+  #view-portfolio {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  #view-portfolio > .kpi-grid          { order: 0 !important; }
+  #view-portfolio > .panel:not(#dep-panel) { order: 1 !important; }
+  #view-portfolio > #dep-panel         { order: 2 !important; }
+  #view-portfolio > .content-grid      { order: 3 !important; }
+
+  /* ── Yatırım: İşlem Geçmişi panel-header — 2 satıra wrap ── */
+  #trades-inv-panel .panel-header {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    align-items: center !important;
+  }
+  #trades-inv-panel .panel-header > div {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+  #trades-inv-panel .panel-header .search-wrap {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+  }
+  #tradeFilterDateBtn #tradeFilterDateLabel { display: none !important; }
+  #tradeFilterDateBtn {
+    width: 34px !important;
+    height: 34px !important;
+    padding: 0 !important;
+    justify-content: center !important;
+  }
+
+  /* ── Mevduat: bilgi paneli başlık çubuğu yatay kaydırılabilir, "Mevduat" başlığı sola sabit ── */
+  #dep-list .panel-header {
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+    background: var(--bg-surface) !important;
+    padding-left: 0 !important;
+  }
+  #dep-list .panel-header::-webkit-scrollbar { display: none !important; }
+  #dep-list .panel-title {
+    position: sticky !important;
+    left: 0 !important;
+    background: var(--bg-surface) !important;
+    z-index: 2 !important;
+    flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    padding-left: 1.5rem !important;
+    padding-right: 12px !important;
+    box-shadow: 8px 0 8px 4px var(--bg-surface) !important;
+  }
+
+  /* ── Mevduat: BANKA ADI sütunu yatay kaydırmada sola sabit ── */
+  #dep-list thead th:first-child {
+    position: sticky !important;
+    left: 0 !important;
+    background: var(--bg-elevated) !important;
+    box-shadow: 1px 0 0 var(--border) !important;
+    z-index: 3 !important;
+  }
+  .dep-dep-row > td:first-child {
+    position: sticky !important;
+    left: 0 !important;
+    background: var(--bg-surface) !important;
+    box-shadow: 1px 0 0 var(--border) !important;
+    z-index: 2 !important;
+  }
+
+  /* ── Yatırım: Portföy Detayı — VARLIK/SEMBOL sütunu yatay kaydırmada sabit ── */
+  table:has(#assetBody) thead th:first-child,
+  #assetBody tr > td:first-child {
+    position: sticky !important;
+    left: 0 !important;
+    background: var(--bg-surface) !important;
+    box-shadow: 1px 0 0 var(--border) !important;
+  }
+  table:has(#assetBody) thead th:first-child { z-index: 3 !important; }
+  #assetBody tr > td:first-child             { z-index: 2 !important; }
+
+  /* ── Yatırım: Getiri Analizi — periyot satırları metin büyüt ─── */
+  #perf-panel > div { padding: 6px 16px !important; min-height: 2.75rem; }
+  #perf-panel span { font-size: 1rem !important; }
+  #perf-panel span[style*="font-family"] { font-size: 1.125rem !important; }
+
+  /* Plans: görünüm toggle butonları ikon-only, 30px yükseklik */
+  .topbar-right .toggle-btn > span { display: none !important; }
+  .topbar-right .toggle-btn {
+    height: 30px !important;
+    min-width: 30px !important;
+    padding: 0 7px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Pasta grafik legend yazıları mobilde gizle */
+  .chart-legend { display: none !important; }
+
+  /* Chart tooltip: center text'in üstüne çıksın */
+  .tlt-chart { z-index: 99999 !important; }
+
+  /* Sidebar açıkken topbar hamburger gizle */
+  .app-layout:has(.sidebar.mobile-open) .mobile-menu-btn { display: none !important; }
+
+  /* Topbar altındaki dekoratif çizgi: mobilde gizle (yükseklik değişken) */
+  .app-layout::after { display: none; }
+
+  /* Sayfa içeriği padding: yatay daralt */
+  .page-content { padding: 14px 8px; }
+
+  /* Dashboard panel grid: tek sütun */
+  #dash-panels-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .dash-panel-wrap.dash-panel-full {
+    grid-column: span 1 !important;
+  }
+
+  /* Gym panel grid: tek sütun */
+  #gym-panels-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Budget overview panel grid: tek sütun (her panel tam genişlik) */
+  #overview-panels-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+  #overview-panels-grid > * { grid-column: 1 !important; }
+
+  /* Mobil panel sırası: subcats (where does my money go) → nethistory'nin üstüne */
+  #budget-panel-summary    { order: 1; }
+  #budget-panel-daily      { order: 2; }
+  #budget-panel-subcats    { order: 3; }
+  #budget-panel-nethistory { order: 4; }
+  #budget-panel-inc        { order: 5; }
+  #budget-panel-pie        { order: 6; }
+
+  /* Kategoriler view grid: tek sütun */
+  #categories-content > div { grid-template-columns: 1fr !important; }
+
+  /* Budget özet tablosu: % sütunlarını gizle (3. ve 5. sütun) */
+  #budget-summary-table th:nth-child(3),
+  #budget-summary-table td:nth-child(3),
+  #budget-summary-table th:nth-child(5),
+  #budget-summary-table td:nth-child(5) { display: none !important; }
+  /* Tablo font ve padding küçült */
+  #budget-summary-table table { font-size: 0.6875rem !important; width: 100% !important; }
+  #budget-summary-table th,
+  #budget-summary-table td { padding: 0.375rem 0.375rem !important; }
+  /* Bar min-width sıfırla (taşmayı önle) */
+  #budget-summary-table td:last-child > div > div:first-child { min-width: 0 !important; }
+
+  /* Daily panel header: nav butonları sığmazsa alt satıra geçsin */
+  #budget-panel-daily .panel-header {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    padding-bottom: 8px !important;
+  }
+
+  /* İşlem Takibi: filtre satırı dikey stack + tablo sığdır */
+  #view-transactions .panel { overflow: hidden !important; }
+  #view-transactions .panel-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+  /* Kontrol satırı: grid ile 2 sütun — layout değişimlerinden etkilenmez */
+  #view-transactions .panel-header > div {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+    align-items: center !important;
+  }
+  /* Arama: üst satır, tüm genişlik */
+  #view-transactions .panel-header .search-wrap {
+    grid-column: 1 / -1 !important;
+    grid-row: 1 !important;
+    min-width: 0 !important;
+  }
+  #view-transactions .panel-header .search-wrap input {
+    width: 100% !important;
+  }
+  /* Kategori dropdown: sol hücre (2. satır) */
+  #view-transactions #filterGroupBtn {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+  }
+  /* CDP wrapper div: sağ hücre (2. satır) — nth-child(2): search-wrap'tan sonraki div */
+  #view-transactions .panel-header > div > :nth-child(2) {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    display: flex !important;
+    height: 2.125rem !important;
+    position: static !important;
+  }
+  #view-transactions #filterDateBtn {
+    flex: 1 !important;
+    min-width: 0 !important;
+    justify-content: center !important;
+  }
+  #view-transactions #filterGroupLabel { text-align: center !important; }
+
+  /* Tablo: x scroll yok, Ana Kategori + Açıklama gizle */
+  #txTable { overflow-x: hidden !important; }
+  #txTable table {
+    width: 100% !important;
+    table-layout: fixed !important;
+    font-size: 0.6875rem !important;
+  }
+  #txTable th, #txTable td { padding: 0.375rem 0.4rem !important; }
+  /* 4. sütun: Ana Kategori — gizle */
+  #txTable th:nth-child(4), #txTable td:nth-child(4) { display: none !important; }
+  /* 5. sütun: Açıklama — gizle */
+  #txTable th:nth-child(5), #txTable td:nth-child(5) { display: none !important; }
+  /* Kalan 4 sütun: Tarih %24 | Tutar %26 | Alt Kategori kalan | İşlem %14 */
+  #txTable th:nth-child(1), #txTable td:nth-child(1) { width: 24%; }
+  #txTable th:nth-child(2) { width: 26%; text-align: right; }
+  #txTable td:nth-child(2) { width: 26%; text-align: right; padding-right: 0.75rem !important; }
+  #txTable th:nth-child(3), #txTable td:nth-child(3) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  #txTable th:nth-child(6), #txTable td:nth-child(6) { width: 14%; }
+
+  /* ── Tüm modal içleri: yatay taşma yok ──────────────────────────────── */
+  .cm-panel, .modal { max-width: 100vw !important; overflow-x: hidden !important; }
+  .cm-body, .modal-body { overflow-x: hidden !important; max-width: 100%; }
+
+  /* Modal içindeki overflow-x:auto wrapper'ları engelle */
+  .cm-body > div[style*="overflow-x"] { overflow-x: hidden !important; }
+
+  /* Modal tabloları ekrana sığdır */
+  .cm-body table, .modal-body table {
+    width: 100% !important;
+    table-layout: fixed !important;
+    font-size: 0.6875rem !important;
+  }
+  .cm-body th, .cm-body td,
+  .modal-body th, .modal-body td {
+    padding: 0.375rem 0.4rem !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Bütçe geçmiş modalı: özet kartlar kompakt */
+  #hist-body-inner > div[style*="display:flex"][style*="gap:12px"] {
+    gap: 6px !important;
+  }
+  #hist-body-inner > div[style*="display:flex"][style*="gap:12px"] > div {
+    padding: 0.5rem 0.625rem !important;
+  }
+  #hist-body-inner > div[style*="display:flex"][style*="gap:12px"] .mono {
+    font-size: 0.8125rem !important;
+  }
+
+  /* Filtre bar: dikey stack */
+  #hist-body-inner > div > div[style*="display:flex"][style*="gap:8px"] {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+  #hist-body-inner .search-wrap {
+    min-width: 0 !important;
+    flex: 1 1 100% !important;
+  }
+  #hist-body-inner #histFilterDateBtn,
+  #hist-body-inner #histFilterGroupBtn {
+    flex: 1 1 calc(50% - 3px) !important;
+    min-width: 0 !important;
+  }
+
+  /* Geçmiş filtre barı: arama üst satır, kategori sol + CDP sağ alt satır */
+  #hist-filter-bar {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+    align-items: center !important;
+    margin-bottom: 12px !important;
+  }
+  #hist-filter-bar .search-wrap {
+    grid-column: 1 / -1 !important;
+    grid-row: 1 !important;
+    min-width: 0 !important;
+    flex: none !important;
+  }
+  /* Kategori dropdown: sol hücre */
+  #hist-filter-bar #histFilterGroupBtn {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    order: unset !important;
+  }
+  /* CDP wrapper: sağ hücre (2. child = CDP wrapper div) */
+  #hist-filter-bar > :nth-child(2) {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    display: flex !important;
+    height: 2rem !important;
+    position: static !important;
+  }
+  #hist-filter-bar #histFilterDateBtn {
+    flex: 1 !important;
+    min-width: 0 !important;
+    justify-content: center !important;
+  }
+  /* Temizle butonu varsa: alt satır, tüm genişlik */
+  #hist-filter-bar > .btn:last-child {
+    grid-column: 1 / -1 !important;
+    grid-row: 3 !important;
+  }
+
+  /* Geçmiş → İşlem Ekle butonu: koyu arka plan + tema renginde kenarlık/yazı */
+  #hist-add-tx-btn {
+    background: var(--bg-base) !important;
+    border: 1px solid var(--text-primary) !important;
+    color: var(--text-primary) !important;
+    box-shadow: none !important;
+  }
+  #hist-add-tx-btn svg {
+    color: var(--text-primary) !important;
+    stroke: var(--text-primary) !important;
+  }
+
+  /* Tablo: Ana Kategori + Açıklama gizle */
+  #hist-body-inner th:nth-child(4), #hist-body-inner td:nth-child(4) { display: none !important; }
+  #hist-body-inner th:nth-child(5), #hist-body-inner td:nth-child(5) { display: none !important; }
+  /* Tarih %22 | Tutar %22 | Alt Kategori kalan | İşlem %22 */
+  #hist-body-inner table {
+    table-layout: fixed !important;
+    width: 100% !important;
+    font-size: 0.6875rem !important;
+  }
+  #hist-body-inner th, #hist-body-inner td { padding: 0.375rem 0.3rem !important; }
+  #hist-body-inner th:nth-child(1), #hist-body-inner td:nth-child(1) { width: 22%; }
+  #hist-body-inner th:nth-child(2) { width: 22%; text-align: right !important; }
+  #hist-body-inner td:nth-child(2) { width: 22%; text-align: right !important; padding-right: 0.75rem !important; }
+  #hist-body-inner th:nth-child(3), #hist-body-inner td:nth-child(3) {
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  #hist-body-inner th:nth-child(6), #hist-body-inner td:nth-child(6) {
+    width: 22%;
+    overflow: visible !important;
+  }
+  /* Action butonları küçült, ikisi de görünsün */
+  #hist-body-inner td:nth-child(6) {
+    display: flex !important;
+    gap: 4px !important;
+    align-items: center !important;
+    padding: 0.25rem 0.2rem !important;
+  }
+  #hist-body-inner td:nth-child(6) .btn-icon {
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
+    flex-shrink: 0 !important;
+  }
+  #hist-body-inner td:nth-child(6) .btn-icon svg {
+    width: 11px !important;
+    height: 11px !important;
+  }
 
   /* KPI grid: 2 sütun */
   .kpi-grid {
@@ -149,21 +909,79 @@
     font-size: 12px;
   }
 
-  /* Modal → bottom sheet */
-  .modal-overlay { align-items: flex-end; }
-  .modal-panel {
-    width: 100% !important;
-    max-width: 100% !important;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
-    max-height: 92vh;
-    transform: translateY(24px) !important;
+  /* Budget details overlay → mobilde kullanılmaz (inline accordion) */
+  #budget-details-overlay { display: none !important; }
+
+  /* Budget details inline accordion */
+  #budget-daily-table,
+  #budget-subcats-table {
+    border-top: 1px solid var(--border);
+    overflow-x: auto;
   }
-  .modal-overlay.open .modal-panel { transform: translateY(0) !important; }
+
+  /* Modal → ekran ortasında (bottom sheet değil) */
+  .modal-overlay { align-items: center; }
+  .modal-panel {
+    width: calc(100% - 24px) !important;
+    max-width: 480px !important;
+    border-radius: var(--radius-lg) !important;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  /* CustomModal (modal-core.js) → ortada kal */
+  .cm-overlay { padding: 12px !important; align-items: center !important; }
+  .cm-panel   { border-radius: var(--radius-lg) !important; width: 100% !important; max-height: 90vh; overflow-y: auto; }
+
+  /* Help modal: sol nav paneli daralt, sağ içerik genişlesin */
+  #lt-help-overlay > div {
+    width: calc(100vw - 20px) !important;
+    height: 88vh !important;
+  }
+  /* İçerik satırı (header + footer arasındaki flex container) → sol nav */
+  #lt-help-overlay > div > div:nth-child(2) > div:first-child {
+    width: 100px !important;
+    min-width: 100px !important;
+    padding: 8px 4px !important;
+  }
+  #lt-help-overlay > div > div:nth-child(2) > div:first-child button {
+    padding: 6px 6px !important;
+    font-size: 0.6875rem !important;
+    gap: 5px !important;
+  }
+  #lt-help-overlay > div > div:nth-child(2) > div:first-child button svg {
+    width: 13px !important;
+    height: 13px !important;
+  }
+  /* Sağ içerik alanı: padding küçült */
+  #lt-help-overlay > div > div:nth-child(2) > div:last-child {
+    padding: 16px 14px !important;
+  }
 }
 
 /* ─── 480px ve altı ─────────────────────────────────────────── */
 @media (max-width: 480px) {
   .goals-grid { grid-template-columns: 1fr; }
-  /* Topbar pomodoro widget'ı çok küçük ekranlarda gizle */
-  .ftw { display: none !important; }
+
+  /* Sidebar focus widget sınıfları */
+  .ftw .fw-label    { display: none !important; }
+  .ftw .fw-task     { display: none !important; }
+  .ftw .fw-icon     { display: none !important; }
+  .ftw .fw-body     { gap: 0 !important; }
+  .ftw .fw-time     { font-size: 12px !important; line-height: 1 !important; }
+  .ftw .fw-dot-wrap { width: 8px !important; height: 8px !important; flex-shrink: 0; }
+  .ftw .fw-dot      { width: 6px !important; height: 6px !important; }
+
+  /* Topbar: ≤480px — col 3 korunur, font küçülür */
+  .topbar { grid-template-columns: 40px 1fr 220px; }
+  body:has(#exchangeRateSection) .topbar { grid-template-columns: 40px 1fr 195px !important; }
+  .topbar-title { font-size: 14px; }
+  .topbar-subtitle { font-size: 9px; }
+
+  /* Period dropdown: sadece ikon + chevron (text gizle) */
+  #periodDDLabel { display: none !important; }
+  #periodDDBtn { padding: 0 6px !important; }
+
+  /* Seed badge: daha kompakt */
+  .seed-warning-badge { max-width: 216px !important; width: auto !important; padding: 3px 6px !important; }
+  .seed-warning-badge .swb-label { font-size: 9px; }
 }

@@ -612,6 +612,7 @@ html.sb-collapsed .sidebar .focus-sidebar-widget { display: none !important; }
   display: flex;
   flex-direction: column;
   transition: left 220ms ease-out;
+  will-change: scroll-position;
 }
 
 .sidebar.collapsed + .main-content {

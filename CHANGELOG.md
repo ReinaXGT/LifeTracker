@@ -5,6 +5,30 @@ Format: **New** · **Fixed** · **Changed** · **Removed**
 
 ---
 
+## [v2.1] — 2026-07-12
+
+### New
+- **Mobile UI overhaul** — Full responsive layer rewritten in `css/mobile.css`. All panels, KPI cards, charts, tables, and grids are now capped to viewport width with `overflow-x: clip` applied at the correct containment level (not `body`, which breaks `position:fixed` on iOS Safari). Sidebar, topbar, modals, and dropdowns all behave correctly at ≤768px.
+- **Fullscreen Pomodoro on mobile** — `#pomo-fs-controls` collapses to 34×34px icon-only buttons stacked vertically on small screens; labels hidden.
+- **Budget: Add transactions to past cycles** — Cycle History modal gains an "Add Transaction" button per cycle. Transactions can be added one-by-one with an "Add & Continue" flow, and the cycle net/income/expense totals recalculate immediately.
+- **Seed data explanation modal** — On first load with demo data, a "What is Demo Data?" modal opens and explains that all entries are sample records, with a direct link to Settings → Data Management.
+- **Investments: Add Deposit from Trade Action menu** — "Mevduat Ekle" option added to the asset trade dropdown alongside New Asset / Buy More / Sell.
+- **Habits grid: frozen name column** — The habit name column is now structurally frozen (`hg-frozen-th / hg-frozen-td`) so horizontal scrolling on the history grid keeps habit names visible.
+
+### Fixed
+- **CDP date picker overflow on mobile** — Picker panel no longer overflows the screen edge on small screens; snaps inward with an 8px margin when `align:'right'` or `align:'left'` would cause overflow.
+- **Dashboard net-worth TRY rate fallback** — `tryFallback` now reads `lt_settings.tryRate` (manual override) before falling back to the cached exchange rate, preventing incorrect conversion when the API key is unset.
+- **Investments price fetch double-reload** — `_fetchOnePrice` now accepts a `reloadAfter` flag; batch price-fetch calls pass `false`, so `_load()` is called once at the end instead of once per asset.
+- **Investments deposit table scroll sync** — Deposit table header and body now scroll horizontally in lock-step via `_syncDepScroll`, preventing column misalignment on wide tables.
+- **TooltipCore: no tooltips on touch devices** — `_isTouchDevice()` check added; `mouseover` handler returns early on pointer-coarse / hover-none environments, preventing phantom tooltips on mobile.
+- **TooltipCore: chart tooltip overlap with center text** — External chart tooltip now uses quadrant-aware positioning: determines which half (left/right/top/bottom) the cursor is in relative to the canvas center and pushes the tooltip away, preventing it from covering the center label.
+- **FocusMode task time badge** — Spent-minutes badge now shows correctly next to tasks using `Math.round` and `UI.t('mins_suffix')`.
+
+### Changed
+- **Budget Import button visible on all tabs** — "Veri Aktar" button moved from Transactions-only to both Overview and Categories topbars; it was previously invisible unless the user switched to the Transactions tab.
+
+---
+
 ## [v2.0] — 2026-06-24
 
 ### New

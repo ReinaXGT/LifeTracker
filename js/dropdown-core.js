@@ -277,7 +277,7 @@
           const item = this._items.find((i) => !i.separator && !i.header && String(i.value ?? '') === val);
           if (!item || item.noSelect) return;
           this._activeVal = val;
-          this._renderItems();
+          this.close();
           this._onSelect && this._onSelect(val, item);
           // Seçim sonrası buton içeriği animasyonlu belirir
           this._btn.classList.remove('dd-btn-selected');
@@ -286,7 +286,6 @@
           this._btn.addEventListener('animationend', () => {
             this._btn.classList.remove('dd-btn-selected');
           }, { once: true });
-          this.close();
         });
       });
 

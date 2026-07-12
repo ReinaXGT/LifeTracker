@@ -198,6 +198,9 @@
 .inv-trade-option.opt-sell { border-color:#FB923C50; background:#FB923C08; }
 .inv-trade-option.opt-sell .opt-title { color:#FB923C; }
 .inv-trade-option.opt-sell:hover { border-color:#FB923C; background:#FB923C20; }
+.inv-trade-option.opt-dep  { border-color:#A78BFA50; background:#A78BFA08; }
+.inv-trade-option.opt-dep .opt-title  { color:#A78BFA; }
+.inv-trade-option.opt-dep:hover  { border-color:#A78BFA; background:#A78BFA20; }
 /* ── Trade row action buttons ───────────────────────────── */
 .trade-act-btn {
   display:inline-flex; align-items:center; justify-content:center;
@@ -251,6 +254,7 @@
 .bvtab:hover { color: var(--text-primary); }
 .bvtab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
 .bvtab svg { width: 0.9375rem; height: 0.9375rem; }
+#view-portfolio.inv-view-hidden, #view-trades.inv-view-hidden { display: none !important; }
 </style>
 </head>
 <body>
@@ -339,7 +343,7 @@
     </header>
 
     <!-- ── PORTFOLIO CONTENT ──────────────────────────────── -->
-    <main class="page-content" id="portfolioContent" style="transition:opacity 150ms ease-out">
+    <main class="page-content" id="portfolioContent">
 
       <div class="bview-bar">
         <button class="bvtab active" id="tab-portfolio" onclick="Investments.setView('portfolio')">
@@ -353,7 +357,7 @@
       <div id="view-portfolio">
 
         <!-- KPI cards -->
-        <div class="kpi-grid" id="kpi-grid"></div>
+        <div class="kpi-grid" id="kpi-grid" style="will-change:transform"></div>
 
         <!-- Allocation chart + type summary -->
         <div class="content-grid grid-2" style="margin-bottom:1.25rem">
@@ -409,7 +413,7 @@
 
       </div><!-- /#view-portfolio -->
 
-      <div id="view-trades" style="display:none">
+      <div id="view-trades" class="inv-view-hidden">
 
         <!-- Stocks/ETF trade history panel -->
         <div id="trades-inv-panel">
@@ -490,6 +494,7 @@
 <script>
   lucide.createIcons();
   Investments.init();
+  if (window.innerWidth <= 768) window.dispatchEvent(new Event('resize'));
 </script>
 </body>
 </html>

@@ -18,10 +18,10 @@ const InvPieCharts = (() => {
 
   function _html(p) {
     return `
-<div style="flex:1;display:flex;gap:1.5rem;align-items:flex-start">
+<div style="flex:1;display:flex;gap:1.5rem;align-items:stretch">
   <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:0.625rem">
     <div style="font-size:0.6875rem;font-weight:600;letter-spacing:.05em;color:var(--text-muted);text-transform:uppercase">${UI.t('inv_by_symbol')}</div>
-    <div style="display:flex;align-items:center;gap:1rem">
+    <div style="flex:1;display:flex;align-items:center;gap:1rem">
       <div class="chart-doughnut" style="flex-shrink:0">
         <canvas id="${p}-sym-chart"></canvas>
         <div id="${p}-sym-center" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;gap:0.125rem"></div>
@@ -32,7 +32,7 @@ const InvPieCharts = (() => {
   <div style="width:1px;background:var(--border);align-self:stretch;flex-shrink:0"></div>
   <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:0.625rem">
     <div style="font-size:0.6875rem;font-weight:600;letter-spacing:.05em;color:var(--text-muted);text-transform:uppercase">${UI.t('inv_by_type')}</div>
-    <div style="display:flex;align-items:center;gap:1rem">
+    <div style="flex:1;display:flex;align-items:center;gap:1rem">
       <div class="chart-doughnut" style="flex-shrink:0">
         <canvas id="${p}-type-chart"></canvas>
         <div id="${p}-type-center" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;gap:0.125rem"></div>

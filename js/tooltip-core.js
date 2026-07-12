@@ -23,10 +23,15 @@ const TooltipCore = (() => {
   const GAP           = 7;
   const MARGIN        = 8;
 
+  // Dokunmatik / mobil cihazlarda tooltip deaktif
+  const _isTouchDevice = () => window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
   let _el          = null;
   let _showTimer   = null;
   let _hideTimer   = null;
   let _curAnchor   = null;
+  let _mouseX      = 0;
+  let _mouseY      = 0;
 
   // ── Singleton element ────────────────────────────────────────────────────
 
@@ -96,6 +101,7 @@ const TooltipCore = (() => {
     clearTimeout(_showTimer);
     clearTimeout(_hideTimer);
     if (!content) return;
+    if (_isTouchDevice()) return;
 
     const delay = opts.delay !== undefined ? opts.delay : DELAY_DEFAULT;
 
@@ -199,6 +205,7 @@ const TooltipCore = (() => {
     document.addEventListener('mouseout',   _onOut,     true);
     document.addEventListener('focusin',    _onFocusIn, true);
     document.addEventListener('focusout',   _onFocusOut, true);
+    document.addEventListener('mousemove', e => { _mouseX = e.clientX; _mouseY = e.clientY; }, { passive: true });
     window.addEventListener('scroll', () => hide(true), { passive: true, capture: true });
     window.addEventListener('resize', () => hide(true), { passive: true });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') hide(true); }, true);
@@ -236,6 +243,7 @@ const TooltipCore = (() => {
       }
 
       el.style.display = 'block';
+      document.body.appendChild(el);
 
       // İçerik oluştur
       let html = '';
@@ -264,10 +272,24 @@ const TooltipCore = (() => {
       const vh   = window.innerHeight;
 
       requestAnimationFrame(() => {
-        const er   = el.getBoundingClientRect();
-        const rawL = rect.left + tooltip.caretX + 12;
-        const rawT = rect.top  + tooltip.caretY - er.height / 2;
-        const left = Math.min(rawL, vw - er.width  - MARGIN);
+        const er  = el.getBoundingClientRect();
+        // Push tooltip away from the chart center so it never overlaps center text.
+        // Determine which quadrant the cursor is in relative to the canvas center.
+        const cxAbs = rect.left + rect.width  / 2;
+        const cyAbs = rect.top  + rect.height / 2;
+        const dx = _mouseX - cxAbs;
+        const dy = _mouseY - cyAbs;
+        let rawL, rawT;
+        if (Math.abs(dx) >= Math.abs(dy)) {
+          // Left/right dominant: push horizontally away from center
+          rawL = dx >= 0 ? _mouseX + 14 : _mouseX - er.width - 14;
+          rawT = _mouseY - er.height / 2;
+        } else {
+          // Top/bottom dominant: push vertically away from center
+          rawL = _mouseX - er.width / 2;
+          rawT = dy >= 0 ? _mouseY + 14 : _mouseY - er.height - 14;
+        }
+        const left = Math.min(Math.max(MARGIN, rawL), vw - er.width  - MARGIN);
         const top  = Math.max(MARGIN, Math.min(rawT, vh - er.height - MARGIN));
         el.style.left = left + 'px';
         el.style.top  = top  + 'px';

@@ -685,7 +685,8 @@ const Dashboard = {
     const sym        = displayCur === 'USD' ? '$' : userSym;
     const prices     = Store.get('inv_prices') || {};
     const ratesMap   = settings.rates || {};
-    const _usdRate   = code => (!code || code === 'USD') ? 1 : (ratesMap[code] || (code === 'TRY' ? (Number(settings.tryRate) || rate || 35) : 1));
+    const tryFallback = Number(settings.tryRate) || (rate > 1 ? rate : 35);
+    const _usdRate   = code => (!code || code === 'USD') ? 1 : (ratesMap[code] || (code === 'TRY' ? tryFallback : 1));
     const _toDisp    = (price, aCur) => {
       const priceUSD = aCur === 'USD' ? price : price / _usdRate(aCur);
       return displayCur === 'USD' ? priceUSD : priceUSD * rate;

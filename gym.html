@@ -221,6 +221,10 @@
 <script src="js/charts.js"></script>
 <script src="js/gym.js"></script>
 <script src="js/focus-widget.js"></script>
-<script>lucide.createIcons(); Gym.init();</script>
+<script>
+  lucide.createIcons();
+  Gym.init();
+  if (window.innerWidth <= 768) window.dispatchEvent(new Event('resize'));
+</script>
 </body>
 </html>
