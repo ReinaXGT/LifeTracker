@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="assets/screenshots/Dashboard.png" alt="LifeTracker" width="100%">
-
 # LifeTracker
 
 **All-in-one personal productivity dashboard — habits, budget, workouts, goals, time tracking, Pomodoro, and investments in one offline-first app.**
