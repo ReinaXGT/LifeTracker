@@ -5,6 +5,35 @@ Format: **New** · **Fixed** · **Changed** · **Removed**
 
 ---
 
+## [v2.2] — 2026-10-04
+
+### New
+- **Cross-tab / cross-page sync** — `UI._initCrossTabSync()` listens to `storage` events and bfcache restores (`pageshow`), re-applying module visibility, theme, language, privacy mode, UI scale, currency, sidebar state and panel visibility live in every open tab. No manual refresh needed.
+- **Demo-data sync guard** — When another tab wipes, resets or imports data, every other tab detects the change (via a demo-flag signature, also re-checked on focus / visibility) and reloads itself instead of keeping or writing back stale demo data.
+- **Offline-capable libraries** — Chart.js and Lucide are now bundled in `js/vendor/` instead of loaded from CDNs. Without internet only live prices / exchange rates and Google Fonts are unavailable; every page, chart and icon keeps working.
+- **Cache-busting & stale-page self-heal** — `tools/stamp.py` stamps every local script/stylesheet reference with a content hash (`?v=…`) and injects a small build guard into each page; a page opened with an older build than the newest one seen in `localStorage` (`lt_build`) reloads itself (max 2 tries). A `.githooks/pre-commit` hook runs the stamp automatically.
+- **`tools/serve.py`** — Tiny static dev server that sends `Cache-Control: no-store`.
+- **Singular forms in i18n** — `UI.t(key, 1)` uses an optional `<key>_1` string (EN / ES / FR), so "1 day", "1 día", "1 jour" and "1 session" read correctly.
+- **Import validation** — `UI._validateImport()` checks backups before they are written (global and Budget import): `__proto__` / `constructor` / `prototype` keys, unsafe `id` / `color` values, excessive nesting and invalid `lt_` key names are rejected, and files over 25 MB are refused.
+
+### Fixed
+- **Budget: old transactions shown as the current cycle** — Importing a budget backup overwrote `lastCycleStart` with the current cycle, so transactions from past months (e.g. August data opened in October) were never archived and appeared as this period's income/expense. The import now keeps the backup's cycle state, and `_checkCycleReset()` splits all elapsed cycles into Cycle History (one entry per month, merged by transaction id if a cycle already exists); only transactions inside the current cycle stay on the Overview. Backups without cycle info are handled too.
+- **Demo data coming back by itself** — `Store.seed()` ran on every load and re-created demo data whenever a module was empty and its flag cleared (e.g. after deleting your own items). It now runs exactly once on a truly empty install (`lt_seed_initialized`); wiping, emptying modules or importing never revives it. "Reset to demo data" still works on purpose.
+- **Demo warning / data persisting in other tabs after deleting** — see cross-tab demo guard above; verified in Firefox with three simultaneous tabs.
+- **Modules / panels toggled in one page not applied in others** — module visibility, panel manager state and theme were only read at load; now synced live (see above).
+- **Doubled storage prefix** — Panel visibility and sidebar state were written as `lt_lt_panels_*` / `lt_lt_sidebar_collapsed`, so the anti-flash script never read them. They are now `lt_panels_*` / `lt_sidebar_collapsed`, with a one-time migration of the old keys.
+- **Empty bars / blank pages offline** — A failed CDN request left `Chart` / `lucide` undefined and aborted page init. Fixed by bundling the libraries locally.
+- **"1.6B$" axis labels in English** — Budget chart axes used the Turkish "B" (bin) for thousands in every language; now "B" in Turkish and "K" elsewhere.
+- **Fractional Pomodoro sessions** — "12.6 sessions" is now "12 sessions" (today and yesterday counts are floored).
+- **"1 days" plural** — see singular forms above.
+- **Unescaped user text in rendered HTML (XSS hardening)** — Names, titles, notes and symbols in Budget, Dashboard, Focus Mode, Goals, Gym, Habits, Plans and Investments are now escaped with `UI.esc()` (which also escapes `'`); inline `onclick` arguments use JSON-encoded, escaped values; `CustomDropdown` escapes item labels, badges and values.
+
+### Changed
+- **Seed behaviour** — Demo data is created once per install; existing installs are marked as initialized on first load and keep their current state.
+- **Docs** — Run LifeTracker from `http://localhost` (`python3 tools/serve.py`) for the most reliable behaviour in Firefox.
+
+---
+
 ## [v2.1] — 2026-07-12
 
 ### New

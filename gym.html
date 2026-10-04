@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="tr">
 <head>
+<script>/*lt-build*/(function(){try{var b=1791134147,k="lt_build",s=+localStorage.getItem(k)||0;if(b>s){localStorage.setItem(k,b);sessionStorage.removeItem("lt_bl")}else if(b<s){var n=+sessionStorage.getItem("lt_bl")||0;if(n<2){sessionStorage.setItem("lt_bl",n+1);location.reload()}}else sessionStorage.removeItem("lt_bl")}catch(e){}})();</script>
 <meta charset="UTF-8"><meta name="color-scheme" content="only light"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Spor — LifeTracker</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -8,19 +9,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/reset.css">
-<link rel="stylesheet" href="css/variables.css?v=2">
-<link rel="stylesheet" href="css/layout.css?v=2">
-<link rel="stylesheet" href="css/components.css">
-<link rel="stylesheet" href="css/charts.css">
-<link rel="stylesheet" href="css/mobile.css">
-<link rel="stylesheet" href="css/cdp-style.css">
-<link rel="stylesheet" href="css/dropdown-style.css">
-<link rel="stylesheet" href="css/checkbox-style.css">
-<link rel="stylesheet" href="css/tooltip-style.css">
-<link rel="stylesheet" href="css/modal-style.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="css/reset.css?v=78fa3c5f">
+<link rel="stylesheet" href="css/variables.css?v=e413d4b8">
+<link rel="stylesheet" href="css/layout.css?v=994a034b">
+<link rel="stylesheet" href="css/components.css?v=ef988b1f">
+<link rel="stylesheet" href="css/charts.css?v=9979ec7b">
+<link rel="stylesheet" href="css/mobile.css?v=2fe52b39">
+<link rel="stylesheet" href="css/cdp-style.css?v=b0dd8fc3">
+<link rel="stylesheet" href="css/dropdown-style.css?v=b89bc68f">
+<link rel="stylesheet" href="css/checkbox-style.css?v=80b22da2">
+<link rel="stylesheet" href="css/tooltip-style.css?v=c7b7ec70">
+<link rel="stylesheet" href="css/modal-style.css?v=ff76ce00">
+<script src="js/vendor/chart.umd.min.js?v=31298e4d"></script>
+<script src="js/vendor/lucide.min.js?v=7f8ffd42"></script>
 <style>
 /* ── Workout cards ─────────────────────────────────── */
 .gym-card { padding:0.875rem 1.25rem; border-bottom:1px solid var(--border); transition:background var(--transition-fast); }
@@ -210,17 +211,17 @@
 
 <div class="toast-container" id="toast-container"></div>
 <input type="file" id="lt-gym-import-file" accept=".json" style="display:none" onchange="Gym.importData(this)">
-<script src="js/store.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/modal-core.js"></script>
-<script src="js/delete-manager.js"></script>
-<script src="js/cdp-core.js"></script>
-<script src="js/dropdown-core.js"></script>
-<script src="js/checkbox-core.js"></script>
-<script src="js/tooltip-core.js"></script>
-<script src="js/charts.js"></script>
-<script src="js/gym.js"></script>
-<script src="js/focus-widget.js"></script>
+<script src="js/store.js?v=4efc5103"></script>
+<script src="js/ui.js?v=95909f82"></script>
+<script src="js/modal-core.js?v=333313fc"></script>
+<script src="js/delete-manager.js?v=fe458657"></script>
+<script src="js/cdp-core.js?v=21acda97"></script>
+<script src="js/dropdown-core.js?v=78dd615c"></script>
+<script src="js/checkbox-core.js?v=a1c44c43"></script>
+<script src="js/tooltip-core.js?v=61ec9dfd"></script>
+<script src="js/charts.js?v=e2afa1e6"></script>
+<script src="js/gym.js?v=b26f0819"></script>
+<script src="js/focus-widget.js?v=61498ffd"></script>
 <script>
   lucide.createIcons();
   Gym.init();

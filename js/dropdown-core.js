@@ -47,6 +47,10 @@
  */
 
 (function () {
+  function _escHtml(v) {
+    return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
 
   /* ── Global registry ── */
   const _registry = new Set();
@@ -261,13 +265,13 @@
           if (it.prefix) inner += it.prefix;
           if (it.color)  inner += '<span class="dd-item-dot" style="background:' + it.color + '"></span>';
           if (it.icon)   inner += '<svg class="dd-item-icon" data-lucide="' + it.icon + '"></svg>';
-          inner += '<span class="dd-item-label">' + (it.label || '') + '</span>';
-          if (it.badge2) inner += '<span class="dd-item-badge" style="margin-right:2px">' + it.badge2 + '</span>';
-          if (it.badge)  inner += '<span class="dd-item-badge">' + it.badge + '</span>';
+          inner += '<span class="dd-item-label">' + _escHtml(it.label || '') + '</span>';
+          if (it.badge2) inner += '<span class="dd-item-badge" style="margin-right:2px">' + _escHtml(it.badge2) + '</span>';
+          if (it.badge)  inner += '<span class="dd-item-badge">' + _escHtml(it.badge) + '</span>';
           inner += CHECKMARK;
         }
 
-        return '<div class="' + cls + '" data-dd-value="' + String(it.value ?? '') + '">' + inner + '</div>';
+        return '<div class="' + cls + '" data-dd-value="' + _escHtml(String(it.value ?? '')) + '">' + inner + '</div>';
       }).join('');
 
       this._menu.querySelectorAll('.dd-item:not(.dd-item-noop)').forEach((el) => {

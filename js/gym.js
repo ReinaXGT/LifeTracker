@@ -707,7 +707,7 @@ const Gym = (() => {
     const rows = more.map(pr => {
       const oneRM = _calc1RM(pr.weight, pr.reps);
       return `<tr>
-        <td style="font-weight:500">${pr.name}</td>
+        <td style="font-weight:500">${UI.esc(pr.name)}</td>
         <td class="mono" style="text-align:center;font-weight:700;color:var(--accent)">${_wt(pr.weight)}</td>
         <td class="mono" style="text-align:center;color:var(--text-secondary)">${oneRM ? _wt(oneRM) : '—'}</td>
         <td class="mono" style="text-align:right;color:var(--text-muted)">${UI.formatDate(pr.date)}</td>
@@ -774,7 +774,7 @@ const Gym = (() => {
         ? [ex.exDuration ? ex.exDuration + ' min' : '', ex.exDistance ? ex.exDistance + ' km' : ''].filter(Boolean).join(' · ')
         : [ex.sets ? ex.sets + 's' : '', ex.reps ? ex.reps + 'r' : '', ex.weight ? _wt(ex.weight) : ''].filter(Boolean).join(' × ');
       const muscleChip = ex.muscle ? `<span class="gym-muscle-chip">${_muscleLabel(ex.muscle)}</span>` : '';
-      return `<span class="gym-ex-chip">${ex.name}${meta ? `<span class="gym-ex-chip-meta"> · ${meta}</span>` : ''}${muscleChip}</span>`;
+      return `<span class="gym-ex-chip">${UI.esc(ex.name)}${meta ? `<span class="gym-ex-chip-meta"> · ${meta}</span>` : ''}${muscleChip}</span>`;
     }).join('');
     return `<div class="gym-card">
       <div class="gym-card-header">
@@ -789,7 +789,7 @@ const Gym = (() => {
           <button class="btn btn-icon btn-secondary" onclick="Gym.del('${w.id}')" style="color:var(--red)" data-tooltip="${UI.t('btn_delete')}"><svg data-lucide="trash-2"></svg></button>
         </div>
       </div>
-      ${w.notes ? `<div class="gym-card-notes">${w.notes}</div>` : ''}
+      ${w.notes ? `<div class="gym-card-notes">${UI.esc(w.notes)}</div>` : ''}
       <div class="gym-ex-chips">${exChips || `<span style="font-size:0.75rem;color:var(--text-muted)">${UI.t('gym_no_exercises')}</span>`}</div>
     </div>`;
   }
@@ -828,7 +828,7 @@ const Gym = (() => {
     const rows = visible.map(pr => {
       const oneRM = _calc1RM(pr.weight, pr.reps);
       return `<tr>
-        <td style="font-weight:500">${pr.name}</td>
+        <td style="font-weight:500">${UI.esc(pr.name)}</td>
         <td class="mono" style="text-align:center;font-weight:700;color:var(--accent)">${_wt(pr.weight)}</td>
         <td class="mono" style="text-align:center;color:var(--text-secondary)">${oneRM ? _wt(oneRM) : '—'}</td>
         <td class="mono" style="text-align:right;color:var(--text-muted)">${UI.formatDate(pr.date)}</td>
@@ -960,14 +960,14 @@ const Gym = (() => {
         if (e.weight) parts.push(`${e.weight}kg`);
       }
       return `<div class="gym-template-ex-row">
-        <span class="gym-template-ex-name">${e.name}</span>
+        <span class="gym-template-ex-name">${UI.esc(e.name)}</span>
         ${parts.length ? `<span class="gym-template-ex-detail">${parts.join(' · ')}</span>` : ''}
       </div>`;
     }).join('');
     return `<div class="gym-template-card">
       <div class="gym-template-info">
         <div style="display:flex;align-items:center;gap:0.5rem">
-          <div class="gym-template-name">${t.name}</div>
+          <div class="gym-template-name">${UI.esc(t.name)}</div>
           ${t.type ? `<span class="gym-type-badge gym-type-${t.type}" style="font-size:0.625rem;padding:2px 0.4375rem">${UI.t(TYPE_KEYS[t.type] || 'gym_type_badge_other')}</span>` : ''}
         </div>
         <div class="gym-template-meta">${exercises.length} ${UI.t('gym_exercises_label').toLowerCase()}</div>
@@ -1669,10 +1669,10 @@ const Gym = (() => {
 
       // Set volume & muscles hidden by default on first load
       if (!Store.get('gym_panels_initialized')) {
-        const state = Store.get('lt_panels_gym') || {};
+        const state = Store.get('panels_gym') || {};
         if (!('gym-panel-volume'  in state)) state['gym-panel-volume']  = false;
         if (!('gym-panel-muscles' in state)) state['gym-panel-muscles'] = false;
-        Store.set('lt_panels_gym', state);
+        Store.set('panels_gym', state);
         Store.set('gym_panels_initialized', true);
       }
 

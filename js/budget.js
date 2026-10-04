@@ -153,16 +153,19 @@
         const isBudgetKey = k => k.startsWith('lt_budget') || k === 'lt_panels_budget';
         const budgetKeys  = Object.keys(data).filter(isBudgetKey);
         if (!budgetKeys.length) throw new Error();
+        if (!UI._validateImport(data, isBudgetKey)) throw new Error('unsafe');
         const _doImport = () => {
           Object.keys(localStorage)
             .filter(k => isBudgetKey(k) || k === 'lt_lt_budget_panel_order' || k === 'lt_lt_budget_panel_sizes')
             .forEach(k => localStorage.removeItem(k));
           budgetKeys.forEach(k => localStorage.setItem(k, JSON.stringify(data[k])));
-          // _checkCycleReset()'in yanlış döngü sonu tetiklemesini önle
+          // lastCycleStart yedekteki haliyle korunur: sayfa yenilenince _checkCycleReset() geçmiş
+          // döngülere ait işlemleri otomatik olarak geçmişe arşivler (güncel döngü gibi görünmez).
           const importedCfg = data['lt_budget_cfg'] || {};
           const cycleDay    = importedCfg.cycleDay || 1;
-          const safeStart   = this._calcCycleStart(cycleDay);
-          localStorage.setItem('lt_budget_cfg', JSON.stringify({ ...importedCfg, cycleDay, lastCycleStart: safeStart }));
+          const cfgOut      = { ...importedCfg, cycleDay };
+          if (!importedCfg.lastCycleStart) delete cfgOut.lastCycleStart;
+          localStorage.setItem('lt_budget_cfg', JSON.stringify(cfgOut));
           UI.toast(UI.t('bud_import_budget_ok'), 'success');
           setTimeout(() => location.reload(), 800);
         };
@@ -245,24 +248,64 @@
           }
         }
       } else if (diffDays > 1) {
-        // Gerçek döngü sonu — sıfırla
-        const { transactions, groups } = Store.getBudget();
-        if (transactions.length > 0) {
-          const income  = transactions.filter(t => t.type === 'income').reduce((a, t) => a + t.amount, 0);
-          const expense = transactions.filter(t => t.type === 'expense').reduce((a, t) => a + t.amount, 0);
-          const prevEnd = new Date(cy, cm - 1, cd);
-          prevEnd.setDate(prevEnd.getDate() - 1);
-          const cycles  = Store.get('budget_cycles') || [];
-          cycles.unshift({ start: cfg.lastCycleStart, end: this._localDateStr(prevEnd), income, expense, net: income - expense, transactions: [...transactions], groups: JSON.parse(JSON.stringify(groups)) });
-          Store.set('budget_cycles', cycles);
-          const b = Store.getBudget();
-          b.transactions = [];
-          Store.setBudget(b);
-        }
+        // Gerçek döngü sonu (birden fazla ay atlanmış olabilir) — geçmiş döngülere ayır
+        this._archiveElapsedCycles(cfg.lastCycleStart, currentStart, cycleDay);
       }
       // diffDays < 0: hesaplanan tarih geçmişte — dokunma
     }
+    // Yedek / eski veride lastCycleStart yoksa: güncel döngüden önceki işlemleri yine arşivle
+    if (!cfg.lastCycleStart) this._archiveElapsedCycles(null, currentStart, cycleDay);
     Store.set('budget_cfg', { ...cfg, cycleDay, lastCycleStart: currentStart });
+  },
+
+  // Güncel döngüden (currentStart) önce kalmış işlemleri ait oldukları döngülere böler ve
+  // geçmişe yazar; güncel döngüye ait işlemler listede kalır.
+  _archiveElapsedCycles(fromStart, currentStart, cycleDay) {
+    const b = Store.getBudget();
+    const old = b.transactions.filter(t => t.date && t.date < currentStart);
+    if (!old.length) return;
+    const dstr = d => this._localDateStr(d);
+    const startOf = (y, m) => new Date(y, m, Math.min(cycleDay, new Date(y, m + 1, 0).getDate()));
+    // Döngü başlangıçları: en eski işlem (veya fromStart) tarihinin döngüsünden güncele kadar
+    const earliest = [old.reduce((m, t) => t.date < m ? t.date : m, old[0].date), fromStart].filter(Boolean).sort()[0];
+    const [ey, em, ed] = earliest.split('-').map(Number);
+    let y = ey, m = em - 1;
+    if (ed < cycleDay) m -= 1;               // işlem, bir önceki ayın döngüsüne ait
+    const starts = [];
+    for (let guard = 0; guard < 600; guard++) {
+      const st = dstr(startOf(y, m));
+      if (st >= currentStart) break;
+      starts.push(st);
+      m++; if (m > 11) { m = 0; y++; }
+    }
+    if (!starts.length) return;
+    const cycles = Store.get('budget_cycles') || [];
+    const groups = b.groups;
+    starts.forEach((st, i) => {
+      const next = starts[i + 1] || currentStart;
+      const txs = old.filter(t => t.date >= st && t.date < next || (i === 0 && t.date < st));
+      if (!txs.length) return;
+      const income  = txs.filter(t => t.type === 'income').reduce((a, t) => a + t.amount, 0);
+      const expense = txs.filter(t => t.type === 'expense').reduce((a, t) => a + t.amount, 0);
+      const [ny, nm, nd] = next.split('-').map(Number);
+      const end = new Date(ny, nm - 1, nd); end.setDate(end.getDate() - 1);
+      const entry = { start: st, end: dstr(end), income, expense, net: income - expense,
+                      transactions: [...txs], groups: JSON.parse(JSON.stringify(groups)) };
+      // Aynı başlangıçlı kayıt zaten varsa işlemleri id'ye göre birleştir (veri kaybı olmasın)
+      const dup = cycles.findIndex(c => c.start === st);
+      if (dup > -1) {
+        const ex = cycles[dup];
+        const ids = new Set((ex.transactions || []).map(t => t.id));
+        ex.transactions = [...(ex.transactions || []), ...txs.filter(t => !ids.has(t.id))];
+        ex.income  = ex.transactions.filter(t => t.type === 'income').reduce((a, t) => a + t.amount, 0);
+        ex.expense = ex.transactions.filter(t => t.type === 'expense').reduce((a, t) => a + t.amount, 0);
+        ex.net     = ex.income - ex.expense;
+      } else cycles.push(entry);
+    });
+    cycles.sort((a, c) => c.start.localeCompare(a.start));   // en yeni başta
+    Store.set('budget_cycles', cycles);
+    b.transactions = b.transactions.filter(t => !t.date || t.date >= currentStart);
+    Store.setBudget(b);
   },
 
   // ── Cycle History ─────────────────────────────────────────
@@ -413,7 +456,7 @@
           return `<tr>
             <td class="mono">${UI.formatDate(t.date)}</td>
             <td class="mono ${t.type === 'income' ? 'pos' : 'neg'}">${t.type === 'income' ? '+' : '-'}${UI.maskCurrency(t.amount, this.cur)}</td>
-            <td>${subName ? `<span class="badge badge-purple">${subName}</span>` : '<span style="color:var(--text-muted)">—</span>'}</td>
+            <td>${subName ? `<span class="badge badge-purple">${UI.esc(subName)}</span>` : '<span style="color:var(--text-muted)">—</span>'}</td>
             <td>${g ? `<span style="display:inline-flex;align-items:center;gap:4px;font-size:0.75rem;color:${g.color}"><span style="width:7px;height:7px;border-radius:2px;background:${g.color};display:inline-block"></span>${UI.esc(g.name)}</span>` : '<span style="color:var(--text-muted)">—</span>'}</td>
             <td style="color:var(--text-secondary)">${UI.esc(t.desc)}</td>
             <td style="display:flex;gap:6px;align-items:center">
@@ -1555,7 +1598,7 @@
   renderCharts() {
     const { groups, transactions } = Store.getBudget();
     const expGroups = groups.filter(g => g.type === 'expense');
-    const fmt = v => (v >= 1000 ? (v/1000).toFixed(0)+'B' : v) + this.cur;
+    const fmt = v => (v >= 1000 ? (v/1000).toFixed(0)+(UI.getLang()==='tr'?'B':'K') : v) + this.cur;
 
     // Doughnut: Harcama Dağılımı (maks 10 kategori)
     if (expGroups.length) {
@@ -1728,7 +1771,7 @@
       }
     };
 
-    const fmt = v => (v >= 1000 ? (v/1000).toFixed(0)+'B' : v) + this.cur;
+    const fmt = v => (v >= 1000 ? (v/1000).toFixed(0)+(UI.getLang()==='tr'?'B':'K') : v) + this.cur;
     Charts._destroy('dailySpendChart');
     Charts._applyDefaults();
     const canvas = document.getElementById('dailySpendChart');
@@ -1905,7 +1948,7 @@
         <td style="padding:0.5rem 0.75rem">
           <div style="display:flex;align-items:center;gap:7px">
             <div style="width:7px;height:7px;border-radius:2px;background:${r.color};flex-shrink:0"></div>
-            <span style="font-size:0.75rem;color:var(--text-primary)">${r.name}</span>
+            <span style="font-size:0.75rem;color:var(--text-primary)">${UI.esc(r.name)}</span>
           </div>
         </td>
         <td style="text-align:right;padding:0.5rem 0.625rem;font-family:var(--font-mono);font-size:0.75rem;color:var(--text-secondary)">${UI.maskCurrency(r.budget, this.cur)}</td>
@@ -1960,7 +2003,7 @@
 
     const fmt = v => {
       const abs = Math.abs(v);
-      return (v < 0 ? '-' : '') + (abs >= 1000 ? (abs / 1000).toFixed(1) + 'B' : String(Math.round(abs))) + this.cur;
+      return (v < 0 ? '-' : '') + (abs >= 1000 ? (abs / 1000).toFixed(1) + (UI.getLang()==='tr'?'B':'K') : String(Math.round(abs))) + this.cur;
     };
 
     this._netHistChart = Charts.line('netHistoryChart', labels, [{
@@ -2043,7 +2086,7 @@
         <td style="padding:0.5625rem 0.75rem">
           <div style="display:flex;align-items:center;gap:7px">
             <div style="width:7px;height:7px;border-radius:2px;background:${g.color};flex-shrink:0"></div>
-            <span style="font-weight:700;font-size:0.6875rem;letter-spacing:.05em;color:var(--text-primary)">${g.name.toUpperCase()}</span>
+            <span style="font-weight:700;font-size:0.6875rem;letter-spacing:.05em;color:var(--text-primary)">${UI.esc(g.name.toUpperCase())}</span>
           </div>
         </td>
         <td style="text-align:right;padding:0.5625rem 0.625rem;font-family:var(--font-mono);font-size:0.6875rem;color:var(--text-primary)">${UI.maskCurrency(gBudget, this.cur)}</td>
@@ -2141,11 +2184,11 @@
       const barCol = over ? 'var(--red)' : pct > 75 ? 'var(--yellow)' : g.color;
       return `<div style="display:flex;flex-direction:column;gap:5px;padding:0.625rem 0;border-bottom:1px solid var(--border)">
         <div style="display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:0.8125rem;color:var(--text-primary);font-weight:500">${s.name}</span>
+          <span style="font-size:0.8125rem;color:var(--text-primary);font-weight:500">${UI.esc(s.name)}</span>
           <div style="display:flex;align-items:center;gap:10px">
             <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-secondary)">
               <span style="cursor:pointer;border-bottom:1px dashed var(--border)"
-                onclick="Budget.editBudget('${g.id}','${s.id}','${s.name}',${s.budget})"
+                onclick="Budget.editBudget('${g.id}','${s.id}',${UI.esc(JSON.stringify(s.name))},${s.budget})"
                 data-tooltip="${UI.t('bud_edit_budget_title')}">${UI.maskCurrency(s.budget, this.cur)}</span>
             </span>
             <span style="font-family:var(--font-mono);font-size:0.8125rem;font-weight:600;color:var(--text-primary)">${UI.maskCurrency(real, this.cur)}</span>
@@ -2169,7 +2212,7 @@
         <div style="padding:1rem 18px 0.875rem;border-bottom:1px solid var(--border)">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
             <div style="display:flex;align-items:center;gap:8px">
-              <span style="font-size:0.9375rem;font-weight:700;color:${g.color}">${g.name}</span>
+              <span style="font-size:0.9375rem;font-weight:700;color:${g.color}">${UI.esc(g.name)}</span>
               <span style="font-size:0.625rem;font-weight:700;letter-spacing:.08em;padding:0.125rem 7px;border-radius:0.25rem;background:${typeColor}18;color:${typeColor}">${typeLabel}</span>
             </div>
             <div style="display:flex;gap:6px">
@@ -2251,10 +2294,10 @@
       return `<tr>
         <td class="mono">${UI.formatDate(t.date)}</td>
         <td class="mono ${t.type==='income'?'pos':'neg'}">${t.type==='income'?'+':'-'}${UI.maskCurrency(t.amount, this.cur)}</td>
-        <td>${subName ? `<span class="badge badge-purple">${subName}</span>` : '<span style="color:var(--text-muted)">—</span>'}</td>
+        <td>${subName ? `<span class="badge badge-purple">${UI.esc(subName)}</span>` : '<span style="color:var(--text-muted)">—</span>'}</td>
         <td>${g ? `<span style="display:inline-flex;align-items:center;gap:4px;font-size:0.75rem;color:${g.color}">
-          <span style="width:7px;height:7px;border-radius:2px;background:${g.color};display:inline-block"></span>${g.name}</span>` : '<span style="color:var(--text-muted)">—</span>'}</td>
-        <td style="color:var(--text-secondary)">${t.desc}</td>
+          <span style="width:7px;height:7px;border-radius:2px;background:${g.color};display:inline-block"></span>${UI.esc(g.name)}</span>` : '<span style="color:var(--text-muted)">—</span>'}</td>
+        <td style="color:var(--text-secondary)">${UI.esc(t.desc)}</td>
         <td style="text-align:right;white-space:nowrap">
           <div style="display:flex;gap:6px;align-items:center;justify-content:flex-end">
             <button class="btn btn-icon btn-secondary" onclick="Budget.openEditTx('${t.id}')" data-tooltip="${UI.t('habits_edit')}">
@@ -2283,7 +2326,7 @@
     const sel = document.getElementById(selId);
     if (!sel) return;
     sel.innerHTML = `<option value="">${UI.t('bud_select_main')}</option>` +
-      groups.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+      groups.map(g => `<option value="${g.id}">${UI.esc(g.name)}</option>`).join('');
   },
 
   _fillSubSel(selId, groupId) {
@@ -2292,7 +2335,7 @@
     if (!sel) return;
     const g = groups.find(g => g.id === groupId);
     sel.innerHTML = `<option value="">${UI.t('bud_select_sub')}</option>` +
-      (g ? g.subs.map(s => `<option value="${s.id}">${s.name}</option>`).join('') : '');
+      (g ? g.subs.map(s => `<option value="${s.id}">${UI.esc(s.name)}</option>`).join('') : '');
   },
 
   _fillAllSubSel(selId) {
@@ -2301,7 +2344,7 @@
     if (!sel) return;
     sel.innerHTML = `<option value="">${UI.t('bud_select_sub')}</option>` +
       groups.map(g => g.subs.length
-        ? `<optgroup label="${g.name}">${g.subs.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}</optgroup>`
+        ? `<optgroup label="${UI.esc(g.name)}">${g.subs.map(s => `<option value="${s.id}">${UI.esc(s.name)}</option>`).join('')}</optgroup>`
         : ''
       ).join('');
   },

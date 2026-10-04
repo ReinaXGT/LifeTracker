@@ -1,5 +1,5 @@
 const UI = {
-  VERSION: 'v2.1',
+  VERSION: 'v2.2',
 
   MONTHS_SHORT: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
   MONTHS_LONG: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'],
@@ -1175,6 +1175,7 @@ const UI = {
       dash_focus_month: 'This Month',
       dash_focus_streak: 'Daily Streak',
       dash_focus_streak_days: '{0} days',
+      dash_focus_streak_days_1: '{0} day',
       dash_focus_cats_week: 'Categories This Week',
       dash_focus_no_logs: 'No time logs yet',
       dash_recent_tasks: 'Recent Tasks',
@@ -1472,7 +1473,9 @@ const UI = {
       pomo_kpi_flow: 'Flow Time',
       pomo_kpi_streak: 'Daily Streak',
       pomo_sessions_n: '{0} sessions',
+      pomo_sessions_n_1: '{0} session',
       pomo_days_n: '{0} days',
+      pomo_days_n_1: '{0} day',
       pomo_focus_sub: 'focus',
       pomo_all_time: 'all time',
       pomo_today_sub: 'today',
@@ -1921,6 +1924,7 @@ const UI = {
       inv_dep_maturity: 'Maturity Date',
       inv_dep_days_left: 'Remaining',
       inv_dep_days_left_val: '{0} days',
+      inv_dep_days_left_val_1: '{0} day',
       inv_dep_expired: 'Matured',
       inv_dep_no_deposits: 'No deposit accounts yet',
       inv_dep_confirm_delete: 'Are you sure you want to delete this deposit?',
@@ -3221,6 +3225,7 @@ const UI = {
       dash_focus_month: 'Este mes',
       dash_focus_streak: 'Racha diaria',
       dash_focus_streak_days: '{0} días',
+      dash_focus_streak_days_1: '{0} día',
       dash_focus_cats_week: 'Categorías esta semana',
       dash_focus_no_logs: 'Sin registros de tiempo',
       dash_recent_tasks: 'Tareas recientes',
@@ -3518,7 +3523,9 @@ const UI = {
       pomo_kpi_flow: 'Tiempo de flujo',
       pomo_kpi_streak: 'Racha diaria',
       pomo_sessions_n: '{0} sesiones',
+      pomo_sessions_n_1: '{0} sesión',
       pomo_days_n: '{0} días',
+      pomo_days_n_1: '{0} día',
       pomo_focus_sub: 'enfoque',
       pomo_all_time: 'todo el tiempo',
       pomo_today_sub: 'hoy',
@@ -3967,6 +3974,7 @@ const UI = {
       inv_dep_maturity: 'Fecha de Vencimiento',
       inv_dep_days_left: 'Restante',
       inv_dep_days_left_val: '{0} días',
+      inv_dep_days_left_val_1: '{0} día',
       inv_dep_expired: 'Vencido',
       inv_dep_no_deposits: 'No hay cuentas de depósito aún',
       inv_dep_confirm_delete: '¿Estás seguro de que deseas eliminar este depósito?',
@@ -4244,6 +4252,7 @@ const UI = {
       dash_focus_month: 'Ce mois',
       dash_focus_streak: 'Série quotidienne',
       dash_focus_streak_days: '{0} jours',
+      dash_focus_streak_days_1: '{0} jour',
       dash_focus_cats_week: 'Catégories cette semaine',
       dash_focus_no_logs: 'Aucun journal de temps',
       dash_recent_tasks: 'Tâches récentes',
@@ -4541,7 +4550,9 @@ const UI = {
       pomo_kpi_flow: 'Temps de flow',
       pomo_kpi_streak: 'Série quotidienne',
       pomo_sessions_n: '{0} sessions',
+      pomo_sessions_n_1: '{0} session',
       pomo_days_n: '{0} jours',
+      pomo_days_n_1: '{0} jour',
       pomo_focus_sub: 'concentration',
       pomo_all_time: 'tout le temps',
       pomo_today_sub: "aujourd'hui",
@@ -4990,6 +5001,7 @@ const UI = {
       inv_dep_maturity: "Date d'Échéance",
       inv_dep_days_left: 'Restant',
       inv_dep_days_left_val: '{0} jours',
+      inv_dep_days_left_val_1: '{0} jour',
       inv_dep_expired: 'Échu',
       inv_dep_no_deposits: 'Aucun compte de dépôt pour le moment',
       inv_dep_confirm_delete: 'Êtes-vous sûr de vouloir supprimer ce dépôt ?',
@@ -5152,6 +5164,11 @@ const UI = {
     let text = (this._i18n[lang] && this._i18n[lang][key]) ||
       (this._i18n.tr && this._i18n.tr[key]) ||
       key;
+    // Singular form: '<key>_1' is used when the count is exactly 1 (only defined where the language needs it)
+    if (args[0] === 1) {
+      const one = this._i18n[lang] && this._i18n[lang][key + '_1'];
+      if (one) text = one;
+    }
     args.forEach((arg, i) => { text = text.replace(`{${i}}`, arg); });
     return text;
   },
@@ -6468,6 +6485,7 @@ const UI = {
         onConfirm: () => {
           Object.keys(localStorage).filter(k => k.startsWith('lt_')).forEach(k => localStorage.removeItem(k));
           ['gym', 'time', 'habits', 'plans', 'inv', 'goals', 'budget', 'pomo', 'todos', 'deposits'].forEach(m => localStorage.setItem('lt_' + m + '_seeded', 'true'));
+          localStorage.setItem('lt_seed_initialized', 'true');
           this.toast(this.t('settings_delete_wipe_ok'), 'success');
           setTimeout(() => location.reload(), 800);
         },
@@ -6491,9 +6509,35 @@ const UI = {
     lucide.createIcons({ nodes: [btn] });
   },
 
+  // İçe aktarılan JSON'u doğrular: tehlikeli anahtar adları, güvensiz id/renk değerleri ve aşırı derinlik reddedilir.
+  // Kullanıcı metinleri (ad, not vb.) ayrıca render sırasında UI.esc() ile kaçışlanır; bu katman ek savunmadır.
+  _validateImport(data, keyFilter) {
+    const BAD_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+    const SAFE_ID = /^[\w.:-]{0,64}$/;
+    const SAFE_COLOR = /^(#[0-9a-f]{3,8}|var\(--[\w-]+\)|rgba?\([\d\s.,%/]+\)|hsla?\([\d\s.,%/deg]+\)|[a-z]{3,20})$/i;
+    const walk = (v, depth) => {
+      if (depth > 12) return false;
+      if (Array.isArray(v)) return v.every(x => walk(x, depth + 1));
+      if (v && typeof v === 'object') {
+        return Object.entries(v).every(([k, x]) => {
+          if (BAD_KEYS.has(k)) return false;
+          if (typeof x === 'string' || typeof x === 'number') {
+            if ((k === 'id' || /Id$/.test(k)) && !SAFE_ID.test(String(x))) return false;
+            if (k === 'color' && x !== '' && !SAFE_COLOR.test(String(x))) return false;
+          }
+          return walk(x, depth + 1);
+        });
+      }
+      return true;
+    };
+    return Object.entries(data).every(([k, v]) =>
+      (!keyFilter(k)) || (/^lt_[A-Za-z0-9_]+$/.test(k) && walk(v, 0)));
+  },
+
   _importData(input) {
     const file = input.files[0];
     if (!file) return;
+    if (file.size > 25 * 1024 * 1024) { this.toast(this.t('settings_import_err'), 'error'); return; }
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
@@ -6501,6 +6545,7 @@ const UI = {
         if (typeof data !== 'object' || Array.isArray(data)) throw new Error();
         const hasLtKey = Object.keys(data).some(k => k.startsWith('lt_'));
         if (!hasLtKey) throw new Error('no_lt');
+        if (!this._validateImport(data, k => k.startsWith('lt_'))) throw new Error('unsafe');
         const _doImport = () => {
           Object.keys(localStorage)
             .filter(k => k.startsWith('lt_'))
@@ -6714,7 +6759,7 @@ const UI = {
   // ── HTML escaping ────────────────────────────────────────
   esc(str) {
     if (str == null) return '';
-    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   },
 
   // ── Date & number formatting ─────────────────────────────
@@ -6830,12 +6875,12 @@ const UI = {
   },
 
   isPanelVisible(panelId) {
-    const v = Store.get(`lt_panels_${this._panelPageId}`) || {};
+    const v = Store.get(`panels_${this._panelPageId}`) || {};
     return v[panelId] !== false;
   },
 
   togglePanelVisibility(panelId) {
-    const key = `lt_panels_${this._panelPageId}`;
+    const key = `panels_${this._panelPageId}`;
     const v = Store.get(key) || {};
     v[panelId] = !this.isPanelVisible(panelId);
     Store.set(key, v);
@@ -6960,7 +7005,7 @@ const UI = {
       lucide.createIcons({ nodes: [btn] });
     }
 
-    if (Store.get('lt_sidebar_collapsed')) {
+    if (Store.get('sidebar_collapsed')) {
       sidebar.classList.add('collapsed');
     }
     document.documentElement.classList.remove('sb-collapsed');
@@ -6977,7 +7022,7 @@ const UI = {
     if (!sidebar) return;
     this._sidebarToggling = true;
     const isCollapsed = sidebar.classList.toggle('collapsed');
-    Store.set('lt_sidebar_collapsed', isCollapsed);
+    Store.set('sidebar_collapsed', isCollapsed);
     setTimeout(() => { this._sidebarToggling = false; }, 260);
   },
 
@@ -7106,9 +7151,73 @@ const UI = {
     overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
   },
 
+  // ── Cross-tab sync ───────────────────────────────────────
+  // Settings-like keys changed in another tab (or restored from bfcache) are re-applied live,
+  // so module/panel visibility, theme, language, privacy, scale and currency never go stale.
+  _initCrossTabSync() {
+    if (this._xtabInit) return;
+    this._xtabInit = true;
+    const fire = (name, detail) => document.dispatchEvent(new CustomEvent(name, { detail }));
+
+    const applyModules = () => { this.applyHiddenModules(); fire('lt:modules-change'); };
+    const applySidebar = () => {
+      const sb = document.querySelector('.sidebar');
+      if (sb) sb.classList.toggle('collapsed', !!Store.get('sidebar_collapsed'));
+    };
+    const applySettings = (oldS, newS) => {
+      oldS = oldS || {}; newS = newS || {};
+      if (oldS.theme !== newS.theme) {
+        const th = newS.theme || 'dark';
+        if (th === 'dark') document.documentElement.removeAttribute('data-theme');
+        else document.documentElement.setAttribute('data-theme', th);
+        fire('lt:theme-change', { theme: th });
+        requestAnimationFrame(() => this._updateFavicon());
+      }
+      if (oldS.language !== newS.language) {
+        this.applyTranslations();
+        fire('lt:language-change', { lang: newS.language });
+      }
+      if (!!oldS.privacyMode !== !!newS.privacyMode) {
+        this._syncPrivacyBtns();
+        fire('lt:privacy-change');
+      }
+      if (oldS.uiScale !== newS.uiScale) {
+        this.applyScale();
+        fire('lt:scale-change', { scale: newS.uiScale || 0.75 });
+      }
+      if (oldS.currency !== newS.currency) fire('lt:currency-change', { currency: newS.currency });
+    };
+
+    window.addEventListener('storage', e => {
+      if (e.storageArea !== localStorage || e.key === null) return;
+      if (e.key === 'lt_hidden_modules') applyModules();
+      else if (e.key === 'lt_sidebar_collapsed') applySidebar();
+      else if (e.key.startsWith('lt_panels_')) {
+        if (e.key.slice(10) === this._panelPageId) { this._renderPanelModal(); fire('lt:panel-change'); }
+      } else if (e.key === 'lt_settings') {
+        let o = null, n = null;
+        try { o = e.oldValue ? JSON.parse(e.oldValue) : null; n = e.newValue ? JSON.parse(e.newValue) : null; } catch {}
+        applySettings(o, n);
+        this._renderSettingsModal();
+      }
+    });
+
+    // Firefox restores pages from bfcache (back/forward) with a stale DOM: re-apply everything.
+    window.addEventListener('pageshow', e => {
+      if (!e.persisted) return;
+      applyModules();
+      applySidebar();
+      this.applyScale();
+      this._syncPrivacyBtns();
+      fire('lt:theme-change', { theme: Store.getSettings().theme || 'dark' });
+      fire('lt:panel-change');
+    });
+  },
+
   // ── Topbar init ──────────────────────────────────────────
   initTopbar({ noPrivacy = false } = {}) {
     this.applyScale();
+    this._initCrossTabSync();
     const el = document.getElementById('topbar-date');
     if (el) el.textContent = this.longDate();
     this.initSidebar();

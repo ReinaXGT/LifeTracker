@@ -288,7 +288,7 @@ const Plans = {
             const doneSubs = subs.filter(s=>s.done).length;
             return `<tr>
               <td><span class="badge ${statusMap[p.status]}">${statusLbl[p.status]}</span></td>
-              <td style="font-weight:500">${p.title}</td>
+              <td style="font-weight:500">${UI.esc(p.title)}</td>
               <td>${UI.catBadge(p.category)}</td>
               <td>${UI.priorityBadge(p.priority)}</td>
               <td class="mono" style="color:${overdue?'var(--red)':'var(--text-muted)'}">${UI.formatDate(p.dueDate)}</td>

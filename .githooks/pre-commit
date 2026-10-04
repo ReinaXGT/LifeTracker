@@ -1,0 +1,4 @@
+#!/bin/sh
+# Re-stamps cache-busting hashes so committed HTML always matches the committed JS/CSS.
+python3 tools/stamp.py >/dev/null 2>&1 || python tools/stamp.py >/dev/null 2>&1 || exit 0
+git add -- *.html 2>/dev/null

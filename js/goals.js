@@ -283,7 +283,7 @@ const Goals = {
           <svg data-lucide="grip-vertical" style="width:0.875rem;height:0.875rem;pointer-events:none"></svg>
         </span>
         <span onclick="Goals._modalToggleMs('${m.id}','${listId}')">${this._customCb(m.done, col)}</span>
-        <input type="text" value="${m.text.replace(/"/g, '&quot;')}"
+        <input type="text" value="${UI.esc(m.text)}"
           class="form-control"
           style="font-size:0.8125rem;padding:3px 0.5rem;height:1.75rem;flex:1;${m.done ? 'color:var(--text-muted);text-decoration:line-through' : ''}"
           oninput="Goals._modalEditMs('${m.id}',this.value)"
@@ -410,7 +410,7 @@ const Goals = {
             ${this._customCb(m.done, col)}
             <span style="font-size:0.8125rem;flex:1;user-select:none;
               color:${m.done ? 'var(--text-muted)' : 'var(--text-secondary)'};
-              ${m.done ? 'text-decoration:line-through' : ''}">${m.text}</span>
+              ${m.done ? 'text-decoration:line-through' : ''}">${UI.esc(m.text)}</span>
           </div>`).join('')
         : `<p style="font-size:0.75rem;color:var(--text-muted);padding:0.25rem 0;font-style:italic">${UI.t('goals_ms_empty_card')}</p>`;
 

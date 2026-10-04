@@ -2,7 +2,21 @@
   _p: 'lt_',
 
   get(k)    { try { const r = localStorage.getItem(this._p+k); return r ? JSON.parse(r) : null; } catch { return null; } },
-  set(k, v) { try { localStorage.setItem(this._p+k, JSON.stringify(v)); return true; } catch { return false; } },
+  set(k, v) {
+    try {
+      localStorage.setItem(this._p+k, JSON.stringify(v));
+      if (k === 'seed_active' || /_seeded$/.test(k)) this._sig = this._seedSig();
+      return true;
+    } catch { return false; }
+  },
+  // Snapshot of every demo-data flag; used to detect that another tab wiped/reset/imported data.
+  _seedSig() {
+    try {
+      return Object.keys(localStorage)
+        .filter(k => k === 'lt_seed_active' || /^lt_[a-z]+_seeded$/.test(k))
+        .sort().map(k => k + '=' + localStorage.getItem(k)).join('|');
+    } catch { return ''; }
+  },
   _id()     { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); },
 
   // ── Budget ──────────────────────────────────────────────
@@ -185,6 +199,10 @@
 
   // ── Seed data ───────────────────────────────────────────
   seed(lang) {
+    // Demo data is created exactly once, on a truly empty install. Afterwards (wipe, deleting your own
+    // items, emptied modules, imports) it must never come back on its own.
+    if (this.get('seed_initialized')) return;
+    if (Object.keys(localStorage).some(k => k.startsWith('lt_') && k !== 'lt_build')) { this.set('seed_initialized', true); return; }
     const _l = lang || (this.getSettings().language) || 'en';
     const T  = _SEED_TEXTS[_l] || _SEED_TEXTS['en'];
     const ago    = n => { const d=new Date(); d.setDate(d.getDate()-n); return d.toISOString().split('T')[0]; };
@@ -773,6 +791,7 @@
       ]);
       this.set('deposits_seeded', true);
     }
+    this.set('seed_initialized', true);
   },
 
   // Updates text fields of still-seeded modules in-place when language changes.
@@ -1093,7 +1112,42 @@ const _SEED_TEXTS = {
   },
 };
 
+// One-time migration: panel visibility / sidebar state were once written with a doubled prefix (lt_lt_...).
+(function () {
+  try {
+    Object.keys(localStorage).forEach(k => {
+      const m = /^lt_lt_((?:panels_[a-z]+)|sidebar_collapsed)$/.exec(k);
+      if (!m) return;
+      const nk = 'lt_' + m[1];
+      if (localStorage.getItem(nk) === null) localStorage.setItem(nk, localStorage.getItem(k));
+      localStorage.removeItem(k);
+    });
+  } catch {}
+})();
+
 Store.seed();
+
+// Cross-tab sync: when another tab wipes/resets demo data, reload this stale tab
+// so it does not keep (or write back) the old demo state.
+Store._sig = Store._seedSig();
+// Fallback for missed storage events (background tabs, Firefox): re-check when the tab is shown again.
+function _ltCheckSeedSync() {
+  if (document.hidden || Store._seedSig() === Store._sig) return;
+  clearTimeout(Store._syncT);
+  Store._syncT = setTimeout(() => location.reload(), 100);
+}
+document.addEventListener('visibilitychange', _ltCheckSeedSync);
+window.addEventListener('focus', _ltCheckSeedSync);
+window.addEventListener('pageshow', _ltCheckSeedSync);
+window.addEventListener('storage', e => {
+  if (e.storageArea !== localStorage) return;
+  const k = e.key;
+  const seedKey = k === null || k === 'lt_seed_active' || /^lt_[a-z]+_seeded$/.test(k);
+  if (!seedKey) return;
+  if (k !== null && e.newValue === e.oldValue) return;
+  clearTimeout(Store._syncT);
+  Store._syncT = setTimeout(() => location.reload(), 300);
+});
 
 document.addEventListener('lt:language-change', () => {
   Store.reseed(Store.getSettings().language || 'en');

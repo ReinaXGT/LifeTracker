@@ -25,3 +25,11 @@ npm-debug.log*
 
 # ── Node (if tooling added later) ─────────────────────────────────────────────
 node_modules/
+# ── graphify output ───────────────────────────────────────────────────────────
+graphify-out/
+
+# ── Personal data backups ─────────────────────────────────────────────────────
+lifetracker-backup-*.json
+
+# ── Local dev tooling ─────────────────────────────────────────────────────────
+tools/security-scan.sh

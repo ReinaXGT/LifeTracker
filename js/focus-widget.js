@@ -349,7 +349,7 @@ const FocusWidget = (() => {
     const flowMins = Math.floor((pomoTodaySecs + manualTodaySecs + lapSecs) / 60);
 
     const workMins     = Store.get('pomo_cfg')?.work || 25;
-    const sessionCount = Math.round(flowMins / workMins * 10) / 10;
+    const sessionCount = Math.floor(flowMins / workMins);
 
     // Dün karşılaştırması — pomodoro logları + manuel loglar (çift kaynak, tek tablo)
     const ydPomoMins = timeLogs
@@ -359,7 +359,7 @@ const FocusWidget = (() => {
       .filter(l => l.date === ydStr && l.source !== 'pomodoro')
       .reduce((a, l) => a + (l.duration || 0), 0);
     const ydFlowMins = Math.floor(ydPomoMins + ydManualMins);
-    const ydCount = Math.round(ydFlowMins / workMins * 10) / 10;
+    const ydCount = Math.floor(ydFlowMins / workMins);
 
     // Günlük seri — canlı lap varsa her hesaplamada taze; aksi halde gün başına bir kez (cache)
     if (!_kpiStreak || _kpiStreak.date !== td || laps.length > 0) {

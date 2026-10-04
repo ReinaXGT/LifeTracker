@@ -495,7 +495,7 @@ const Investments = (() => {
             const sign  = pct > 0 ? '+' : '';
             return `<div style="display:flex;align-items:center;gap:0.5rem;padding:0.25rem 0;min-width:0">
               <div style="width:0.5rem;height:0.5rem;border-radius:50%;background:${color};flex-shrink:0"></div>
-              <span style="font-size:0.8125rem;font-weight:600;color:var(--text-primary);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.symbol}</span>
+              <span style="font-size:0.8125rem;font-weight:600;color:var(--text-primary);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${UI.esc(a.symbol)}</span>
               <span style="font-size:0.75rem;font-family:var(--font-mono);font-weight:700;color:${color};flex-shrink:0">${sign}${pct.toFixed(1)}%</span>
             </div>`;
           }).join('')
@@ -554,7 +554,7 @@ const Investments = (() => {
       const cached   = prices[a.symbol];
       const priceAge = `<div style="display:flex;align-items:center;justify-content:center;gap:0.3125rem;margin-top:0.1875rem">
         ${cached ? `<span style="font-size:0.625rem;color:var(--text-muted);opacity:.7">${_relativeTime(cached.fetchedAt)}</span><span style="font-size:0.625rem;color:var(--text-muted);opacity:.35">·</span>` : ''}
-        <button onclick="Investments.editManualPrice('${a.symbol}')"
+        <button onclick="Investments.editManualPrice(${UI.esc(JSON.stringify(a.symbol))})"
           style="background:none;border:none;cursor:pointer;padding:2px 4px;color:var(--text-muted);display:flex;align-items:center;gap:2px;border-radius:0.25rem;transition:color .15s,background .15s"
           onmouseover="this.style.color='var(--accent)';this.style.background='rgba(124,108,252,.1)'"
           onmouseout="this.style.color='var(--text-muted)';this.style.background='transparent'"
@@ -570,8 +570,8 @@ const Investments = (() => {
               <span style="font-family:var(--font-mono);font-size:0.6875rem;font-weight:700;color:var(--accent)">${init}</span>
             </div>
             <div>
-              <div style="font-weight:600;font-size:0.875rem">${a.symbol}</div>
-              <div style="font-size:0.75rem;color:var(--text-muted)">${a.name}</div>
+              <div style="font-weight:600;font-size:0.875rem">${UI.esc(a.symbol)}</div>
+              <div style="font-size:0.75rem;color:var(--text-muted)">${UI.esc(a.name)}</div>
             </div>
           </div>
         </td>
@@ -1356,8 +1356,8 @@ const Investments = (() => {
 
     const pickerSection = asset
       ? `<div style="margin-bottom:14px;padding:10px 14px;background:var(--bg-elevated);border-radius:var(--radius-sm);display:flex;align-items:center;gap:10px">
-           <span style="font-size:0.9375rem;font-weight:700;font-family:var(--font-mono);color:var(--text-primary)">${asset.symbol}</span>
-           <span style="font-size:0.75rem;color:var(--text-secondary);flex:1">${asset.name}</span>
+           <span style="font-size:0.9375rem;font-weight:700;font-family:var(--font-mono);color:var(--text-primary)">${UI.esc(asset.symbol)}</span>
+           <span style="font-size:0.75rem;color:var(--text-secondary);flex:1">${UI.esc(asset.name)}</span>
            <span style="font-size:0.75rem;color:var(--text-muted)">${UI.t('inv_sell_max')}: <strong style="color:var(--text-primary);font-family:var(--font-mono)">${asset.quantity}</strong></span>
          </div>`
       : `<div class="form-group" style="margin-bottom:14px">
@@ -1519,8 +1519,8 @@ const Investments = (() => {
 
     const pickerSection = asset
       ? `<div style="margin-bottom:14px;padding:10px 14px;background:var(--bg-elevated);border-radius:var(--radius-sm);display:flex;align-items:center;gap:10px">
-           <span style="font-size:0.9375rem;font-weight:700;font-family:var(--font-mono);color:var(--text-primary)">${asset.symbol}</span>
-           <span style="font-size:0.75rem;color:var(--text-secondary);flex:1">${asset.name}</span>
+           <span style="font-size:0.9375rem;font-weight:700;font-family:var(--font-mono);color:var(--text-primary)">${UI.esc(asset.symbol)}</span>
+           <span style="font-size:0.75rem;color:var(--text-secondary);flex:1">${UI.esc(asset.name)}</span>
            <span style="font-size:0.75rem;color:var(--text-muted)">${UI.t('inv_avg_cost')}: <strong style="font-family:var(--font-mono);color:var(--text-primary)">${_mask(asset.buyPrice)}</strong></span>
          </div>`
       : `<div class="form-group" style="margin-bottom:14px">
@@ -1738,8 +1738,8 @@ const Investments = (() => {
         <td style="text-align:center;vertical-align:middle"><span style="font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:${color};background:${color}18;border:1px solid ${color}35;padding:2px 7px;border-radius:4px">${typeLabel}</span></td>
         <td>
           <div style="display:flex;align-items:baseline;gap:0.5rem">
-            <span style="font-weight:600;font-family:var(--font-mono);font-size:0.875rem;display:inline-block;min-width:3.75rem">${t.symbol}</span>
-            <span style="font-size:0.75rem;color:var(--text-muted)">${t.name || ''}</span>
+            <span style="font-weight:600;font-family:var(--font-mono);font-size:0.875rem;display:inline-block;min-width:3.75rem">${UI.esc(t.symbol)}</span>
+            <span style="font-size:0.75rem;color:var(--text-muted)">${UI.esc(t.name || '')}</span>
           </div>
         </td>
         <td class="mono" style="text-align:center">${UI.isPrivate() ? '••••' : t.quantity}</td>
@@ -1873,7 +1873,7 @@ const Investments = (() => {
     DeleteManager.confirm({
       module:       'inv_trade',
       title:        UI.t('inv_delete_trade'),
-      message:      `${typeLabel} — ${trade.symbol} × ${trade.quantity}`,
+      message:      `${typeLabel} — ${UI.esc(trade.symbol)} × ${trade.quantity}`,
       confirmLabel: UI.t('btn_delete'),
       onConfirm: () => {
         const all = _getTrades().filter(t => t.id !== id);
@@ -2429,8 +2429,8 @@ const Investments = (() => {
               <td style="color:var(--text-secondary);font-size:0.8125rem">${UI.formatDate(t.date || '')}</td>
               <td style="text-align:center;vertical-align:middle"><span style="font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:${color};background:${color}18;border:1px solid ${color}35;padding:2px 7px;border-radius:4px">${typeLabel}</span></td>
               <td><div style="display:flex;align-items:baseline;gap:0.5rem">
-                <span style="font-weight:600;font-family:var(--font-mono);font-size:0.875rem">${t.symbol}</span>
-                <span style="font-size:0.75rem;color:var(--text-muted)">${t.name || ''}</span>
+                <span style="font-weight:600;font-family:var(--font-mono);font-size:0.875rem">${UI.esc(t.symbol)}</span>
+                <span style="font-size:0.75rem;color:var(--text-muted)">${UI.esc(t.name || '')}</span>
               </div></td>
               <td class="mono" style="text-align:center">${UI.isPrivate() ? '••••' : t.quantity}</td>
               <td class="mono" style="text-align:center;color:var(--text-secondary)">${_mask(price)}</td>
@@ -2570,7 +2570,7 @@ const Investments = (() => {
           }
           return `<tr>
             <td>
-              <div style="font-weight:600">${dep.bankName || '—'}</div>
+              <div style="font-weight:600">${UI.esc(dep.bankName || '—')}</div>
               <div style="font-size:0.75rem;color:var(--text-muted);margin-top:1px">${UI.formatDate(dep.startDate || '')}</div>
             </td>
             <td style="text-align:center;vertical-align:middle">
@@ -2785,7 +2785,7 @@ const Investments = (() => {
         <div class="dep-dep-row" data-id="${dep.id}" draggable="true" style="display:grid;grid-template-columns:1fr auto;align-items:start;gap:0.75rem;padding:1rem 1.25rem;border-bottom:1px solid var(--border)">
           <div style="display:flex;flex-direction:column;gap:0.5rem;min-width:0">
             <div style="display:flex;align-items:center;gap:0.625rem;flex-wrap:wrap">
-              <span style="font-size:0.9375rem;font-weight:700;color:var(--text-primary)">${dep.bankName || '—'}</span>
+              <span style="font-size:0.9375rem;font-weight:700;color:var(--text-primary)">${UI.esc(dep.bankName || '—')}</span>
               <span style="font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:${typeColor};background:${typeColor}18;border:1px solid ${typeColor}35;padding:2px 7px;border-radius:4px">${typeLabel}</span>
               ${maturityInfo}
             </div>
@@ -2866,7 +2866,7 @@ const Investments = (() => {
         : `<span style="font-size:0.625rem;font-weight:700;color:var(--green);background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3);padding:2px 7px;border-radius:4px">${UI.t('inv_dep_status_active')}</span>`;
 
       return `<tr class="dep-dep-row" data-id="${dep.id}" draggable="true" style="border-bottom:1px solid var(--border)">
-        <td style="padding:0.75rem 0.5rem;padding-left:1.25rem;font-weight:700;font-size:0.875rem">${dep.bankName || '—'}</td>
+        <td style="padding:0.75rem 0.5rem;padding-left:1.25rem;font-weight:700;font-size:0.875rem">${UI.esc(dep.bankName || '—')}</td>
         <td style="padding:0.75rem 0.5rem;text-align:center">
           <span style="font-size:0.625rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:${typeColor};background:${typeColor}18;border:1px solid ${typeColor}35;padding:2px 7px;border-radius:4px">${typeLabel}</span>
         </td>
@@ -3100,7 +3100,7 @@ const Investments = (() => {
       </div>
       <div class="form-group">
         <label class="form-label">${UI.t('inv_dep_notes')}</label>
-        <input class="form-control" type="text" id="depNotesInput" placeholder="" value="${dep?.notes || ''}">
+        <input class="form-control" type="text" id="depNotesInput" placeholder="" value="${UI.esc(dep?.notes || '')}">
       </div>
     </div>`;
   }
@@ -3408,8 +3408,8 @@ const Investments = (() => {
       return `<tr>
         <td style="overflow:hidden">
           <div style="display:flex;align-items:baseline;gap:0.5rem;overflow:hidden">
-            <span style="font-weight:600;font-size:0.875rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${dep.bankName || '—'}</span>
-            ${dep.notes ? `<span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${dep.notes}</span>` : ''}
+            <span style="font-weight:600;font-size:0.875rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${UI.esc(dep.bankName || '—')}</span>
+            ${dep.notes ? `<span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${UI.esc(dep.notes)}</span>` : ''}
           </div>
         </td>
         <td style="text-align:center;vertical-align:middle">

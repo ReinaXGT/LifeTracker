@@ -2096,7 +2096,7 @@
              ondragend="PomodoroPage._subDragEnd('${t.id}')"
              ondrop="PomodoroPage._subDrop('${t.id}','${s.id}',event)">
           ${CheckboxCore.html({ done: s.done, type: 'square', color: 'var(--accent)', onclick: `event.stopPropagation();PomodoroPage.toggleSubtask('${t.id}','${s.id}')` })}
-          <span style="font-size:0.8125rem;color:var(--text-secondary);flex:1;${s.done ? 'text-decoration:line-through;color:var(--text-muted)' : ''}">${s.text}</span>
+          <span style="font-size:0.8125rem;color:var(--text-secondary);flex:1;${s.done ? 'text-decoration:line-through;color:var(--text-muted)' : ''}">${UI.esc(s.text)}</span>
           <button class="hc-del hc-edit-btn" data-tooltip="${UI.t('btn_edit')}"
             onclick="event.stopPropagation();PomodoroPage._todoSubEdit('${t.id}','${s.id}')">
             <svg data-lucide="pencil" style="width:0.75rem;height:0.75rem"></svg>
@@ -2167,13 +2167,13 @@
       const textBlock = t.note
         ? `<div ${clickArea}>
             <div style="display:flex;flex-direction:column;gap:1px;min-width:0">
-              <span class="hc-name${t.done ? ' hc-strike' : ''}">${t.text}</span>
-              <span style="font-size:0.6875rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.note}</span>
+              <span class="hc-name${t.done ? ' hc-strike' : ''}">${UI.esc(t.text)}</span>
+              <span style="font-size:0.6875rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${UI.esc(t.note)}</span>
             </div>
             ${subBadge}
           </div>`
         : `<div ${clickArea}>
-            <span class="hc-name${t.done ? ' hc-strike' : ''}" style="min-width:0">${t.text}</span>
+            <span class="hc-name${t.done ? ' hc-strike' : ''}" style="min-width:0">${UI.esc(t.text)}</span>
             ${subBadge}
           </div>`;
 
@@ -2278,7 +2278,7 @@
           ${CheckboxCore.html({ done: s.done, type: 'sm', color: 'var(--accent)', extraClass: 'pomo-fsub-cb' })}
         </div>
         <span class="pomo-fsub-text${s.done ? ' done' : ''}"
-          onclick="PomodoroPage.toggleFocusSubtask('${s.id}','${taskId}')">${s.text}</span>
+          onclick="PomodoroPage.toggleFocusSubtask('${s.id}','${taskId}')">${UI.esc(s.text)}</span>
         <div class="pomo-fsub-actions">
           <button class="pomo-fsub-action-btn" data-tooltip="Düzenle"
             onclick="event.stopPropagation();PomodoroPage._focusSubEdit('${s.id}','${taskId}')">
@@ -2402,7 +2402,7 @@
     DeleteManager.confirm({
       module:       'todo_sub',
       title:        UI.t('btn_delete'),
-      message:      `"${sub.text}"`,
+      message:      `"${UI.esc(sub.text)}"`,
       confirmLabel: UI.t('btn_delete'),
       onConfirm: () => {
         const d2    = Store.get('habits_todos') || { items: [] };
@@ -2721,10 +2721,10 @@
         },
         renderItem: (item, isActive) => {
           if (item._isPlaceholder) {
-            return `<span class="dd-item-label" style="color:var(--text-muted);font-style:italic">${item.label}</span>`;
+            return `<span class="dd-item-label" style="color:var(--text-muted);font-style:italic">${UI.esc(item.label)}</span>`;
           }
           return `<div style="flex:1;min-width:0;overflow:hidden">` +
-            `<div style="font-size:0.8125rem;color:var(--text-muted);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:${isActive ? '600' : '400'}">${item.label}</div>` +
+            `<div style="font-size:0.8125rem;color:var(--text-muted);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:${isActive ? '600' : '400'}">${UI.esc(item.label)}</div>` +
             (item._meta ? `<div style="font-size:0.6875rem;color:var(--text-muted);margin-top:2px;font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item._meta}</div>` : '') +
             `</div>` +
             `<svg class="dd-item-check" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;

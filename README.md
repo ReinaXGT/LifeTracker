@@ -92,6 +92,11 @@
 ### System Settings
 ![System Settings](assets/screenshots/System%20Settings.png)
 
+### Project Graph
+![Project Graph](assets/screenshots/ProjectGraph.png)
+
+A knowledge graph of the codebase generated with graphify: each node is a class or function (UI components, `Store`, `Charts`, …), edges are calls and relationships, and colors are detected communities. The interactive version is built locally with `/graphify` into `graphify-out/graph.html` (git-ignored).
+
 ---
 
 ## Modules
@@ -114,7 +119,7 @@
 
 ### Why LifeTracker?
 
-Most productivity apps require an account, phone number, or monthly subscription. LifeTracker runs entirely in your browser with no server, no account, no tracking, and no internet connection required (except for optional live investment prices).
+Most productivity apps require an account, phone number, or monthly subscription. LifeTracker runs entirely in your browser with no server, no account, no tracking, and no internet connection required (except for optional live investment prices and exchange rates). Chart.js and Lucide are bundled locally, so the app works fully offline.
 
 ### Global
 - **All data in `localStorage`** — works fully offline, private by default
@@ -125,6 +130,7 @@ Most productivity apps require an account, phone number, or monthly subscription
 - **Sidebar collapse** — icon-only mode for more screen space
 - **Full JSON backup** — export, import, and restore everything
 - **Per-page panel manager** — show/hide and reorder dashboard panels
+- **Live cross-tab sync** — theme, language, privacy mode, sidebar, hidden modules and demo-data state stay in sync across all open tabs and pages
 - **Responsive** — desktop (1280px+) and mobile (≤768px)
 
 ### Focus Mode (Pomodoro)
@@ -187,25 +193,32 @@ Most productivity apps require an account, phone number, or monthly subscription
 No installation, no build step, no Node.js required.
 
 ```bash
-# Option 1 — Python
+# Option 1 — Python, no-cache dev server (recommended)
+python3 tools/serve.py 8080
+
+# Option 2 — plain Python
 python -m http.server 8080
 
-# Option 2 — Node
+# Option 3 — Node
 npx serve .
-
-# Option 3 — just open index.html directly in your browser
 ```
 
-Then open `http://localhost:8080` (or just double-click `index.html`).
+Then open `http://localhost:8080`. Always use the same address — `localStorage` is stored per origin, so `localhost` and `127.0.0.1` (or different ports) hold separate data.
+
+Opening `index.html` directly (`file://`) also works, but a server is more reliable, especially in Firefox, which caches static files aggressively.
+
+### For contributors
+
+- `python3 tools/stamp.py` stamps `?v=<hash>` onto every local `js/` and `css/` reference and a build guard into each HTML page. It runs automatically on commit via `.githooks/pre-commit`; enable the hook once after cloning with `git config core.hooksPath .githooks`.
 
 ---
 
 ## Tech Stack
 
 - **Vanilla HTML / CSS / JavaScript** — no framework, no bundler, no transpiler
-- [Chart.js v4.4.0](https://www.chartjs.org/) — bar, line, doughnut charts
-- [Lucide Icons](https://lucide.dev/) — icon library
-- [Google Fonts](https://fonts.google.com/) — Space Grotesk, DM Sans, JetBrains Mono
+- [Chart.js v4.4.0](https://www.chartjs.org/) — bar, line, doughnut charts (bundled in `js/vendor/`)
+- [Lucide Icons](https://lucide.dev/) — icon library (bundled in `js/vendor/`)
+- [Google Fonts](https://fonts.google.com/) — Space Grotesk, DM Sans, JetBrains Mono (online only; falls back to system fonts offline)
 
 ### Custom UI Components (no third-party UI library)
 
@@ -231,7 +244,7 @@ Live price fetching requires external API keys. Enter them in **Settings → Inv
 | [Alpha Vantage](https://www.alphavantage.co/support/#api-key) | Stocks, ETFs, crypto prices | 25 req/day |
 | [Exchange Rates API](https://exchangeratesapi.io/) | Currency conversion | 1,000 req/month |
 
-All other modules work **100% offline** with no API keys.
+All other modules work **100% offline** with no API keys. Without internet, price and exchange-rate fetches fail silently and the last cached values are used.
 
 ---
 
@@ -256,7 +269,12 @@ LifeTracker/
 │   ├── mobile.css              ← Responsive overrides (≤768px)
 │   └── ...                     ← Component-specific styles
 │
+├── tools/
+│   ├── serve.py            ← No-cache static dev server
+│   └── stamp.py            ← Cache-busting hashes + build guard (run by pre-commit hook)
+│
 └── js/
+    ├── vendor/             ← Bundled Chart.js + Lucide (offline support)
     ├── store.js            ← All localStorage read/write (lt_ prefix)
     ├── ui.js               ← Shared helpers: modal, toast, i18n, themes
     ├── charts.js           ← Chart.js wrappers

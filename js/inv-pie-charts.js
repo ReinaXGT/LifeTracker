@@ -92,7 +92,7 @@ const InvPieCharts = (() => {
       legendVisible.map((x, i) =>
         `<div class="legend-item" style="gap:0.375rem;min-width:0;width:100%;justify-content:flex-start">
           <div class="legend-dot" style="background:${symCols[i]};flex-shrink:0"></div>
-          <span style="font-size:0.8125rem;font-weight:600;white-space:nowrap">${x.symbol}</span>
+          <span style="font-size:0.8125rem;font-weight:600;white-space:nowrap">${UI.esc(x.symbol)}</span>
           <span style="font-family:var(--font-mono);font-size:0.75rem;font-weight:700;color:${symCols[i]};white-space:nowrap">%${symPcts[i].toFixed(1)}</span>
         </div>`
       ).join('')

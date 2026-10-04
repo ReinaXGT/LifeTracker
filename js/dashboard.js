@@ -336,7 +336,7 @@ const Dashboard = {
         <div style="display:flex;justify-content:space-between;align-items:center">
           <span style="display:flex;align-items:center;gap:.3125rem">
             ${_dot(color)}
-            <span style="font-size:.625rem;color:var(--text-muted);letter-spacing:.03em">${g.name}</span>
+            <span style="font-size:.625rem;color:var(--text-muted);letter-spacing:.03em">${UI.esc(g.name)}</span>
           </span>
           <span class="mono" style="font-size:.6875rem;font-weight:700;color:${over ? 'var(--red)' : 'var(--text-primary)'};">${UI.maskCurrency(g.spent, cur)}</span>
         </div>
@@ -470,7 +470,7 @@ const Dashboard = {
         <div style="display:flex;justify-content:space-between;align-items:center;gap:.375rem">
           <span style="display:flex;align-items:center;gap:.3125rem;min-width:0;overflow:hidden">
             ${_dot(c)}
-            <span style="font-size:.625rem;color:var(--text-muted);letter-spacing:.03em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${g.title}</span>
+            <span style="font-size:.625rem;color:var(--text-muted);letter-spacing:.03em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${UI.esc(g.title)}</span>
           </span>
           <span class="mono" style="font-size:.6875rem;font-weight:700;color:${c};flex-shrink:0">%${p}</span>
         </div>
@@ -667,8 +667,8 @@ const Dashboard = {
       return `<div style="display:flex;align-items:center;gap:0.75rem;padding:0.8125rem 1.25rem;border-bottom:1px solid var(--border)">
         <div class="dot" style="background:${pColor[p.priority]||'var(--blue)'}"></div>
         <div style="flex:1;min-width:0">
-          <div style="font-size:0.875rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.title}</div>
-          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.125rem">${p.category}</div>
+          <div style="font-size:0.875rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${UI.esc(p.title)}</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.125rem">${UI.esc(p.category)}</div>
         </div>
         <div style="font-family:var(--font-mono);font-size:0.75rem;color:${overdue||p.dueDate===td?'var(--red)':'var(--text-muted)'};flex-shrink:0">${lbl}</div>
       </div>`;
@@ -772,7 +772,7 @@ const Dashboard = {
         <div style="font-size:0.625rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.5625rem">${UI.t('dash_focus_cats_week')}</div>
         ${topCats.map(([cat, mins], i) => `
           <div style="display:flex;align-items:center;gap:0.625rem;margin-bottom:0.4375rem">
-            <span style="font-size:0.75rem;color:var(--text-secondary);min-width:4.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${cat}</span>
+            <span style="font-size:0.75rem;color:var(--text-secondary);min-width:4.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${UI.esc(cat)}</span>
             <div style="flex:1;height:0.25rem;border-radius:0.1875rem;background:var(--bg-base);overflow:hidden">
               <div style="height:100%;width:${(mins / maxCat * 100).toFixed(0)}%;background:${catColors[i]};border-radius:0.1875rem"></div>
             </div>
@@ -905,7 +905,7 @@ const Dashboard = {
         meta = [ex.sets ? ex.sets + ' set' : '', ex.reps ? ex.reps + ' tekrar' : '', ex.weight ? ex.weight + ' kg' : ''].filter(Boolean).join(' · ');
       }
       return `<div style="display:flex;align-items:center;justify-content:space-between;padding:0.4375rem 0.75rem;border-bottom:1px solid var(--border)">
-        <span style="font-size:0.75rem;color:var(--text-primary)">${ex.name || '—'}</span>
+        <span style="font-size:0.75rem;color:var(--text-primary)">${UI.esc(ex.name || '—')}</span>
         <span style="font-size:0.6875rem;font-family:var(--font-mono);color:var(--text-muted)">${meta || '—'}</span>
       </div>`;
     }).join('');
@@ -999,7 +999,7 @@ const Dashboard = {
         } else {
           meta = [ex.sets ? ex.sets + ' set' : '', ex.reps ? ex.reps + ' tekrar' : '', ex.weight ? ex.weight + ' kg' : ''].filter(Boolean).join(' · ');
         }
-        return `<span style="font-size:0.6875rem;padding:0.125rem 0.4375rem;border-radius:0.3125rem;background:var(--bg-elevated);color:var(--text-secondary);font-family:var(--font-mono);border:1px solid var(--border)">${ex.name || '—'}${meta ? ' · ' + meta : ''}</span>`;
+        return `<span style="font-size:0.6875rem;padding:0.125rem 0.4375rem;border-radius:0.3125rem;background:var(--bg-elevated);color:var(--text-secondary);font-family:var(--font-mono);border:1px solid var(--border)">${UI.esc(ex.name || '—')}${meta ? ' · ' + meta : ''}</span>`;
       }).join('');
       return `<div style="padding:0.75rem 1rem;border-bottom:1px solid var(--border)">
         <div style="display:flex;align-items:center;gap:0.625rem;margin-bottom:${exs.length ? '0.5rem' : '0'}">
@@ -1037,7 +1037,7 @@ const Dashboard = {
       c.innerHTML = sorted.map(([cat, amt], i) => `
         <div style="margin-bottom:1rem">
           <div style="display:flex;justify-content:space-between;margin-bottom:0.375rem">
-            <span style="font-size:0.8125rem;color:var(--text-secondary)">${cat}</span>
+            <span style="font-size:0.8125rem;color:var(--text-secondary)">${UI.esc(cat)}</span>
             <span style="font-family:var(--font-mono);font-size:0.8125rem;font-weight:600">${UI.maskCurrency(amt, cur)}</span>
           </div>
           <div class="progress-bar"><div class="progress-fill" style="width:${(amt/max*100).toFixed(0)}%;background:${cols[i]}"></div></div>
@@ -1057,7 +1057,7 @@ const Dashboard = {
         <div style="display:flex;justify-content:space-between;margin-bottom:0.375rem">
           <span style="font-size:0.8125rem;color:var(--text-secondary);display:flex;align-items:center;gap:0.375rem">
             <span style="width:0.5rem;height:0.5rem;border-radius:0.125rem;background:${g.color};display:inline-block"></span>
-            ${g.name}
+            ${UI.esc(g.name)}
           </span>
           <span style="font-family:var(--font-mono);font-size:0.75rem;color:${over?'var(--red)':'var(--text-muted)'}">
             ${UI.maskCurrency(real,cur)} / ${UI.maskCurrency(budget,cur)}

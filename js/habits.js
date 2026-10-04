@@ -447,7 +447,7 @@ const Habits = {
         data-id="${h.id}" ${draggable}>
         ${CheckboxCore.html({ done, type: 'circle', color: 'var(--green)', onclick: isSkipped ? '' : `Habits.toggle('${h.id}')` })}
         <span class="hc-icon">${h.icon || '✓'}</span>
-        <span class="hc-name${done ? ' hc-strike' : ''}">${h.name}</span>
+        <span class="hc-name${done ? ' hc-strike' : ''}">${UI.esc(h.name)}</span>
         ${badge}
         <div style="flex:1"></div>
         ${streak > 1 && !isSkipped ? `<span class="hc-streak" style="color:${h.color}">🔥 ${streak}</span>` : ''}
@@ -645,7 +645,7 @@ const Habits = {
       const schedBadge = h.type === 'scheduled' ? `<span class="hg-sched-badge">${UI.t('habits_time_badge')}</span>` : '';
 
       return `<tr class="hg-row">
-        <td class="hg-frozen-td"><div class="hg-frozen-inner"><div class="hg-fn"><span class="hg-icon">${h.icon || '✓'}</span><span class="hg-habit-name">${h.name}${schedBadge}</span></div><div class="hg-fp"><span class="hg-pct" style="color:${h.color}">%${pct}</span></div></div></td>
+        <td class="hg-frozen-td"><div class="hg-frozen-inner"><div class="hg-fn"><span class="hg-icon">${UI.esc(h.icon || '✓')}</span><span class="hg-habit-name">${UI.esc(h.name)}${schedBadge}</span></div><div class="hg-fp"><span class="hg-pct" style="color:${h.color}">%${pct}</span></div></div></td>
         ${cells}
       </tr>`;
     }).join('');
